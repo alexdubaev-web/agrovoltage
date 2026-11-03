@@ -1,0 +1,26 @@
+---
+pagination:
+  data: collections.categories
+  size: 1
+  alias: category
+permalink: "{{ category.url }}"
+---
+<section class="section">
+  <div class="container">
+    <h1>{{ category.data.title }}</h1>
+    {%- if category.data.description %}<p class="lead">{{ category.data.description }}</p>{% endif %}
+    {%- if categoryProducts.length %}
+    <div class="grid">
+      {%- for product in categoryProducts %}
+      {% include "./_product-card.html" %}
+      {%- endfor %}
+    </div>
+    {%- else %}
+    <h2>Товары скоро появятся</h2>
+    <p class="lead">В этой категории пока нет позиций. Напишите, что нужно, и мы подберём запчасть.</p>
+    {% set leadForm = { type: "callback", id: "category", service: "Каталог запчастей", message: "Нужна запчасть из категории «" + category.data.title + "»: ", title: "Спросить менеджера" } %}
+    {% include "partials/lead-form.njk" %}
+    {%- endif %}
+    <p><a href="/katalog/">Весь каталог</a></p>
+  </div>
+</section>

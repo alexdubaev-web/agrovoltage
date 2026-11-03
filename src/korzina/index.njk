@@ -1,0 +1,42 @@
+---
+permalink: /korzina/
+title: Корзина
+sitemap: false
+seo:
+  title: Корзина
+  description: Состав заказа запчастей. Заказ оформляется как заявка, оплата онлайн не требуется.
+  noindex: true
+---
+<section class="section" data-cart-page>
+  <div class="container">
+    <h1>Корзина</h1>
+
+    <noscript><p class="lead">Корзине нужен включённый JavaScript. Позвоните нам: <a href="{{ settings.phoneHref }}">{{ settings.phone }}</a>.</p></noscript>
+
+    <div class="cart-empty" data-cart-empty>
+      <p class="lead">Корзина пуста</p>
+      <p><a class="btn btn--primary" href="/katalog/">Перейти в каталог</a></p>
+    </div>
+
+    <div class="cart-sent" data-cart-sent hidden role="status">
+      <p class="lead"><strong>Заказ отправлен.</strong> <span data-cart-sent-id></span> Мы свяжемся с вами в рабочее время.</p>
+      <p><a class="btn btn--primary" href="/katalog/">Вернуться в каталог</a></p>
+    </div>
+
+    <div data-cart-content hidden>
+      <ul class="cart-list" data-cart-rows></ul>
+      <p class="cart-stale-note" data-cart-stale-note hidden>Позиции, помеченные «Товар больше не продаётся», не войдут в заказ. Удалите их из корзины.</p>
+      <div class="cart-total">
+        <p class="cart-total__line"><span>Итого</span> <strong data-cart-total>0 ₽</strong></p>
+        <p class="muted" data-cart-note hidden></p>
+        <p class="muted">Оплата онлайн не требуется: менеджер подтвердит наличие, итоговую цену и срок поставки.</p>
+      </div>
+
+      <div class="cart-order" data-cart-order hidden>
+        <h2>Оформить заказ</h2>
+        {% set leadForm = { type: "order", id: "order", service: "Заказ запчастей", title: "Контакты для заказа", messageLabel: "Комментарий к заказу (необязательно)", submit: "Отправить заказ" } %}
+        {% include "partials/lead-form.njk" %}
+      </div>
+    </div>
+  </div>
+</section>

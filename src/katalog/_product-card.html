@@ -1,0 +1,12 @@
+{#- Карточка товара в списке. Вход: product (элемент коллекции products). Файл .html: Eleventy не собирает его как страницу. -#}
+{%- set pImg = product.data.images | first -%}
+<article class="card product-card" data-product-card>
+  <a class="product-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
+    {%- if pImg %}{% image pImg, product.data.title, "(min-width: 900px) 280px, 50vw" %}{% else %}<span class="product-ph" aria-hidden="true"></span>{% endif -%}
+  </a>
+  <h3><a href="{{ product.url }}">{{ product.data.title }}</a></h3>
+  <p class="muted">Арт. {{ product.data.sku }}</p>
+  <p class="product-card__price">{{ product.data.price | price }}</p>
+  <p class="product-card__stock">{% if product.data.inStock %}В наличии{% else %}Под заказ{% endif %}</p>
+  <button class="btn btn--primary" type="button" data-add-to-cart data-slug="{{ product.slug }}" data-title="{{ product.data.title }}" data-price="{% if product.data.price is number %}{{ product.data.price }}{% endif %}">В корзину</button>
+</article>

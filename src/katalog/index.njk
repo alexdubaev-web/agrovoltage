@@ -1,0 +1,70 @@
+---
+permalink: /katalog/
+title: Каталог запчастей для John Deere
+scripts: [catalog-search]
+seo:
+  title: Каталог запчастей для электрики John Deere
+  description: Датчики, жгуты, генераторы, стартеры и комплектующие кондиционеров для техники John Deere. Поиск по названию и артикулу, заказ без онлайн-оплаты.
+---
+<section class="section">
+  <div class="container">
+    <h1>Каталог запчастей для John Deere</h1>
+    <p class="lead">Запчасти для электрики и электроники сельхозтехники. Оформите заказ как заявку: менеджер уточнит наличие, совместимость и срок поставки, оплата онлайн не требуется.</p>
+
+    <form class="catalog-search" role="search" data-catalog-search hidden>
+      <label class="field__label" for="catalog-q">Поиск по названию или артикулу</label>
+      <div class="catalog-search__row">
+        <input class="field__input" id="catalog-q" type="search" name="q" autocomplete="off" placeholder="Например: датчик давления или AGV-T-0102">
+        <button class="btn btn--primary" type="submit">Найти</button>
+      </div>
+    </form>
+
+    <div class="catalog-results" data-search-results hidden aria-live="polite">
+      <p class="muted" data-search-count></p>
+      <div class="grid" data-search-list hidden></div>
+      <div class="catalog-empty" data-search-empty hidden>
+        <p><strong>Ничего не нашли</strong></p>
+        <p class="muted">Проверьте написание или опишите, что нужно: менеджер подберёт запчасть по модели техники.</p>
+        <a class="btn btn--primary" href="#zayavka" data-lead-open data-service="Каталог запчастей" data-message="" data-search-ask>Спросить менеджера</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div data-catalog-browse>
+{%- if collections.categories.length %}
+<section class="section section--alt">
+  <div class="container">
+    <h2>Категории</h2>
+    <div class="grid">
+      {%- for category in collections.categories %}
+      {%- set inCategory = collections.products | selectattr("data.category", "equalto", category.slug) | list %}
+      <article class="card">
+        <h3><a href="{{ category.url }}">{{ category.data.title }}</a></h3>
+        {%- if category.data.description %}<p class="muted">{{ category.data.description }}</p>{% endif %}
+        <p><a href="{{ category.url }}">{% if inCategory.length %}Товаров: {{ inCategory.length }}{% else %}Скоро появятся{% endif %}</a></p>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endif %}
+
+<section class="section">
+  <div class="container">
+    {%- if collections.products.length %}
+    <h2>Все товары</h2>
+    <div class="grid">
+      {%- for product in collections.products %}
+      {% include "./_product-card.html" %}
+      {%- endfor %}
+    </div>
+    {%- else %}
+    <h2>Товары скоро появятся</h2>
+    <p class="lead">Каталог наполняется. Напишите, что вам нужно, и мы подберём запчасть.</p>
+    {% set leadForm = { type: "callback", id: "catalog", service: "Каталог запчастей", message: "Нужна запчасть: ", title: "Спросить менеджера" } %}
+    {% include "partials/lead-form.njk" %}
+    {%- endif %}
+  </div>
+</section>
+</div>

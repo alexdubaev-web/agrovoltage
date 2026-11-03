@@ -1,0 +1,62 @@
+---
+pagination:
+  data: collections.products
+  size: 1
+  alias: product
+permalink: "{{ product.url }}"
+---
+{%- set pImg = product.data.images | first -%}
+<article class="section product" data-product>
+  <div class="container">
+    <div class="product__grid">
+      <div class="product__media">
+        {%- if pImg %}{% image pImg, product.data.title, "(min-width: 900px) 540px, 100vw", true %}{% else %}<span class="product-ph product-ph--large" role="img" aria-label="Фото скоро появится"></span>{% endif %}
+      </div>
+      <div class="product__info">
+        <h1>{{ product.data.title }}</h1>
+        <p class="muted">Артикул: {{ product.data.sku }}{% if product.data.demo %} <span class="badge badge--demo">Тестовый товар</span>{% endif %}</p>
+        <p class="product__price">{{ product.data.price | price }}</p>
+        <p class="product__stock">{% if product.data.inStock %}<span class="badge">В наличии</span>{% else %}<span class="badge badge--demo">Под заказ</span>{% endif %}</p>
+        {%- if product.data.summary %}<p>{{ product.data.summary }}</p>{% endif %}
+        <div class="actions">
+          <input class="field__input product__qty" type="number" min="1" max="999" value="1" inputmode="numeric" aria-label="Количество" data-add-qty>
+          <button class="btn btn--primary" type="button" data-add-to-cart data-slug="{{ product.slug }}" data-title="{{ product.data.title }}" data-price="{% if product.data.price is number %}{{ product.data.price }}{% endif %}">В корзину</button>
+          <a class="btn btn--ghost" href="/korzina/">Перейти в корзину</a>
+        </div>
+        <p class="muted" data-add-status role="status" aria-live="polite"></p>
+        {%- if product.data.price is not number %}<p class="muted">Цену сообщит менеджер после заявки.</p>{% endif %}
+      </div>
+    </div>
+
+    {%- if product.data.compatibility.length %}
+    <h2>Совместимость</h2>
+    <ul class="product__compat">
+      {%- for model in product.data.compatibility %}
+      <li>{{ model }}</li>
+      {%- endfor %}
+    </ul>
+    <p class="muted">Менеджер сверит совместимость по VIN или серийному номеру техники перед поставкой.</p>
+    {%- endif %}
+
+    {%- if product.data.specs.length %}
+    <h2>Характеристики</h2>
+    <table class="price-table product__specs">
+      <tbody>
+        {%- for spec in product.data.specs %}
+        <tr><th scope="row">{{ spec.name }}</th><td>{{ spec.value }}</td></tr>
+        {%- endfor %}
+      </tbody>
+    </table>
+    {%- endif %}
+
+    {%- if product.content %}
+    <h2>Описание</h2>
+    <div class="prose">{{ product.content | safe }}</div>
+    {%- endif %}
+
+    <h2>Вопрос по товару</h2>
+    {% set leadForm = { type: "callback", id: "product", service: "Каталог запчастей", message: "Вопрос по товару: " + product.data.title + " (арт. " + product.data.sku + ")", title: "Спросить менеджера" } %}
+    {% include "partials/lead-form.njk" %}
+    <p><a href="{{ product.data.category | categoryUrl }}">К категории</a></p>
+  </div>
+</article>
