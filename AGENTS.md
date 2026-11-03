@@ -7,6 +7,50 @@
 
 | Команда | Что делает |
 |---------|------------|
+| `npm ci` | Ставит зависимости по lock-файлу. |
+| `npm run build` | Проверяет контент, чистит `dist/`, собирает сайт. |
+| `npm run validate` | Проверяет контент против `schemas/`. |
+| `npm test` | Сначала `npm run build`, затем все тесты (`node --test "tests/*.test.mjs"`). |
+| `node --test tests/<файл>.test.mjs` | Один тестовый файл (нужен собранный `dist/`). |
+| `DEV_PORT=8091 npm run dev` | Сайт на http://localhost:8091/ (по умолчанию порт 8080), PHP выполняет `/api/lead.php`. |
+| `php backend/console.php resend` | Переотправляет заявки, не доставленные в каналы. |
+| `php -l <файл>` | Проверка синтаксиса PHP. |
+
+Архитектура: `docs/architecture.md`. Решения и их причины: `docs/adr/`. Словарь проекта: `CONTEXT.md`.
+
+## Где что
+
+- `src/content/` — весь контент (Markdown + YAML, JSON), единственный источник правды; схемы в `schemas/`.
+- `src/_data/settings.json`, `src/_data/models.json` — данные компании и модели техники.
+- `src/*.njk`, `src/_includes/` — страницы и шаблоны (`layouts/base.njk`, `partials/lead-form.njk`).
+- `eleventy.config.js`, `lib/` — коллекции, фильтры, шорткод `{% image %}`, JSON-LD (`lib/seo.js`), адреса (`lib/urls.js`).
+- `src/assets/js/` — клиентский JS: `cart.js`, `forms.js`, `consent.js`, `catalog-search.js`.
+- `public/api/` — точки входа PHP, логика в `backend/src/`; журнал и лог — `storage/`.
+- `src/admin/` — Sveltia CMS (`config.yml` повторяет поля из `schemas/`).
+- `tests/` — тесты, `tests/helpers/` — сборка на фикстурах.
+
+## Подводные камни
+
+- `npm test` и `npm run dev` пишут в один `dist/`. Одновременный запуск роняет dev (sharp: «unable to open for write»).
+- Асинхронный шорткод `{% image %}` внутри обычного `{% for %}` через include теряет вывод. Нужен `asyncEach`.
+- В Nunjucks нет теста `equalto` для `selectattr` с путём через точку.
+- Node 24 не принимает папку в `node --test`. Нужен glob `"tests/*.test.mjs"`.
+- В локальном PHP нет openssl, curl и mbstring. SMTP по TLS и HTTPS к MAX локально не работают.
+- Sveltia грузится с unpkg: без сети админка не откроется. Локальный режим работает только в Chrome или Edge.
+- Индексация закрыта, пока не заданы `INDEXABLE=true` и `SITE_URL=https://…`.
+- Заявки, принятые без настроенных каналов (статус `skipped`), `resend` не переотправляет.
+- Новые зависимости не добавлять без решения: тесты и сборка рассчитаны на текущий набор.
+
+## Окружение
+
+Шаблон — `.env.example`, рабочий `.env` в корне не коммитится. Значения не записывать сюда.
+
+- `SITE_URL` — адрес сайта для canonical, sitemap, JSON-LD (по умолчанию `http://localhost:8080`).
+- `INDEXABLE` — `true` открывает индексацию, только вместе с `SITE_URL` на `https://`.
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_SECURE` — SMTP для писем с заявками.
+- `MAIL_FROM`, `MAIL_TO` — отправитель и получатель писем.
+- `MAX_BOT_TOKEN`, `MAX_CHAT_ID` — бот и чат мессенджера MAX.
+- `MAX_API_URL` — адрес Bot API MAX (пусто — `https://platform-api2.max.ru`).
 
 ## Как здесь работает Autopilot
 
