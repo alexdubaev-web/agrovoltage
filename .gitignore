@@ -8,3 +8,4 @@ dist/
 .autopilot/serve.*
 storage/*
 !storage/.gitkeep
+!storage/.htaccess
