@@ -17,6 +17,15 @@ export default function (eleventyConfig) {
   eleventyConfig.addGlobalData("site", site);
   eleventyConfig.addGlobalData("jsModules", () => listJsModules(INPUT));
   eleventyConfig.addGlobalData("buildDate", () => new Date());
+  // Главное меню (не больше 7 пунктов). Пункт показывается, только когда страница собрана.
+  eleventyConfig.addGlobalData("navItems", [
+    { name: "Услуги", url: "/uslugi/" },
+    { name: "Каталог", url: "/katalog/" },
+    { name: "Статьи", url: "/stati/" },
+    { name: "Доставка", url: "/dostavka/" },
+    { name: "О компании", url: "/o-kompanii/" },
+    { name: "Контакты", url: "/kontakty/" },
+  ]);
 
   // Контент читается своим загрузчиком, а не как шаблоны.
   eleventyConfig.ignores.add(`${INPUT}/content/**`);
@@ -66,8 +75,15 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("regionUrl", (slug) => urls.region(slug));
   eleventyConfig.addFilter("pageUrl", (slug) => urls.page(slug));
   // Есть ли собранная страница с таким адресом (ссылки меню не ведут в 404).
-  eleventyConfig.addFilter("pageExists", (url, all) => (all || []).some((p) => p.url === url));
-  eleventyConfig.addFilter("existingPages", (items, all) => (items || []).filter((i) => (all || []).some((p) => p.url === i.url)));
+  // Карта адресов строится до рендера, поэтому видит и страницы-пагинации по коллекциям
+  // (collections.all на момент рендера layout бывает неполной). Второй аргумент оставлен для совместимости.
+  let knownUrls = new Set();
+  eleventyConfig.on("eleventy.contentMap", ({ urlToInputPath }) => {
+    knownUrls = new Set(Object.keys(urlToInputPath || {}));
+  });
+  const exists = (url, all) => knownUrls.has(url) || (all || []).some((p) => p.url === url);
+  eleventyConfig.addFilter("pageExists", (url, all) => exists(url, all));
+  eleventyConfig.addFilter("existingPages", (items, all) => (items || []).filter((i) => exists(i.url, all)));
   // Картинки страницы для sitemap: sitemapImages[] и seo.ogImage, абсолютные, без повторов.
   eleventyConfig.addFilter("sitemapImages", (data) => [
     ...new Set([...(data?.sitemapImages || []), data?.seo?.ogImage].filter(Boolean).map((p) => absoluteUrl(p, site.url))),
@@ -75,6 +91,7 @@ export default function (eleventyConfig) {
 
   // Данные.
   eleventyConfig.addFilter("findBySlug", (list, slug) => (list || []).find((i) => (i.slug ?? i.data?.slug) === slug));
+  eleventyConfig.addFilter("findByTitle", (list, title) => (list || []).find((i) => (i.data?.title ?? i.title) === title));
   eleventyConfig.addFilter("md", (text) => renderMarkdown(text));
   eleventyConfig.addFilter("isPlaceholder", (v) => typeof v === "string" && /^\s*\[.*\]\s*$/.test(v));
   eleventyConfig.addFilter("price", (value) =>

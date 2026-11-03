@@ -162,6 +162,31 @@ describe("dist/ после npm run build", () => {
     for (const a of d.querySelectorAll("header nav a[href^='/']")) assert.ok(resolveLocal(a.getAttribute("href")), "меню ведёт в 404");
   });
 
+  test("подвал главной ссылается на страницы регионов", () => {
+    const d = dom(path.join(DIST, "index.html"));
+    for (const url of ["/regiony/stavropolskij-kraj/", "/regiony/krasnodarskij-kraj/"]) {
+      assert.ok(d.querySelector(`footer a[href="${url}"]`), `нет ссылки ${url} в подвале`);
+    }
+  });
+
+  test("меню в шапке и подвале ведёт на собранные разделы", () => {
+    const d = dom(path.join(DIST, "index.html"));
+    for (const url of ["/uslugi/", "/katalog/", "/kontakty/"]) {
+      assert.ok(d.querySelector(`header nav a[href="${url}"]`), `нет ${url} в меню шапки`);
+      assert.ok(d.querySelector(`footer nav a[href="${url}"]`), `нет ${url} в подвале`);
+    }
+    assert.ok(d.querySelectorAll("header nav li").length <= 7, "в меню не больше 7 пунктов");
+  });
+
+  test("стили подключены только из <head>, без inline <style>", () => {
+    for (const file of pages) {
+      const d = dom(file);
+      const rel = path.relative(DIST, file);
+      assert.equal(d.querySelectorAll("style").length, 0, `${rel}: <style>`);
+      for (const l of d.querySelectorAll('link[rel="stylesheet"]')) assert.equal(l.parentElement.tagName, "HEAD", `${rel}: stylesheet вне head`);
+    }
+  });
+
   test("форма заявки по контракту §5", () => {
     const form = dom(path.join(DIST, "404.html")).querySelector("form[data-lead-form]");
     for (const name of ["name", "phone", "message", "service", "page", "consent", "consentVersion", "website", "startedAt"]) {
