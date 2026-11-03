@@ -1,13 +1,14 @@
 import { serviceLd, faqLd } from "../../lib/seo.js";
-
-const REGION_TEXT = "в Ставропольском и Краснодарском крае";
+import { regionsIn } from "./region-text.js";
 
 export default {
   eleventyComputed: {
     permalink: (data) => data.service.url,
-    title: (data) => `${data.service.data.title} John Deere ${REGION_TEXT}`,
+    // «в Ставропольском и Краснодарском крае» — из settings.regions.
+    regionText: (data) => regionsIn(data.settings?.regions),
+    title: (data) => `${data.service.data.title} John Deere ${regionsIn(data.settings?.regions)}`.trim(),
     seo: (data) => ({
-      title: `${data.service.data.title} John Deere ${REGION_TEXT}`,
+      title: `${data.service.data.title} John Deere ${regionsIn(data.settings?.regions)}`.trim(),
       ...(data.service.data.seo || {}),
       ogImage: data.service.data.seo?.ogImage || data.service.data.image || "",
     }),

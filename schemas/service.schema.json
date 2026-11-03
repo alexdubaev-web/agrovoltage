@@ -132,7 +132,8 @@
       }
     },
     "order": {
-      "type": "number"
+      "type": ["number", "null"],
+      "description": "пустое значение — в конце списка"
     },
     "demo": {
       "type": "boolean"

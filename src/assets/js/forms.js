@@ -2,7 +2,6 @@
 // Токен — GET /api/token.php, отправка — POST /api/lead.php (JSON, заголовок X-CSRF-Token).
 // После успеха — событие document "agv:lead-sent" {detail:{type,id}}: на него подписывается корзина.
 
-const CART_KEY = "agv.cart.v1";
 const FALLBACK_PHONE = "+7 962 001 19 90";
 const FALLBACK_PHONE_HREF = "tel:+79620011990";
 
@@ -13,7 +12,8 @@ const MSG = {
   emptyCart: "Корзина пуста — добавьте товары, чтобы оформить заказ.",
   check: "Проверьте поля формы.",
   sending: "Отправляем…",
-  fail: "Не удалось отправить заявку. Позвоните нам: ",
+  // R17.2: «Не удалось отправить. Позвоните <телефон> или попробуйте ещё раз».
+  fail: ["Не удалось отправить. Позвоните ", " или попробуйте ещё раз."],
 };
 
 /** «9620011990» → «+7 (962) 001-19-90»; неполный ввод форматируется частично. */
@@ -38,11 +38,14 @@ function phoneValid(value) {
   return d.length === 11 && (d[0] === "7" || d[0] === "8") && "3489".includes(d[1]);
 }
 
-function readCartItems(win) {
+// Состав заказа берётся из формы: cart.js сверяет корзину с /katalog/index.json и пишет
+// в input[name="items"] и data-cart-items только товары из каталога с его ценой и названием.
+// localStorage здесь не читается: там могут лежать снятые товары и старые цены.
+function orderItemsOf(form) {
+  const raw = form.querySelector('input[name="items"]')?.value || form.getAttribute("data-cart-items") || "[]";
   try {
-    const data = JSON.parse(win.localStorage.getItem(CART_KEY) || "null");
-    const items = Array.isArray(data?.items) ? data.items : [];
-    return items
+    const items = JSON.parse(raw);
+    return (Array.isArray(items) ? items : [])
       .filter((i) => i && typeof i.slug === "string" && Number.isInteger(i.qty) && i.qty > 0)
       .map(({ slug, title, price, qty }) => ({ slug, title: String(title ?? slug), price: typeof price === "number" ? price : null, qty }));
   } catch {
@@ -70,20 +73,22 @@ export function initForms(win = window) {
     return { href: a?.getAttribute("href") || FALLBACK_PHONE_HREF, text: a?.textContent.trim() || FALLBACK_PHONE };
   };
 
-  function setStatus(form, text, state, withPhone = false) {
+  // text — строка или [до, после]: тогда между частями встаёт ссылка на телефон.
+  function setStatus(form, text, state) {
     const el = form.querySelector("[data-form-status]");
     if (!el) return;
-    el.textContent = text;
     if (state) el.dataset.state = state;
     else delete el.dataset.state;
-    if (withPhone) {
-      const { href, text: label } = phoneLink();
-      const a = doc.createElement("a");
-      a.href = href;
-      a.textContent = label;
-      a.dataset.goal = "phone";
-      el.append(a);
+    if (!Array.isArray(text)) {
+      el.textContent = text;
+      return;
     }
+    const { href, text: label } = phoneLink();
+    const a = doc.createElement("a");
+    a.href = href;
+    a.textContent = label;
+    a.dataset.goal = "phone";
+    el.replaceChildren(text[0], a, text[1]);
   }
 
   function setError(form, field, text) {
@@ -146,7 +151,7 @@ export function initForms(win = window) {
       website: val("website"),
       startedAt: Number(val("startedAt")) || 0,
     };
-    if (type === "order") body.items = readCartItems(win);
+    if (type === "order") body.items = orderItemsOf(form);
     return body;
   }
 
@@ -206,10 +211,10 @@ export function initForms(win = window) {
       } else if (status === 429 && data?.error) {
         setStatus(form, data.error, "error");
       } else {
-        setStatus(form, MSG.fail, "error", true);
+        setStatus(form, MSG.fail, "error");
       }
     } catch {
-      setStatus(form, MSG.fail, "error", true);
+      setStatus(form, MSG.fail, "error");
     } finally {
       setBusy(form, false);
     }

@@ -26,7 +26,8 @@
       "description": "путь от корня сайта, например /assets/uploads/foto.jpg"
     },
     "order": {
-      "type": "number"
+      "type": ["number", "null"],
+      "description": "пустое значение — в конце списка"
     },
     "seo": {
       "type": "object",

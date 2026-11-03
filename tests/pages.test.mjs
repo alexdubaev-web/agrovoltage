@@ -231,3 +231,80 @@ describe("демо-флаг и пагинация (отдельная сборк
     assert.equal(second.querySelector('a[rel="prev"]').getAttribute("href"), "/stati/");
   });
 });
+
+// R27.1 / R12: регионы на страницах берутся из settings.regions. Сборка на копии проекта,
+// где в настройках другие регионы. В копии контента старые названия тоже заменены:
+// так каждое оставшееся упоминание указывает на шаблон или код, а не на текст владельца.
+describe("регионы из настроек (сборка с подменённой конфигурацией)", () => {
+  const OLD = /Ставрополь|Краснодар/i;
+  const NEW_REGIONS = ["Ростовская область", "Волгоградская область"];
+  let out;
+  before(() => {
+    const root = tempDir("regions-root");
+    for (const item of ["src", "lib", "scripts", "schemas", "public", "eleventy.config.js", "package.json"]) {
+      fs.cpSync(path.join(ROOT, item), path.join(root, item), { recursive: true });
+    }
+    fs.symlinkSync(path.join(ROOT, "node_modules"), path.join(root, "node_modules"), "junction");
+    const settingsFile = path.join(root, "src/_data/settings.json");
+    const settings = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
+    settings.regions = NEW_REGIONS;
+    settings.seo.defaultDescription = "Диагностика и ремонт электрики сельхозтехники John Deere.";
+    fs.writeFileSync(settingsFile, JSON.stringify(settings, null, 2));
+    const contentDir = path.join(root, "src/content");
+    for (const file of fs.readdirSync(contentDir, { recursive: true })) {
+      const p = path.join(contentDir, file);
+      if (!/\.(md|json)$/.test(p)) continue;
+      fs.writeFileSync(p, fs.readFileSync(p, "utf8").replace(/(Ставрополь|Краснодар)[а-яё]*/gi, "Энск"));
+    }
+    out = path.join(root, "dist");
+    const r = spawnSync(process.execPath, ["scripts/build.mjs"], {
+      cwd: root, encoding: "utf8", env: { ...process.env, OUTPUT_DIR: out, CONTENT_DIR: contentDir },
+    });
+    assert.equal(r.status, 0, r.stdout + r.stderr);
+  });
+
+  test("старых названий регионов нет ни в одном файле dist/", () => {
+    const hits = [];
+    const walk = (dir) => {
+      for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+        const p = path.join(dir, e.name);
+        if (e.isDirectory()) {
+          if (!(dir === out && e.name === "admin")) walk(p); // админка — подсказки Sveltia, не страницы сайта
+        } else if (/\.(html|txt|xml|json|js|css)$/.test(e.name) && OLD.test(fs.readFileSync(p, "utf8"))) {
+          hits.push(path.relative(out, p));
+        }
+      }
+    };
+    walk(out);
+    assert.deepEqual(hits, []);
+  });
+
+  test("новые регионы на страницах услуг, /uslugi/ и /kontakty/", () => {
+    const svc = page("/uslugi/diagnostika-elektriki", out);
+    assert.match(text(svc.querySelector("h1")), /John Deere в Ростовской и Волгоградской области/);
+    for (const url of ["/uslugi", "/kontakty"]) {
+      const doc = page(url, out);
+      const all = text(doc.querySelector("main")) + " " + doc.querySelector('meta[name="description"]').getAttribute("content");
+      assert.match(all, /Ростовск/, url);
+      assert.match(all, /Волгоградск/, url);
+    }
+  });
+});
+
+// R31i: о стационарной мастерской пользователь ничего не подтверждал.
+describe("нет неподтверждённых утверждений о мастерской", () => {
+  test("ни в одном файле dist/, в регионах — пометка «[уточнить]»", () => {
+    const hits = fs.readdirSync(DIST, { recursive: true })
+      .filter((rel) => /\.(html|txt|xml|json|js|yml)$/.test(rel))
+      .filter((rel) => /мастерск/i.test(fs.readFileSync(path.join(DIST, rel), "utf8")));
+    assert.deepEqual(hits, []);
+    for (const slug of ["stavropolskij-kraj", "krasnodarskij-kraj"]) {
+      const doc = page(`/regiony/${slug}`);
+      // Как идёт работа (выезд или приём техники), пока не подтверждено: в тексте пометка «[уточнить]».
+      for (const el of [doc.querySelector(".lead"), ...doc.querySelectorAll("#faq details")]) {
+        const t = text(el);
+        if (/выезж|выезд|привез|приним.*техник/i.test(t)) assert.match(t, /\[уточнить/, t);
+      }
+    }
+  });
+});

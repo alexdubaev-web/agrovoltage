@@ -140,6 +140,9 @@ describe("forms.js", () => {
       await settle();
       const status = doc.querySelector("[data-form-status]");
       assert.ok(status.textContent.includes(PHONE), status.textContent);
+      // Текст из спецификации (история 21, R17.2).
+      assert.ok(status.textContent.includes(`Не удалось отправить. Позвоните ${PHONE} или попробуйте ещё раз`), status.textContent);
+      assert.ok(status.querySelector('a[href="tel:+79620011990"]'), "телефон — ссылка");
       assert.equal(status.dataset.state, "error");
       assert.equal(form.elements.name.value, "Олег");
     }
@@ -162,11 +165,19 @@ describe("forms.js", () => {
     assert.match(doc.querySelector("[data-form-status]").textContent, /AGV-20261103-0002/);
   });
 
-  test("заказ: позиции из корзины agv.cart.v1, цели Метрики «order»", async () => {
-    const { doc, win, calls } = setup({ html: formHtml("order") });
+  // Состав заказа держит cart.js: input[name="items"] и data-cart-items (interfaces.md, тикет 03).
+  const orderHtml = (items, { attr = true, field = true } = {}) => {
+    const json = JSON.stringify(items).replace(/'/g, "&#39;");
+    return formHtml("order")
+      .replace('data-lead-form="order"', `data-lead-form="order"${attr ? ` data-cart-items='${json}'` : ""}`)
+      .replace("<p data-form-status>", `${field ? `<input type="hidden" name="items" value='${json}'>` : ""}<p data-form-status>`);
+  };
+
+  test("заказ: позиции из формы, которую заполняет cart.js, цели Метрики «order»", async () => {
+    const items = [{ slug: "rele", title: "Реле", price: 1500, qty: 2 }, { slug: "datchik", title: "Датчик", price: null, qty: 1 }];
+    const { doc, win, calls } = setup({ html: orderHtml(items) });
     const goals = [];
     win.agvGoal = (name) => goals.push(name);
-    const items = [{ slug: "rele", title: "Реле", price: 1500, qty: 2 }, { slug: "datchik", title: "Датчик", price: null, qty: 1 }];
     win.localStorage.setItem("agv.cart.v1", JSON.stringify({ items, updatedAt: 1 }));
     submit(fill(doc));
     await settle();
@@ -174,6 +185,25 @@ describe("forms.js", () => {
     assert.equal(body.type, "order");
     assert.deepEqual(body.items, items);
     assert.deepEqual(goals, ["lead", "order"]);
+  });
+
+  test("R17.3: снятый с продажи товар не уходит в заказ, цена и название — из каталога", async () => {
+    // В localStorage — старые цена и название и товар, которого уже нет в /katalog/index.json.
+    const stored = [
+      { slug: "rele", title: "Реле (старое)", price: 1500, qty: 2 },
+      { slug: "snyat-s-prodazhi", title: "Снятый товар", price: 900, qty: 1 },
+    ];
+    // cart.js сверил корзину с каталогом и оставил только то, что продаётся, с данными каталога.
+    const fromCatalog = [{ slug: "rele", title: "Реле стартера", price: 1700, qty: 2 }];
+    for (const opts of [{ attr: true, field: true }, { attr: false, field: true }, { attr: true, field: false }]) {
+      const { doc, win, calls } = setup({ html: orderHtml(fromCatalog, opts) });
+      win.localStorage.setItem("agv.cart.v1", JSON.stringify({ items: stored, updatedAt: 1 }));
+      submit(fill(doc));
+      await settle();
+      const body = JSON.parse(leadCalls(calls)[0].opts.body);
+      assert.deepEqual(body.items, fromCatalog, JSON.stringify(opts));
+      assert.ok(!body.items.some((i) => i.slug === "snyat-s-prodazhi"));
+    }
   });
 
   test("заказ с пустой корзиной не отправляется", async () => {

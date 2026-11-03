@@ -1,5 +1,6 @@
 import { loadCollection } from "../../lib/content.js";
 import { itemListLd } from "../../lib/seo.js";
+import { regionsIn } from "./region-text.js";
 
 const GROUPS = [
   { key: "diagnostics", name: "Диагностика" },
@@ -11,6 +12,12 @@ const GROUPS = [
 
 export default {
   eleventyComputed: {
+    // Регионы — из settings.regions (R27.1).
+    regionText: (data) => regionsIn(data.settings?.regions),
+    seo: (data) => ({
+      title: "Услуги по диагностике и ремонту электрики John Deere",
+      description: `Диагностика, ремонт электрики, проводки, электрооборудования и кондиционеров сельхозтехники John Deere ${regionsIn(data.settings?.regions)}.`,
+    }),
     // Группы с услугами, в порядке из GROUPS; пустые группы не выводятся.
     serviceGroups: () => {
       const services = loadCollection("services");

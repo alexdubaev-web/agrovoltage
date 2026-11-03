@@ -11,6 +11,7 @@ import {
 } from "./helpers/dist.mjs";
 import { tempDir, writeFiles, VALID_CONTENT, fixtureBuild } from "./helpers/fixture.mjs";
 import * as seo from "../lib/seo.js";
+import { loadCollection } from "../lib/content.js";
 
 const SETTINGS = JSON.parse(fs.readFileSync(path.join(ROOT, "src/_data/settings.json"), "utf8"));
 const REGIONS = ["Ставропольский край", "Краснодарский край"];
@@ -95,6 +96,20 @@ describe("валидатор контента", () => {
     assert.notEqual(v.status, 0);
     assert.match(v.stderr, /test-article\.md: поле date — /);
     assert.match(v.stderr, /test-product\.md: поле category — /);
+  });
+
+  test("R25.1: пустой «Порядок» из Sveltia (order: null) проходит проверку, элемент — в конце списка", () => {
+    const content = tempDir("order-null");
+    fs.cpSync(path.join(ROOT, "src/content"), content, { recursive: true });
+    // Sveltia сохраняет очищенное числовое поле как пустое значение.
+    const svc = path.join(content, "services/diagnostika-elektriki.md");
+    fs.writeFileSync(svc, fs.readFileSync(svc, "utf8").replace(/^order: 1$/m, "order:"));
+    const cat = path.join(content, "categories/datchiki-i-rele.json");
+    fs.writeFileSync(cat, JSON.stringify({ ...JSON.parse(fs.readFileSync(cat, "utf8")), order: null }, null, 2));
+    const v = spawnSync(process.execPath, ["scripts/validate-content.mjs"], { cwd: ROOT, encoding: "utf8", env: { ...process.env, CONTENT_DIR: content } });
+    assert.equal(v.status, 0, v.stderr);
+    assert.equal(loadCollection("services", content).at(-1).slug, "diagnostika-elektriki");
+    assert.equal(loadCollection("categories", content).at(-1).slug, "datchiki-i-rele");
   });
 
   test("корректный контент проходит", () => {

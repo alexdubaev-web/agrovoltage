@@ -78,6 +78,21 @@ describe("страницы каталога в dist/", () => {
     assert.equal(doc.querySelector("main .product-ph"), null, "заглушки при наличии фото нет");
   });
 
+  test("R32i: значения характеристик переносятся, nowrap таблицы цен на .product__specs не действует", () => {
+    // jsdom не считает раскладку, поэтому проверяется вычисленный стиль ячеек с main.css.
+    // Ширину 360 px (scrollWidth <= clientWidth) проверяли в браузере на длинном значении.
+    const { url } = index()[0];
+    const html = fs.readFileSync(path.join(DIST, url, "index.html"), "utf8");
+    const css = fs.readFileSync(path.join(DIST, "assets/css/main.css"), "utf8");
+    const win = new JSDOM(html.replace("</head>", `<style>${css}</style></head>`)).window;
+    const cells = [...win.document.querySelectorAll(".product__specs td, .product__specs th")];
+    assert.ok(cells.length > 0, "у товара есть характеристики");
+    for (const cell of cells) {
+      assert.notEqual(win.getComputedStyle(cell).whiteSpace, "nowrap", cell.textContent);
+      assert.equal(win.getComputedStyle(cell).overflowWrap, "anywhere", cell.textContent);
+    }
+  });
+
   test("товар с ценой null: «по запросу», пустая цена в кнопке", () => {
     const item = index().find((i) => i.price === null);
     const doc = page(item.url);

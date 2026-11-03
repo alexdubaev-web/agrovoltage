@@ -2,9 +2,6 @@
 layout: layouts/base.njk
 title: Контакты
 permalink: /kontakty/
-seo:
-  title: Контакты
-  description: Телефон, адрес, режим работы и регионы мастерской АГРОВОЛЬТАЖ. Ставропольский и Краснодарский край.
 breadcrumbs:
   - name: Главная
     url: /
@@ -13,7 +10,7 @@ breadcrumbs:
 <section class="section">
   <div class="container">
     <h1>Контакты</h1>
-    <p class="lead">Позвоните или оставьте заявку. Работаем в Ставропольском и Краснодарском крае.</p>
+    <p class="lead">Позвоните или оставьте заявку. Работаем {{ regionText }}.</p>
     <div class="grid">
       <div class="card">
         <h2>Связаться</h2>
@@ -56,7 +53,7 @@ breadcrumbs:
         button.addEventListener("click", function () {
           var frame = document.createElement("iframe");
           frame.src = box.getAttribute("data-map-src");
-          frame.title = "Карта: адрес мастерской";
+          frame.title = "Карта";
           frame.width = "100%";
           frame.height = "400";
           frame.loading = "lazy";

@@ -9,7 +9,7 @@ pagination:
 <article>
   <section class="section">
     <div class="container">
-      <h1>{{ s.title }} John Deere в Ставропольском и Краснодарском крае{% if s.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h1>
+      <h1>{{ s.title }} John Deere {{ regionText }}{% if s.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h1>
       <p class="lead">{{ s.summary }}</p>
       <p class="muted">{% if s.priceFrom %}от {{ s.priceFrom | price }}{% else %}Стоимость по запросу{% endif %}</p>
       <div class="actions">

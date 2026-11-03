@@ -230,7 +230,8 @@ details > :not(summary) { margin: 0; padding: 0 16px 14px; }
 
 /* Таблица цен: кнопка «Записаться» компактная. */
 .price-table td .btn { min-height: var(--tap); padding: 8px 14px; white-space: nowrap; }
-.price-table td:nth-child(2) { white-space: nowrap; font-weight: 600; }
+/* Цена в одну строку — только в таблице цен; характеристики товара переносятся (R32i, 360 px). */
+.price-table:not(.product__specs) td:nth-child(2) { white-space: nowrap; font-weight: 600; }
 @media (max-width: 639px) { .price-table td .btn { width: 100%; } }
 
 /* Карта: грузится по клику. */
@@ -264,6 +265,7 @@ details > :not(summary) { margin: 0; padding: 0 16px 14px; }
 .product__qty { width: 84px; flex: 0 0 auto; }
 .product__compat { columns: 2 220px; }
 .product__specs th { width: 40%; }
+.product__specs th, .product__specs td { overflow-wrap: anywhere; }
 @media (min-width: 900px) {
   .product__grid { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 40px; }
 }
