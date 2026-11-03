@@ -1,0 +1,42 @@
+---
+layout: layouts/base.njk
+title: Услуги
+permalink: /uslugi/
+seo:
+  title: Услуги по диагностике и ремонту электрики John Deere
+  description: Диагностика, ремонт электрики, проводки, электрооборудования и кондиционеров сельхозтехники John Deere в Ставропольском и Краснодарском крае.
+breadcrumbs:
+  - name: Главная
+    url: /
+  - name: Услуги
+---
+<section class="section">
+  <div class="container">
+    <h1>Услуги по диагностике и ремонту электрики John Deere</h1>
+    <p class="lead">Диагностика неисправностей, ремонт электрики, проводки, электрооборудования и систем кондиционирования сельхозтехники в Ставропольском и Краснодарском крае.</p>
+  </div>
+</section>
+{%- for group in serviceGroups %}
+<section class="section{% if loop.index0 % 2 == 0 %} section--alt{% endif %}" id="{{ group.key }}">
+  <div class="container">
+    <h2>{{ group.name }}</h2>
+    <div class="grid">
+      {%- for item in group.items %}
+      <article class="card">
+        {%- if item.data.image %}{% image item.data.image, item.data.title, "(min-width: 960px) 300px, 100vw" %}{% endif %}
+        <h3><a href="{{ item.url }}">{{ item.data.title }}</a>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h3>
+        <p>{{ item.data.summary }}</p>
+        <p><strong>{% if item.data.priceFrom %}от {{ item.data.priceFrom | price }}{% else %}по запросу{% endif %}</strong></p>
+        <a class="btn btn--ghost" href="{{ item.url }}">Подробнее</a>
+      </article>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endfor %}
+<section class="section">
+  <div class="container">
+    {% set leadForm = { type: "callback", id: "page", title: "Не нашли нужную услугу? Опишите задачу" } %}
+    {% include "partials/lead-form.njk" %}
+  </div>
+</section>

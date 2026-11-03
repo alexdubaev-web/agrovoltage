@@ -1,0 +1,45 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.articles
+  size: 1
+  alias: article
+---
+{%- set a = article.data -%}
+<article>
+  <section class="section">
+    <div class="container prose">
+      <h1>{{ a.title }}</h1>
+      <p class="muted"><time datetime="{{ a.date }}">{{ a.date | dateRu }}</time>{% if a.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</p>
+      <p class="lead">{{ a.excerpt }}</p>
+      {%- if a.cover %}<p>{% image a.cover, a.title, "(min-width: 960px) 720px, 100vw", true %}</p>{% endif %}
+      {{ article.content | safe }}
+    </div>
+  </section>
+  {%- set related = [] %}
+  {%- for slug in a.relatedServices or [] %}
+  {%- set found = collections.services | findBySlug(slug) %}
+  {%- if found %}{% set related = (related.push(found), related) %}{% endif %}
+  {%- endfor %}
+  {%- if related | length %}
+  <section class="section section--alt">
+    <div class="container">
+      <h2>Связанные услуги</h2>
+      <div class="grid">
+        {%- for item in related %}
+        <article class="card">
+          <h3><a href="{{ item.url }}">{{ item.data.title }}</a>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h3>
+          <p>{{ item.data.summary }}</p>
+        </article>
+        {%- endfor %}
+      </div>
+    </div>
+  </section>
+  {%- endif %}
+  <section class="section">
+    <div class="container">
+      {% set leadForm = { type: "callback", id: "article", title: "Нужна консультация? Оставьте заявку", message: "Вопрос по статье: " + a.title } %}
+      {% include "partials/lead-form.njk" %}
+    </div>
+  </section>
+</article>

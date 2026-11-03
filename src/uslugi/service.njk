@@ -1,0 +1,118 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.services
+  size: 1
+  alias: service
+---
+{%- set s = service.data -%}
+<article>
+  <section class="section">
+    <div class="container">
+      <h1>{{ s.title }} John Deere в Ставропольском и Краснодарском крае{% if s.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h1>
+      <p class="lead">{{ s.summary }}</p>
+      <p class="muted">{% if s.priceFrom %}от {{ s.priceFrom | price }}{% else %}Стоимость по запросу{% endif %}</p>
+      <div class="actions">
+        <a class="btn btn--primary" href="#zayavka" data-lead-open data-service="{{ s.title }}" data-message="Нужна услуга: {{ s.title }}">Оставить заявку</a>
+        <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a>
+      </div>
+      {%- if s.image %}
+      <p>{% image s.image, s.title, "(min-width: 960px) 960px, 100vw", true %}</p>
+      {%- endif %}
+      {%- if service.content %}
+      <div class="prose">{{ service.content | safe }}</div>
+      {%- endif %}
+    </div>
+  </section>
+  {%- if s.symptoms and s.symptoms.length %}
+  <section class="section section--alt" id="priznaki">
+    <div class="container prose">
+      <h2>Признаки неисправности</h2>
+      <ul>{% for item in s.symptoms %}<li>{{ item }}</li>{% endfor %}</ul>
+    </div>
+  </section>
+  {%- endif %}
+  {%- if s.diagnosticsSteps and s.diagnosticsSteps.length %}
+  <section class="section" id="diagnostika">
+    <div class="container prose">
+      <h2>Что входит в диагностику</h2>
+      <ul>{% for item in s.diagnosticsSteps %}<li>{{ item }}</li>{% endfor %}</ul>
+    </div>
+  </section>
+  {%- endif %}
+  {%- if s.works and s.works.length %}
+  <section class="section section--alt" id="raboty">
+    <div class="container prose">
+      <h2>Выполняем работы</h2>
+      <ul>{% for item in s.works %}<li>{{ item }}</li>{% endfor %}</ul>
+    </div>
+  </section>
+  {%- endif %}
+  {%- if s.stages and s.stages.length %}
+  <section class="section" id="etapy">
+    <div class="container prose">
+      <h2>Как проходит ремонт</h2>
+      <ol>{% for item in s.stages %}<li>{{ item }}</li>{% endfor %}</ol>
+      <p class="muted">Ремонт начинаем только после согласования перечня работ и стоимости.</p>
+    </div>
+  </section>
+  {%- endif %}
+  {%- if models and models.length %}
+  <section class="section section--alt" id="modeli">
+    <div class="container">
+      <h2>Модели John Deere, с которыми работаем</h2>
+      <div class="grid">
+        {%- for series in models %}
+        <div class="card">
+          <h3>{{ series.series }}</h3>
+          <p class="muted">{{ series.models | join(", ") }}</p>
+        </div>
+        {%- endfor %}
+      </div>
+      <p class="muted">Другие марки и модели — по запросу.</p>
+    </div>
+  </section>
+  {%- endif %}
+  {%- if s.faq and s.faq.length %}
+  <section class="section" id="faq">
+    <div class="container prose">
+      <h2>Вопросы и ответы</h2>
+      {%- for item in s.faq %}
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
+      {%- endfor %}
+    </div>
+  </section>
+  {%- endif %}
+  {%- if s.prices and s.prices.length %}
+  <section class="section section--alt" id="ceny">
+    <div class="container">
+      <h2>Цены{% if s.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h2>
+      <p class="muted">Цены ориентировочные, точную сумму называем после диагностики.</p>
+      {%- for group in s.prices %}
+      <h3>{{ group.group }}</h3>
+      <table class="price-table">
+        <thead><tr><th>Работа</th><th>Цена</th><th></th></tr></thead>
+        <tbody>
+          {%- for item in group.items %}
+          <tr>
+            <td data-label="Работа">{{ item.name }}</td>
+            <td data-label="Цена">{{ item.price | price }}</td>
+            <td><a class="btn btn--primary" href="#zayavka" data-lead-open data-service="{{ s.title }}" data-message="{{ s.title }}: {{ item.name }}">Записаться</a></td>
+          </tr>
+          {%- endfor %}
+        </tbody>
+      </table>
+      {%- endfor %}
+    </div>
+  </section>
+  {%- endif %}
+  <section class="section" id="zayavka-uslugi">
+    <div class="container">
+      {% set leadForm = { type: "service", id: "service", service: s.title, title: "Записаться на услугу", message: "Нужна услуга: " + s.title, submit: "Записаться" } %}
+      {% include "partials/lead-form.njk" %}
+    </div>
+  </section>
+</article>

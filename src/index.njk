@@ -1,0 +1,116 @@
+---
+layout: layouts/base.njk
+permalink: /
+---
+{%- set home = collections.pages | findBySlug("home") -%}
+{%- set h = home.data -%}
+<section class="section">
+  <div class="container">
+    <h1>{{ h.hero.title }}</h1>
+    <p class="lead">{{ h.hero.lead }}</p>
+    <p class="muted">{{ settings.regions | join(" · ") }}</p>
+    <div class="actions">
+      <a class="btn btn--primary" href="{{ settings.phoneHref }}" data-goal="phone">Позвонить: {{ settings.phone }}</a>
+      <a class="btn btn--ghost" href="#zayavka" data-lead-open>Оставить заявку</a>
+    </div>
+    {%- if h.hero.image %}
+    <p>{% image h.hero.image, h.hero.title, "(min-width: 960px) 960px, 100vw", true %}</p>
+    {%- endif %}
+  </div>
+</section>
+
+<section class="section section--alt" id="uslugi">
+  <div class="container">
+    <h2>Услуги</h2>
+    <div class="grid">
+      {%- for item in collections.services %}
+      <article class="card">
+        {%- if item.data.image %}{% image item.data.image, item.data.title, "(min-width: 960px) 300px, 100vw" %}{% endif %}
+        <h3><a href="{{ item.url }}">{{ item.data.title }}</a>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h3>
+        <p>{{ item.data.summary }}</p>
+        <p><strong>{% if item.data.priceFrom %}от {{ item.data.priceFrom | price }}{% else %}по запросу{% endif %}</strong></p>
+      </article>
+      {%- endfor %}
+    </div>
+    <p><a class="btn btn--ghost" href="/uslugi/">Все услуги</a></p>
+  </div>
+</section>
+
+{%- if models and models.length %}
+<section class="section" id="modeli">
+  <div class="container">
+    <h2>Модели John Deere</h2>
+    <p class="lead">Основная марка мастерской. Другие марки — по согласованию.</p>
+    <div class="grid">
+      {%- for series in models %}
+      <div class="card">
+        <h3>{{ series.series }}</h3>
+        <p class="muted">{{ series.models | join(", ") }}</p>
+      </div>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endif %}
+
+{%- if h.advantages and h.advantages.length %}
+<section class="section section--alt" id="preimushchestva">
+  <div class="container">
+    <h2>Почему к нам</h2>
+    <div class="grid">
+      {%- for item in h.advantages %}
+      <div class="card">
+        <h3>{{ item.title }}</h3>
+        <p>{{ item.text }}</p>
+      </div>
+      {%- endfor %}
+    </div>
+  </div>
+</section>
+{%- endif %}
+
+{%- if h.steps and h.steps.length %}
+<section class="section" id="etapy">
+  <div class="container prose">
+    <h2>Как мы работаем</h2>
+    <ol>{% for step in h.steps %}<li>{{ step }}</li>{% endfor %}</ol>
+  </div>
+</section>
+{%- endif %}
+
+{%- if h.faq and h.faq.length %}
+<section class="section section--alt" id="faq">
+  <div class="container prose">
+    <h2>Вопросы и ответы</h2>
+    {%- for item in h.faq %}
+    <details><summary>{{ item.q }}</summary><p>{{ item.a }}</p></details>
+    {%- endfor %}
+  </div>
+</section>
+{%- endif %}
+
+{%- if collections.articles.length %}
+<section class="section" id="stati">
+  <div class="container">
+    <h2>Последние статьи</h2>
+    <div class="grid">
+      {%- for item in collections.articles %}{% if loop.index0 < 3 %}
+      <article class="card">
+        {%- if item.data.cover %}{% image item.data.cover, item.data.title, "(min-width: 960px) 300px, 100vw" %}{% endif %}
+        <p class="muted"><time datetime="{{ item.data.date }}">{{ item.data.date | dateRu }}</time>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</p>
+        <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
+        <p>{{ item.data.excerpt }}</p>
+      </article>
+      {%- endif %}{% endfor %}
+    </div>
+    <p><a class="btn btn--ghost" href="/stati/">Все статьи</a></p>
+  </div>
+</section>
+{%- endif %}
+
+<section class="section section--alt" id="forma">
+  <div class="container">
+    {% set leadForm = { type: "callback", id: "home", title: "Оставьте заявку, перезвоним в рабочее время" } %}
+    {% include "partials/lead-form.njk" %}
+  </div>
+</section>

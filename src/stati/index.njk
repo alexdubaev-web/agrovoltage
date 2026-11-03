@@ -1,0 +1,41 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.articles
+  size: 12
+  alias: articlesPage
+  generatePageOnEmptyData: true
+---
+<section class="section">
+  <div class="container">
+    <h1>Статьи об электрике и ремонте сельхозтехники</h1>
+    <p class="lead">Советы по диагностике, ремонту электрики, проводки и кондиционеров техники John Deere.</p>
+    {%- if articlesPage.length %}
+    <div class="grid">
+      {%- for item in articlesPage %}
+      <article class="card">
+        {%- if item.data.cover %}{% image item.data.cover, item.data.title, "(min-width: 960px) 300px, 100vw" %}{% endif %}
+        <p class="muted"><time datetime="{{ item.data.date }}">{{ item.data.date | dateRu }}</time>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</p>
+        <h2><a href="{{ item.url }}">{{ item.data.title }}</a></h2>
+        <p>{{ item.data.excerpt }}</p>
+      </article>
+      {%- endfor %}
+    </div>
+    {%- else %}
+    <p>Статьи скоро появятся.</p>
+    {%- endif %}
+    {%- if pagination.pages.length > 1 %}
+    <nav class="actions" aria-label="Страницы списка">
+      {%- if pagination.href.previous %}<a class="btn btn--ghost" rel="prev" href="{{ pagination.href.previous }}">Назад</a>{% endif %}
+      <span class="muted">Страница {{ pagination.pageNumber + 1 }} из {{ pagination.pages.length }}</span>
+      {%- if pagination.href.next %}<a class="btn btn--ghost" rel="next" href="{{ pagination.href.next }}">Дальше</a>{% endif %}
+    </nav>
+    {%- endif %}
+  </div>
+</section>
+<section class="section section--alt">
+  <div class="container">
+    {% set leadForm = { type: "callback", id: "page", title: "Остались вопросы? Оставьте заявку" } %}
+    {% include "partials/lead-form.njk" %}
+  </div>
+</section>

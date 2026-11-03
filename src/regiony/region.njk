@@ -1,0 +1,59 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.regions
+  size: 1
+  alias: region
+---
+{%- set r = region.data -%}
+<article>
+  <section class="section">
+    <div class="container">
+      <h1>Ремонт электрики John Deere: {{ r.title }}</h1>
+      <p class="lead">{{ r.lead }}</p>
+      <div class="actions">
+        <a class="btn btn--primary" href="#zayavka" data-lead-open data-message="Регион: {{ r.title }}">Оставить заявку</a>
+        <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a>
+      </div>
+      {%- if region.content %}<div class="prose">{{ region.content | safe }}</div>{% endif %}
+    </div>
+  </section>
+  {%- if r.localities and r.localities.length %}
+  <section class="section section--alt">
+    <div class="container prose">
+      <h2>Населённые пункты</h2>
+      <ul>{% for place in r.localities %}<li>{{ place }}</li>{% endfor %}</ul>
+    </div>
+  </section>
+  {%- endif %}
+  <section class="section">
+    <div class="container">
+      <h2>Услуги в регионе</h2>
+      <div class="grid">
+        {%- for item in collections.services %}
+        <article class="card">
+          <h3><a href="{{ item.url }}">{{ item.data.title }}</a>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h3>
+          <p>{{ item.data.summary }}</p>
+          <p><strong>{% if item.data.priceFrom %}от {{ item.data.priceFrom | price }}{% else %}по запросу{% endif %}</strong></p>
+        </article>
+        {%- endfor %}
+      </div>
+    </div>
+  </section>
+  {%- if r.faq and r.faq.length %}
+  <section class="section section--alt" id="faq">
+    <div class="container prose">
+      <h2>Вопросы и ответы</h2>
+      {%- for item in r.faq %}
+      <details><summary>{{ item.q }}</summary><p>{{ item.a }}</p></details>
+      {%- endfor %}
+    </div>
+  </section>
+  {%- endif %}
+  <section class="section">
+    <div class="container">
+      {% set leadForm = { type: "callback", id: "region", title: "Заявка из региона: " + r.title, message: "Регион: " + r.title } %}
+      {% include "partials/lead-form.njk" %}
+    </div>
+  </section>
+</article>

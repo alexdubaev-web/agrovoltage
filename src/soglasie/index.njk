@@ -1,0 +1,26 @@
+---
+layout: layouts/base.njk
+---
+{%- set doc = collections.pages | findBySlug("consent") %}
+<article class="section">
+  <div class="container">
+    <h1>{{ doc.data.title }}</h1>
+    {%- if doc.data.lead %}
+    <p class="lead">{{ doc.data.lead }}</p>
+    {%- endif %}
+    <div class="prose">
+      {{ doc.content | safe }}
+    </div>
+    {%- if "consent" == "delivery" or "consent" == "about" %}
+    <p class="actions"><a class="btn btn--primary" href="#zayavka" data-lead-open>Оставить заявку</a> <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a></p>
+    {%- endif %}
+  </div>
+</article>
+{%- if "consent" == "delivery" or "consent" == "about" %}
+<section class="section section--alt">
+  <div class="container">
+    {% set leadForm = { type: "callback", id: "page", title: "Задать вопрос" } %}
+    {% include "partials/lead-form.njk" %}
+  </div>
+</section>
+{%- endif %}
