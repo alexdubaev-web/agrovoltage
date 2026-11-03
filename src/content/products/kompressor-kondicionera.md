@@ -9,7 +9,8 @@ compatibility:
   - "John Deere 7R 310"
   - "John Deere 8R 340"
   - "John Deere S790"
-images: []
+images:
+  - /assets/images/products/kompressor-kondicionera.jpg
 summary: "Компрессор кондиционера кабины с электромагнитной муфтой."
 specs:
   - name: "Напряжение муфты"

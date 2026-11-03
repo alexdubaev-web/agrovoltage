@@ -8,7 +8,8 @@ inStock: false
 compatibility:
   - "John Deere 6155M"
   - "John Deere 6R 250"
-images: []
+images:
+  - /assets/images/products/rele-startera.jpg
 summary: "Реле включения стартера, 12 В."
 specs:
   - name: "Напряжение"

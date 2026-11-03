@@ -2,7 +2,7 @@
 title: Почему не холодит кондиционер в кабине
 slug: pochemu-ne-holodit-kondicioner
 date: '2026-10-27'
-cover: ''
+cover: /assets/images/articles/pochemu-ne-holodit-kondicioner.jpg
 excerpt: 'Основные причины слабого охлаждения в кабине техники: утечка, загрязнение конденсатора, компрессор. Что делать и когда обращаться в сервис.'
 relatedServices:
   - diagnostika-i-remont-kondicionerov

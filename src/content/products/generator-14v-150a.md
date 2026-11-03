@@ -8,7 +8,8 @@ inStock: true
 compatibility:
   - "John Deere 7230R"
   - "John Deere 8R 340"
-images: []
+images:
+  - /assets/images/products/generator-14v-150a.jpg
 summary: "Генератор 14 В, 150 А, в сборе со шкивом."
 specs:
   - name: "Напряжение"

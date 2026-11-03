@@ -53,7 +53,7 @@ prices:
         price: null
       - name: Комплексная диагностика электрики
         price: null
-image: ''
+image: /assets/images/services/diagnostika-elektriki.jpg
 demo: true
 seo:
   title: Диагностика электрики и электроники John Deere в Ставропольском и Краснодарском крае

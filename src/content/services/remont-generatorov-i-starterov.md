@@ -52,7 +52,7 @@ prices:
         price: null
       - name: Ремонт стартера
         price: null
-image: ''
+image: /assets/images/services/remont-generatorov-i-starterov.jpg
 demo: true
 seo:
   title: Ремонт генераторов и стартеров John Deere в Ставропольском и Краснодарском крае

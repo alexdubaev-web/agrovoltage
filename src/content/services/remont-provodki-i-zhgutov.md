@@ -52,7 +52,7 @@ prices:
         price: null
       - name: Изготовление жгута
         price: null
-image: ''
+image: /assets/images/services/remont-provodki-i-zhgutov.jpg
 demo: true
 seo:
   title: Ремонт электропроводки и жгутов John Deere в Ставропольском и Краснодарском крае

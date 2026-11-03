@@ -8,7 +8,8 @@ inStock: false
 compatibility:
   - "John Deere 6155M"
   - "John Deere 6195M"
-images: []
+images:
+  - /assets/images/products/starter-12v-4kvt.jpg
 summary: "Стартер 12 В, 4 кВт, редукторный."
 specs:
   - name: "Напряжение"

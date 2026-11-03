@@ -9,7 +9,8 @@ compatibility:
   - "John Deere 6215R"
   - "John Deere S670"
   - "John Deere S790"
-images: []
+images:
+  - /assets/images/products/remkomplekt-shchetok-generatora.jpg
 summary: "Щёточный узел с реле-регулятором для генератора."
 specs:
   - name: "В комплекте"

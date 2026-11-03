@@ -48,7 +48,7 @@ prices:
         price: null
       - name: Ремонт на месте
         price: null
-image: ''
+image: /assets/images/services/vyezd-v-pole.jpg
 demo: true
 seo:
   title: Выезд мастера в поле для диагностики и ремонта John Deere в Ставропольском и Краснодарском крае

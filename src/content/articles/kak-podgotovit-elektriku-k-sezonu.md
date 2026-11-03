@@ -2,7 +2,7 @@
 title: Как подготовить электрику трактора к сезону
 slug: kak-podgotovit-elektriku-k-sezonu
 date: '2026-10-20'
-cover: ''
+cover: /assets/images/articles/kak-podgotovit-elektriku-k-sezonu.jpg
 excerpt: 'Что проверить в электрике перед полевыми работами: аккумулятор, заряд, проводка, свет. Короткий перечень для хозяйства.'
 relatedServices:
   - diagnostika-elektriki

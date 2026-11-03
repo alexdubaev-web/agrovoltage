@@ -54,7 +54,7 @@ prices:
         price: null
       - name: Замена конденсатора
         price: null
-image: ''
+image: /assets/images/services/diagnostika-i-remont-kondicionerov.jpg
 demo: true
 seo:
   title: Диагностика и ремонт кондиционеров John Deere в Ставропольском и Краснодарском крае

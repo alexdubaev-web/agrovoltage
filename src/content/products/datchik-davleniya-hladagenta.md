@@ -9,7 +9,8 @@ compatibility:
   - "John Deere 6155M"
   - "John Deere 6215R"
   - "John Deere W330"
-images: []
+images:
+  - /assets/images/products/datchik-davleniya-hladagenta.jpg
 summary: "Датчик давления хладагента в магистрали кондиционера."
 specs:
   - name: "Тип"

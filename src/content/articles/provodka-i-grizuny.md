@@ -2,7 +2,7 @@
 title: 'Проводка техники и грызуны: как избежать поломок'
 slug: provodka-i-grizuny
 date: '2026-11-02'
-cover: ''
+cover: /assets/images/articles/provodka-i-grizuny.jpg
 excerpt: Почему мыши и крысы повреждают жгуты на зимнем хранении, как это проявляется весной и как защитить проводку.
 relatedServices:
   - remont-provodki-i-zhgutov

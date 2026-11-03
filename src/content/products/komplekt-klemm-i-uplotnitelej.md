@@ -9,7 +9,8 @@ compatibility:
   - "John Deere S670"
   - "John Deere S790"
   - "John Deere W330"
-images: []
+images:
+  - /assets/images/products/komplekt-klemm-i-uplotnitelej.jpg
 summary: "Набор клемм и уплотнителей для ремонта разъёмов."
 specs:
   - name: "В наборе"

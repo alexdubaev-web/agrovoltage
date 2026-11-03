@@ -52,7 +52,7 @@ prices:
         price: 3000
       - name: Ремонт блока управления
         price: null
-image: ''
+image: /assets/images/services/remont-elektriki.jpg
 demo: true
 seo:
   title: Ремонт электрики сельхозтехники John Deere в Ставропольском и Краснодарском крае

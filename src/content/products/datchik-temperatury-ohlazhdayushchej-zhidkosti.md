@@ -9,7 +9,8 @@ compatibility:
   - "John Deere 6155M"
   - "John Deere 6195M"
   - "John Deere 6215R"
-images: []
+images:
+  - /assets/images/products/datchik-temperatury-ohlazhdayushchej-zhidkosti.jpg
 summary: "Датчик температуры охлаждающей жидкости двигателя."
 specs:
   - name: "Тип"

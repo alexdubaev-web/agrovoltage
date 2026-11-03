@@ -9,7 +9,8 @@ compatibility:
   - "John Deere 7230R"
   - "John Deere 7R 310"
   - "John Deere 8R 340"
-images: []
+images:
+  - /assets/images/products/datchik-davleniya-masla.jpg
 summary: "Датчик давления масла в двигателе."
 specs:
   - name: "Диапазон"

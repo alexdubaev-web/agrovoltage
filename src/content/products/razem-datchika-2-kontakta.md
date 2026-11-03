@@ -9,7 +9,8 @@ compatibility:
   - "John Deere 6155M"
   - "John Deere 6195M"
   - "John Deere S670"
-images: []
+images:
+  - /assets/images/products/razem-datchika-2-kontakta.jpg
 summary: "Ответная часть разъёма с проводами и уплотнителями."
 specs:
   - name: "Контактов"

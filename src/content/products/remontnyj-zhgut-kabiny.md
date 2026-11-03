@@ -8,7 +8,8 @@ inStock: true
 compatibility:
   - "John Deere 6215R"
   - "John Deere 7R 310"
-images: []
+images:
+  - /assets/images/products/remontnyj-zhgut-kabiny.jpg
 summary: "Ремонтный жгут проводки кабины с маркировкой цепей."
 specs:
   - name: "Длина"

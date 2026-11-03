@@ -50,7 +50,7 @@ prices:
         price: 800
       - name: Заправка большой кабины или нестандартного контура
         price: null
-image: ''
+image: /assets/images/services/zapravka-kondicionera.jpg
 demo: true
 seo:
   title: Заправка кондиционера John Deere в Ставропольском и Краснодарском крае

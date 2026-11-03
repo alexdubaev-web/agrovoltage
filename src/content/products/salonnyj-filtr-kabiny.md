@@ -9,7 +9,8 @@ compatibility:
   - "John Deere 6155M"
   - "John Deere 7230R"
   - "John Deere R4050"
-images: []
+images:
+  - /assets/images/products/salonnyj-filtr-kabiny.jpg
 summary: "Фильтр воздуха кабины, угольный."
 specs:
   - name: "Тип"

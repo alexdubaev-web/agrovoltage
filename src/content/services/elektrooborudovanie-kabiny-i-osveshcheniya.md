@@ -50,7 +50,7 @@ prices:
         price: 3500
       - name: Ремонт панели управления
         price: null
-image: ''
+image: /assets/images/services/elektrooborudovanie-kabiny-i-osveshcheniya.jpg
 demo: true
 seo:
   title: Электрооборудование кабины и освещения John Deere в Ставропольском и Краснодарском крае

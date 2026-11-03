@@ -72,7 +72,10 @@ describe("страницы каталога в dist/", () => {
     const buy = doc.querySelector("[data-add-to-cart]");
     assert.equal(buy.getAttribute("data-slug"), "generator-14v-150a");
     assert.equal(buy.getAttribute("data-price"), "18900");
-    assert.ok(doc.querySelector(".product-ph"), "без фото показана заглушка");
+    const photo = doc.querySelector("main .product__media picture img");
+    assert.ok(photo, "с фото выводится picture/img");
+    assert.match(photo.getAttribute("src"), /generator-14v-150a/);
+    assert.equal(doc.querySelector("main .product-ph"), null, "заглушки при наличии фото нет");
   });
 
   test("товар с ценой null: «по запросу», пустая цена в кнопке", () => {
@@ -147,6 +150,19 @@ describe("пустой каталог и пустая категория", () =>
     assert.ok(doc.querySelector("main form[data-lead-form]"));
     assert.equal(doc.querySelector("main [data-product-card]"), null);
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(out, "katalog", "index.json"), "utf8")), []);
+  });
+
+  test("товар без фото: показана заглушка, а не picture", () => {
+    const out = build({
+      "categories/kat.json": JSON.stringify({ title: "Категория", slug: "kat", description: "Тест", image: "", order: 1, seo: {} }),
+      "products/bez-foto.md": [
+        "---", "title: Товар без фото", "slug: bez-foto", "sku: T-1", "category: kat", "price: null", "inStock: true",
+        "compatibility: [John Deere 6155M]", "images: []", "summary: Тест", "demo: true", "seo: {}", "---", "Описание.", "",
+      ].join("\n"),
+    });
+    const doc = dom(path.join(out, "katalog", "kat", "bez-foto", "index.html"));
+    assert.ok(doc.querySelector("main .product-ph"), "без фото показана заглушка");
+    assert.equal(doc.querySelector("main .product__media picture"), null);
   });
 
   test("каталог без товаров вообще: «Товары скоро появятся» и форма на /katalog/", () => {
