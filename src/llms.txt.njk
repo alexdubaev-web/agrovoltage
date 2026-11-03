@@ -1,0 +1,65 @@
+---
+permalink: /llms.txt
+eleventyExcludeFromCollections: true
+---
+{#- Сводка для нейропоиска (llmstxt.org). Только данные из настроек и коллекций. -#}
+{%- set keyPages = [
+  { name: "Услуги", url: "/uslugi/" },
+  { name: "Каталог запчастей", url: "/katalog/" },
+  { name: "Статьи", url: "/stati/" },
+  { name: "Доставка", url: "/dostavka/" },
+  { name: "О компании", url: "/o-kompanii/" },
+  { name: "Контакты", url: "/kontakty/" }
+] -%}
+# {{ settings.brand | safe }}
+
+> {{ settings.seo.defaultDescription | safe }}
+
+- Телефон: {{ settings.phone | safe }}
+- Регионы: {{ settings.regions | join(", ") | safe }}
+{%- if not (settings.email | isPlaceholder) %}
+- Почта: {{ settings.email | safe }}
+{%- endif %}
+{%- if not (settings.address | isPlaceholder) %}
+- Адрес: {{ settings.address | safe }}
+{%- endif %}
+{%- if not (settings.hours | isPlaceholder) %}
+- Часы работы: {{ settings.hours | safe }}
+{%- endif %}
+- Сайт: {{ site.url }}/
+{%- if collections.services.length %}
+
+## Услуги
+{% for s in collections.services %}
+- [{{ s.data.title | safe }}]({{ s.url | absUrl }}){% if s.data.summary %}: {{ s.data.summary | safe }}{% endif %}
+{%- endfor %}
+{%- endif %}
+{%- if collections.categories.length %}
+
+## Каталог запчастей
+{% for c in collections.categories %}
+- [{{ c.data.title | safe }}]({{ c.url | absUrl }}){% if c.data.description %}: {{ c.data.description | safe }}{% endif %}
+{%- endfor %}
+{%- endif %}
+{%- if collections.regions.length %}
+
+## Регионы
+{% for r in collections.regions %}
+- [{{ r.data.title | safe }}]({{ r.url | absUrl }}){% if r.data.localities and r.data.localities.length %}: {{ r.data.localities | join(", ") | safe }}{% endif %}
+{%- endfor %}
+{%- endif %}
+{%- if collections.articles.length %}
+
+## Статьи
+{% for a in collections.articles %}
+- [{{ a.data.title | safe }}]({{ a.url | absUrl }}){% if a.data.excerpt %}: {{ a.data.excerpt | safe }}{% endif %}
+{%- endfor %}
+{%- endif %}
+{%- set existing = keyPages | existingPages(collections.all) %}
+{%- if existing.length %}
+
+## Страницы
+{% for p in existing %}
+- [{{ p.name }}]({{ p.url | absUrl }})
+{%- endfor %}
+{%- endif %}

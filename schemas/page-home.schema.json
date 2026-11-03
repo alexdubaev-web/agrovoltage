@@ -1,0 +1,108 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "page-home",
+  "title": "Главная",
+  "type": "object",
+  "required": [
+    "title",
+    "slug",
+    "hero"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "const": "home"
+    },
+    "hero": {
+      "type": "object",
+      "required": [
+        "title",
+        "lead"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lead": {
+          "type": "string",
+          "minLength": 1
+        },
+        "image": {
+          "type": "string",
+          "pattern": "^(|/.+|https?://.+)$",
+          "description": "путь от корня сайта, например /assets/uploads/foto.jpg"
+        }
+      }
+    },
+    "advantages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "title",
+          "text"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "faq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "q",
+          "a"
+        ],
+        "properties": {
+          "q": {
+            "type": "string",
+            "minLength": 1
+          },
+          "a": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ogImage": {
+          "type": "string",
+          "pattern": "^(|/.+|https?://.+)$",
+          "description": "путь от корня сайта, например /assets/uploads/foto.jpg"
+        },
+        "noindex": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

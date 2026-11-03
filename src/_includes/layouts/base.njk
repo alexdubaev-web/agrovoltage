@@ -1,0 +1,67 @@
+{#- Базовый layout (interfaces.md §3).
+    Принимает: seo{title,description,canonical,ogImage,noindex}, title, description,
+    breadcrumbs[{name,url}], jsonld[] (объекты из lib/seo.js), scripts[] (имена модулей
+    из src/assets/js/ сверх общих consent/forms/cart), bodyClass. -#}
+{%- set seoData = seo or {} -%}
+{%- set pageTitle = (seoData.title or title or settings.brand) + settings.seo.titleSuffix -%}
+{%- set pageDescription = seoData.description or description or settings.seo.defaultDescription -%}
+{%- set canonical = seoData.canonical or (page.url | absUrl) -%}
+{%- set ogImage = (seoData.ogImage or settings.seo.ogImage) | absUrl -%}
+{%- set noindex = seoData.noindex or not site.indexable -%}
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ pageTitle }}</title>
+<meta name="description" content="{{ pageDescription }}">
+<link rel="canonical" href="{{ canonical }}">
+{%- if noindex %}
+<meta name="robots" content="noindex,nofollow">
+{%- endif %}
+{%- if settings.yandexVerification %}
+<meta name="yandex-verification" content="{{ settings.yandexVerification }}">
+{%- endif %}
+<meta property="og:type" content="{{ seoData.ogType or 'website' }}">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:site_name" content="{{ settings.brand }}">
+<meta property="og:title" content="{{ pageTitle }}">
+<meta property="og:description" content="{{ pageDescription }}">
+<meta property="og:url" content="{{ canonical }}">
+<meta property="og:image" content="{{ ogImage }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ pageTitle }}">
+<meta name="twitter:description" content="{{ pageDescription }}">
+<meta name="twitter:image" content="{{ ogImage }}">
+<meta name="theme-color" content="#006512">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/assets/brand/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
+<link rel="preload" href="/assets/fonts/manrope-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/manrope-cyrillic-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/main.css">
+{%- for name in scripts | pageScripts(jsModules) %}
+<script type="module" src="/assets/js/{{ name }}.js"></script>
+{%- endfor %}
+{{ settings | organizationLd | jsonld | safe }}
+{%- if breadcrumbs and breadcrumbs.length %}
+{{ breadcrumbs | breadcrumbLd | jsonld | safe }}
+{%- endif %}
+{%- for item in jsonld or [] %}
+{{ item | jsonld | safe }}
+{%- endfor %}
+</head>
+<body{% if bodyClass %} class="{{ bodyClass }}"{% endif %}>
+<a class="skip-link" href="#main">Перейти к содержимому</a>
+{% include "partials/header.njk" %}
+<main id="main">
+{%- if breadcrumbs and breadcrumbs.length %}
+{% include "partials/breadcrumbs.njk" %}
+{%- endif %}
+{{ content | safe }}
+</main>
+{% include "partials/footer.njk" %}
+{% include "partials/lead-modal.njk" %}
+{% include "partials/consent-banner.njk" %}
+</body>
+</html>

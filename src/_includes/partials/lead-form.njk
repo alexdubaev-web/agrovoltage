@@ -1,0 +1,48 @@
+{#- Форма заявки (контракт interfaces.md §5). Логику (токен, отправку, ошибки) добавляет forms.js.
+    Вход — переменная leadForm перед include:
+      {% set leadForm = { type: "callback"|"service"|"order", id: "уникальный-на-странице",
+                          service: "название услуги", message: "текст по умолчанию",
+                          title: "заголовок", submit: "текст кнопки", messageLabel: "подпись" } %}
+      {% include "partials/lead-form.njk" %}
+    Разметка для forms.js:
+      form[data-lead-form] — тип заявки; [data-error-for="<поле>"] — текст ошибки у поля;
+      [data-form-status] — общий статус; [data-submit] — кнопка; поля items нет:
+      позиции заказа forms.js берёт из cart.js. id полей: <id>-name, <id>-phone, … -#}
+{%- set lf = leadForm or {} -%}
+{%- set lfType = lf.type or "callback" -%}
+{%- set lfId = lf.id or lfType -%}
+<form class="lead-form" id="lead-{{ lfId }}" data-lead-form="{{ lfType }}" action="/api/lead.php" method="post">
+  {%- if lf.title %}
+  <p class="lead-form__title">{{ lf.title }}</p>
+  {%- endif %}
+  <div class="field">
+    <label class="field__label" for="{{ lfId }}-name">Имя</label>
+    <input class="field__input" id="{{ lfId }}-name" name="name" type="text" autocomplete="name" maxlength="100" required aria-describedby="{{ lfId }}-name-error">
+    <p class="field__error" id="{{ lfId }}-name-error" data-error-for="name" hidden></p>
+  </div>
+  <div class="field">
+    <label class="field__label" for="{{ lfId }}-phone">Телефон</label>
+    <input class="field__input" id="{{ lfId }}-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" maxlength="20" required aria-describedby="{{ lfId }}-phone-error">
+    <p class="field__error" id="{{ lfId }}-phone-error" data-error-for="phone" hidden></p>
+  </div>
+  <div class="field">
+    <label class="field__label" for="{{ lfId }}-message">{{ lf.messageLabel or "Сообщение (необязательно)" }}</label>
+    <textarea class="field__input" id="{{ lfId }}-message" name="message" rows="3" maxlength="2000" aria-describedby="{{ lfId }}-message-error">{{ lf.message }}</textarea>
+    <p class="field__error" id="{{ lfId }}-message-error" data-error-for="message" hidden></p>
+  </div>
+  <input type="hidden" name="service" value="{{ lf.service }}">
+  <input type="hidden" name="page" value="{{ page.url }}">
+  <input type="hidden" name="consentVersion" value="{{ settings.consentVersion }}">
+  <input type="hidden" name="startedAt" value="">
+  <div class="hp" aria-hidden="true">
+    <label for="{{ lfId }}-website">Не заполняйте это поле</label>
+    <input id="{{ lfId }}-website" name="website" type="text" tabindex="-1" autocomplete="off" value="">
+  </div>
+  <div class="field field--check">
+    <input class="field__check" id="{{ lfId }}-consent" name="consent" type="checkbox" value="true" required aria-describedby="{{ lfId }}-consent-error">
+    <label for="{{ lfId }}-consent">Согласен на обработку персональных данных{% if "/soglasie/" | pageExists(collections.all) %} (<a href="/soglasie/">условия</a>){% endif %}</label>
+    <p class="field__error" id="{{ lfId }}-consent-error" data-error-for="consent" hidden></p>
+  </div>
+  <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+  <button class="btn btn--primary btn--block" type="submit" data-submit>{{ lf.submit or "Отправить заявку" }}</button>
+</form>

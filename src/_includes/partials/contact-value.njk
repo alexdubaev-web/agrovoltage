@@ -1,0 +1,2 @@
+{#- Значение настройки: заглушка «[… — впиши]» показывается как видимая метка. Вход: value. -#}
+{%- if value | isPlaceholder %}<span class="placeholder">{{ value }}</span>{% else %}{{ value }}{% endif -%}

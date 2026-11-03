@@ -1,0 +1,8 @@
+{#- breadcrumbs: [{name, url}]; последний пункт — текущая страница. JSON-LD выводит layout. -#}
+<nav class="breadcrumbs container" aria-label="Хлебные крошки">
+  <ol>
+    {%- for item in breadcrumbs %}
+    <li>{% if loop.last or not item.url %}<span aria-current="page">{{ item.name }}</span>{% else %}<a href="{{ item.url }}">{{ item.name }}</a>{% endif %}</li>
+    {%- endfor %}
+  </ol>
+</nav>

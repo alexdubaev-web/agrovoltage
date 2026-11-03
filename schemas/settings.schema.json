@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "settings",
+  "title": "Настройки",
+  "type": "object",
+  "required": [
+    "brand",
+    "phone",
+    "phoneHref",
+    "email",
+    "maxUrl",
+    "address",
+    "hours",
+    "regions",
+    "legal",
+    "seo",
+    "consentVersion"
+  ],
+  "properties": {
+    "brand": {
+      "type": "string",
+      "minLength": 1
+    },
+    "phone": {
+      "type": "string",
+      "pattern": "^\\+7 \\d{3} \\d{3} \\d{2} \\d{2}$",
+      "description": "формат +7 962 001 19 90"
+    },
+    "phoneHref": {
+      "type": "string",
+      "pattern": "^tel:\\+7\\d{10}$",
+      "description": "формат tel:+79620011990"
+    },
+    "email": {
+      "type": "string",
+      "pattern": "^(\\[.+\\]|[^@\\s]+@[^@\\s]+\\.[^@\\s]+)$",
+      "description": "почта или заглушка в квадратных скобках"
+    },
+    "maxUrl": {
+      "type": "string",
+      "pattern": "^(\\[.+\\]|https://.+)$",
+      "description": "ссылка https:// или заглушка в квадратных скобках"
+    },
+    "address": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hours": {
+      "type": "string",
+      "minLength": 1
+    },
+    "regions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "legal": {
+      "type": "object",
+      "required": [
+        "operator",
+        "inn",
+        "ogrn"
+      ],
+      "properties": {
+        "operator": {
+          "type": "string",
+          "minLength": 1
+        },
+        "inn": {
+          "type": "string",
+          "pattern": "^(\\[.+\\]|\\d{10}|\\d{12})$",
+          "description": "10 или 12 цифр"
+        },
+        "ogrn": {
+          "type": "string",
+          "pattern": "^(\\[.+\\]|\\d{13}|\\d{15})$",
+          "description": "13 или 15 цифр"
+        }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "required": [
+        "titleSuffix",
+        "defaultDescription",
+        "ogImage"
+      ],
+      "properties": {
+        "titleSuffix": {
+          "type": "string"
+        },
+        "defaultDescription": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ogImage": {
+          "type": "string",
+          "pattern": "^(|/.+|https?://.+)$",
+          "description": "путь от корня сайта, например /assets/uploads/foto.jpg"
+        }
+      }
+    },
+    "yandexMetrikaId": {
+      "type": "string",
+      "pattern": "^\\d*$",
+      "description": "только цифры или пусто"
+    },
+    "yandexVerification": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]*$",
+      "description": "код из Вебмастера или пусто"
+    },
+    "consentVersion": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

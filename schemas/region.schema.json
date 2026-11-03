@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "region",
+  "title": "Регион",
+  "type": "object",
+  "required": [
+    "title",
+    "slug",
+    "lead"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "латиница в нижнем регистре, цифры и дефисы"
+    },
+    "lead": {
+      "type": "string",
+      "minLength": 1
+    },
+    "localities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "faq": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "q",
+          "a"
+        ],
+        "properties": {
+          "q": {
+            "type": "string",
+            "minLength": 1
+          },
+          "a": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "seo": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ogImage": {
+          "type": "string",
+          "pattern": "^(|/.+|https?://.+)$",
+          "description": "путь от корня сайта, например /assets/uploads/foto.jpg"
+        },
+        "noindex": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

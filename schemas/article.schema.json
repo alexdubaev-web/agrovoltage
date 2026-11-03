@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "article",
+  "title": "Статья",
+  "type": "object",
+  "required": [
+    "title",
+    "slug",
+    "date",
+    "excerpt"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "латиница в нижнем регистре, цифры и дефисы"
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$",
+      "description": "дата в формате ГГГГ-ММ-ДД"
+    },
+    "cover": {
+      "type": "string",
+      "pattern": "^(|/.+|https?://.+)$",
+      "description": "путь от корня сайта, например /assets/uploads/foto.jpg"
+    },
+    "excerpt": {
+      "type": "string",
+      "minLength": 1
+    },
+    "relatedServices": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+        "description": "латиница в нижнем регистре, цифры и дефисы"
+      }
+    },
+    "demo": {
+      "type": "boolean"
+    },
+    "seo": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ogImage": {
+          "type": "string",
+          "pattern": "^(|/.+|https?://.+)$",
+          "description": "путь от корня сайта, например /assets/uploads/foto.jpg"
+        },
+        "noindex": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

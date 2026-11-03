@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "page",
+  "title": "Страница",
+  "type": "object",
+  "required": [
+    "title",
+    "slug"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "slug": {
+      "type": "string",
+      "enum": [
+        "home",
+        "delivery",
+        "about",
+        "privacy",
+        "consent"
+      ]
+    },
+    "lead": {
+      "type": "string"
+    },
+    "seo": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "ogImage": {
+          "type": "string",
+          "pattern": "^(|/.+|https?://.+)$",
+          "description": "путь от корня сайта, например /assets/uploads/foto.jpg"
+        },
+        "noindex": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

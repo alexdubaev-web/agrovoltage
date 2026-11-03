@@ -1,0 +1,20 @@
+---
+permalink: /sitemap.xml
+eleventyExcludeFromCollections: true
+---
+{#- Все собранные страницы, кроме noindex и sitemap: false.
+    lastmod: данные страницы lastmod или дата шаблона; картинки: sitemapImages[] и seo.ogImage. -#}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+{%- for item in collections.all %}
+{%- if item.url and item.url.endsWith("/") and item.data.sitemap !== false and not (item.data.seo and item.data.seo.noindex) %}
+  <url>
+    <loc>{{ item.url | absUrl }}</loc>
+    <lastmod>{{ (item.data.lastmod or item.date) | isoDate }}</lastmod>
+    {%- for img in item.data | sitemapImages %}
+    <image:image><image:loc>{{ img }}</image:loc></image:image>
+    {%- endfor %}
+  </url>
+{%- endif %}
+{%- endfor %}
+</urlset>

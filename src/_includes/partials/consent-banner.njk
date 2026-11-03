@@ -1,0 +1,9 @@
+{#- Баннер согласия на cookie и Метрику. Скрыт, пока consent.js не решит его показать (ключ agv.consent.v1).
+    Кнопки: [data-consent-accept], [data-consent-decline]. ID Метрики и версия согласия — в data-атрибутах. -#}
+<div class="consent" data-consent-banner data-metrika-id="{{ settings.yandexMetrikaId }}" data-consent-version="{{ settings.consentVersion }}" role="region" aria-label="Согласие на cookie" hidden>
+  <p class="consent__text">Сайт использует cookie и Яндекс Метрику, чтобы понимать, как им пользуются. Метрика включится только с вашего согласия.{% if "/politika-konfidencialnosti/" | pageExists(collections.all) %} <a href="/politika-konfidencialnosti/">Подробнее</a>{% endif %}</p>
+  <div class="consent__actions">
+    <button class="btn btn--primary" type="button" data-consent-accept>Принять</button>
+    <button class="btn btn--ghost" type="button" data-consent-decline>Отклонить</button>
+  </div>
+</div>

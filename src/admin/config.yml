@@ -1,0 +1,396 @@
+# Sveltia CMS: коллекции и поля в точности по interfaces.md §1 и schemas/*.schema.json.
+# Локально: Chrome или Edge, /admin/, «Работать с локальным репозиторием» (см. README).
+backend:
+  name: github
+  repo: alexdubaev-web/agrovoltage
+  branch: main
+
+site_url: http://localhost:8080
+display_url: http://localhost:8080
+logo:
+  src: /assets/brand/logo-mark.png
+media_folder: src/assets/uploads
+public_folder: /assets/uploads
+slug:
+  encoding: ascii
+  clean_accents: true
+
+collections:
+  - name: services
+    label: Услуги
+    label_singular: Услуга
+    folder: src/content/services
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{fields.slug}}'
+    identifier_field: title
+    summary: '{{fields.title}}'
+    sortable_fields: [order, title]
+    fields:
+      - { label: Название, name: title, widget: string }
+      - label: Адрес (slug)
+        name: slug
+        widget: string
+        hint: Часть адреса страницы латиницей, совпадает с именем файла. После публикации лучше не менять
+        pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Только латиница в нижнем регистре, цифры и дефисы, например remont-generatora']
+      - label: Группа
+        name: group
+        widget: select
+        options:
+          - { label: Диагностика, value: diagnostics }
+          - { label: Электрика и проводка, value: electrics }
+          - { label: Электрооборудование, value: equipment }
+          - { label: Кондиционеры, value: climate }
+          - { label: Выезд, value: field }
+      - { label: Краткое описание, name: summary, widget: text }
+      - { label: 'Цена от, ₽ (пусто — «по запросу»)', name: priceFrom, widget: number, value_type: int, min: 0, required: false }
+      - { label: Картинка, name: image, widget: image, required: false }
+      - { label: 'Признаки неисправности', name: symptoms, widget: list, required: false }
+      - { label: 'Что входит в диагностику', name: diagnosticsSteps, widget: list, required: false }
+      - { label: 'Перечень работ', name: works, widget: list, required: false }
+      - { label: 'Этапы', name: stages, widget: list, required: false }
+      - label: Вопросы и ответы
+        name: faq
+        widget: list
+        required: false
+        summary: '{{fields.q}}'
+        fields:
+          - { label: Вопрос, name: q, widget: string }
+          - { label: Ответ, name: a, widget: text }
+      - label: Цены
+        name: prices
+        widget: list
+        required: false
+        summary: '{{fields.group}}'
+        fields:
+          - { label: Группа, name: group, widget: string }
+          - label: Позиции
+            name: items
+            widget: list
+            summary: '{{fields.name}}'
+            fields:
+              - { label: Работа, name: name, widget: string }
+              - { label: 'Цена, ₽ (пусто — «по запросу»)', name: price, widget: number, value_type: int, min: 0, required: false }
+      - { label: Порядок, name: order, widget: number, value_type: int, required: false, default: 100 }
+      - { label: Демо (тестовая запись), name: demo, widget: boolean, required: false, default: false, hint: 'Снимите флаг, когда запись станет настоящей' }
+      - label: SEO
+        name: seo
+        widget: object
+        required: false
+        collapsed: true
+        hint: Если пусто, берутся название и описание по умолчанию
+        fields:
+          - { label: Заголовок (title), name: title, widget: string, required: false }
+          - { label: Описание (description), name: description, widget: text, required: false }
+      - { label: Текст, name: body, widget: markdown, required: false }
+
+  - name: categories
+    label: Категории каталога
+    label_singular: Категория
+    folder: src/content/categories
+    create: true
+    extension: json
+    format: json
+    slug: '{{fields.slug}}'
+    identifier_field: title
+    summary: '{{fields.title}}'
+    fields:
+      - { label: Название, name: title, widget: string }
+      - label: Адрес (slug)
+        name: slug
+        widget: string
+        hint: Часть адреса страницы латиницей, совпадает с именем файла. После публикации лучше не менять
+        pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Только латиница в нижнем регистре, цифры и дефисы, например remont-generatora']
+      - { label: Описание, name: description, widget: text, required: false }
+      - { label: Картинка, name: image, widget: image, required: false }
+      - { label: Порядок, name: order, widget: number, value_type: int, required: false, default: 100 }
+      - label: SEO
+        name: seo
+        widget: object
+        required: false
+        collapsed: true
+        hint: Если пусто, берутся название и описание по умолчанию
+        fields:
+          - { label: Заголовок (title), name: title, widget: string, required: false }
+          - { label: Описание (description), name: description, widget: text, required: false }
+
+  - name: products
+    label: Товары
+    label_singular: Товар
+    folder: src/content/products
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{fields.slug}}'
+    identifier_field: title
+    summary: '{{fields.title}} ({{fields.sku}})'
+    fields:
+      - { label: Название, name: title, widget: string }
+      - label: Адрес (slug)
+        name: slug
+        widget: string
+        hint: Часть адреса страницы латиницей, совпадает с именем файла. После публикации лучше не менять
+        pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Только латиница в нижнем регистре, цифры и дефисы, например remont-generatora']
+      - { label: Артикул, name: sku, widget: string }
+      - { label: Категория, name: category, widget: relation, collection: categories, value_field: slug, search_fields: [title], display_fields: [title] }
+      - { label: 'Цена, ₽ (пусто — «по запросу»)', name: price, widget: number, value_type: int, min: 0, required: false }
+      - { label: В наличии, name: inStock, widget: boolean, default: true }
+      - { label: 'Совместимость (модели)', name: compatibility, widget: list, required: false, hint: 'Например: John Deere 6155M' }
+      - { label: Фото, name: images, widget: list, required: false, field: { label: Фото, name: image, widget: image } }
+      - { label: Краткое описание, name: summary, widget: text, required: false }
+      - label: Характеристики
+        name: specs
+        widget: list
+        required: false
+        summary: '{{fields.name}}: {{fields.value}}'
+        fields:
+          - { label: Название, name: name, widget: string }
+          - { label: Значение, name: value, widget: string }
+      - { label: Демо (тестовая запись), name: demo, widget: boolean, required: false, default: false, hint: 'Снимите флаг, когда запись станет настоящей' }
+      - label: SEO
+        name: seo
+        widget: object
+        required: false
+        collapsed: true
+        hint: Если пусто, берутся название и описание по умолчанию
+        fields:
+          - { label: Заголовок (title), name: title, widget: string, required: false }
+          - { label: Описание (description), name: description, widget: text, required: false }
+      - { label: Описание, name: body, widget: markdown, required: false }
+
+  - name: articles
+    label: Статьи
+    label_singular: Статья
+    folder: src/content/articles
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{fields.slug}}'
+    identifier_field: title
+    summary: '{{fields.date}}: {{fields.title}}'
+    sortable_fields: [date, title]
+    fields:
+      - { label: Заголовок, name: title, widget: string }
+      - label: Адрес (slug)
+        name: slug
+        widget: string
+        hint: Часть адреса страницы латиницей, совпадает с именем файла. После публикации лучше не менять
+        pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Только латиница в нижнем регистре, цифры и дефисы, например remont-generatora']
+      - { label: Дата, name: date, widget: datetime, format: YYYY-MM-DD, date_format: DD.MM.YYYY, time_format: false, picker_utc: true }
+      - { label: Обложка, name: cover, widget: image, required: false }
+      - { label: Анонс, name: excerpt, widget: text }
+      - { label: Связанные услуги, name: relatedServices, widget: relation, collection: services, value_field: slug, search_fields: [title], display_fields: [title], multiple: true, required: false }
+      - { label: Демо (тестовая запись), name: demo, widget: boolean, required: false, default: false, hint: 'Снимите флаг, когда запись станет настоящей' }
+      - label: SEO
+        name: seo
+        widget: object
+        required: false
+        collapsed: true
+        hint: Если пусто, берутся название и описание по умолчанию
+        fields:
+          - { label: Заголовок (title), name: title, widget: string, required: false }
+          - { label: Описание (description), name: description, widget: text, required: false }
+      - { label: Текст, name: body, widget: markdown, required: true }
+
+  - name: regions
+    label: Регионы
+    label_singular: Регион
+    folder: src/content/regions
+    create: true
+    extension: md
+    format: frontmatter
+    slug: '{{fields.slug}}'
+    identifier_field: title
+    fields:
+      - { label: Название, name: title, widget: string, hint: 'Например «Ставропольский край»' }
+      - label: Адрес (slug)
+        name: slug
+        widget: string
+        hint: Часть адреса страницы латиницей, совпадает с именем файла. После публикации лучше не менять
+        pattern: ['^[a-z0-9]+(-[a-z0-9]+)*$', 'Только латиница в нижнем регистре, цифры и дефисы, например remont-generatora']
+      - { label: Вступление, name: lead, widget: text }
+      - { label: 'Города и районы', name: localities, widget: list, required: false }
+      - label: Вопросы и ответы
+        name: faq
+        widget: list
+        required: false
+        summary: '{{fields.q}}'
+        fields:
+          - { label: Вопрос, name: q, widget: string }
+          - { label: Ответ, name: a, widget: text }
+      - label: SEO
+        name: seo
+        widget: object
+        required: false
+        collapsed: true
+        hint: Если пусто, берутся название и описание по умолчанию
+        fields:
+          - { label: Заголовок (title), name: title, widget: string, required: false }
+          - { label: Описание (description), name: description, widget: text, required: false }
+      - { label: Текст, name: body, widget: markdown, required: false }
+
+  - name: pages
+    label: Страницы
+    files:
+      - name: home
+        label: Главная
+        file: src/content/pages/home.md
+        format: frontmatter
+        fields:
+          - { label: Название, name: title, widget: string }
+          - { label: slug, name: slug, widget: hidden, default: home }
+          - label: Первый экран
+            name: hero
+            widget: object
+            fields:
+              - { label: Заголовок (H1), name: title, widget: string }
+              - { label: Подзаголовок, name: lead, widget: text }
+              - { label: Картинка, name: image, widget: image, required: false }
+          - label: Преимущества
+            name: advantages
+            widget: list
+            required: false
+            summary: '{{fields.title}}'
+            fields:
+              - { label: Заголовок, name: title, widget: string }
+              - { label: Текст, name: text, widget: text }
+          - { label: 'Как мы работаем (шаги)', name: steps, widget: list, required: false }
+          - label: Вопросы и ответы
+            name: faq
+            widget: list
+            required: false
+            summary: '{{fields.q}}'
+            fields:
+              - { label: Вопрос, name: q, widget: string }
+              - { label: Ответ, name: a, widget: text }
+          - label: SEO
+            name: seo
+            widget: object
+            required: false
+            collapsed: true
+            hint: Если пусто, берутся название и описание по умолчанию
+            fields:
+              - { label: Заголовок (title), name: title, widget: string, required: false }
+              - { label: Описание (description), name: description, widget: text, required: false }
+          - { label: Текст, name: body, widget: markdown, required: false }
+      - name: delivery
+        label: Доставка
+        file: src/content/pages/delivery.md
+        format: frontmatter
+        fields:
+          - { label: Заголовок, name: title, widget: string }
+          - { label: slug, name: slug, widget: hidden, default: delivery }
+          - { label: Вступление, name: lead, widget: text, required: false }
+          - label: SEO
+            name: seo
+            widget: object
+            required: false
+            collapsed: true
+            hint: Если пусто, берутся название и описание по умолчанию
+            fields:
+              - { label: Заголовок (title), name: title, widget: string, required: false }
+              - { label: Описание (description), name: description, widget: text, required: false }
+          - { label: Текст, name: body, widget: markdown, required: true }
+      - name: about
+        label: О компании
+        file: src/content/pages/about.md
+        format: frontmatter
+        fields:
+          - { label: Заголовок, name: title, widget: string }
+          - { label: slug, name: slug, widget: hidden, default: about }
+          - { label: Вступление, name: lead, widget: text, required: false }
+          - label: SEO
+            name: seo
+            widget: object
+            required: false
+            collapsed: true
+            hint: Если пусто, берутся название и описание по умолчанию
+            fields:
+              - { label: Заголовок (title), name: title, widget: string, required: false }
+              - { label: Описание (description), name: description, widget: text, required: false }
+          - { label: Текст, name: body, widget: markdown, required: true }
+      - name: privacy
+        label: Политика конфиденциальности
+        file: src/content/pages/privacy.md
+        format: frontmatter
+        fields:
+          - { label: Заголовок, name: title, widget: string }
+          - { label: slug, name: slug, widget: hidden, default: privacy }
+          - { label: Вступление, name: lead, widget: text, required: false }
+          - label: SEO
+            name: seo
+            widget: object
+            required: false
+            collapsed: true
+            hint: Если пусто, берутся название и описание по умолчанию
+            fields:
+              - { label: Заголовок (title), name: title, widget: string, required: false }
+              - { label: Описание (description), name: description, widget: text, required: false }
+          - { label: Текст, name: body, widget: markdown, required: true }
+      - name: consent
+        label: Согласие на обработку ПД
+        file: src/content/pages/consent.md
+        format: frontmatter
+        fields:
+          - { label: Заголовок, name: title, widget: string }
+          - { label: slug, name: slug, widget: hidden, default: consent }
+          - { label: Вступление, name: lead, widget: text, required: false }
+          - label: SEO
+            name: seo
+            widget: object
+            required: false
+            collapsed: true
+            hint: Если пусто, берутся название и описание по умолчанию
+            fields:
+              - { label: Заголовок (title), name: title, widget: string, required: false }
+              - { label: Описание (description), name: description, widget: text, required: false }
+          - { label: Текст, name: body, widget: markdown, required: true }
+
+  - name: settings
+    label: Настройки
+    files:
+      - name: settings
+        label: Контакты, реквизиты, SEO
+        file: src/_data/settings.json
+        format: json
+        fields:
+          - { label: Название компании, name: brand, widget: string }
+          - { label: Телефон (как показывать), name: phone, widget: string, pattern: ['^\+7 \d{3} \d{3} \d{2} \d{2}$', 'Формат: +7 962 001 19 90'] }
+          - { label: Телефон для ссылки, name: phoneHref, widget: string, pattern: ['^tel:\+7\d{10}$', 'Формат: tel:+79620011990'] }
+          - { label: Почта, name: email, widget: string, pattern: ['^(\[.+\]|[^@\s]+@[^@\s]+\.[^@\s]+)$', 'Адрес почты, например info@example.ru'] }
+          - { label: Ссылка на MAX, name: maxUrl, widget: string, pattern: ['^(\[.+\]|https://.+)$', 'Ссылка, начинается с https://'] }
+          - { label: Адрес, name: address, widget: string }
+          - { label: Часы работы, name: hours, widget: string }
+          - { label: Регионы работы, name: regions, widget: list, min: 1 }
+          - label: Реквизиты
+            name: legal
+            widget: object
+            fields:
+              - { label: Оператор персональных данных, name: operator, widget: string }
+              - { label: ИНН, name: inn, widget: string, pattern: ['^(\[.+\]|\d{10}|\d{12})$', '10 или 12 цифр'] }
+              - { label: ОГРН, name: ogrn, widget: string, pattern: ['^(\[.+\]|\d{13}|\d{15})$', '13 или 15 цифр'] }
+          - label: SEO по умолчанию
+            name: seo
+            widget: object
+            fields:
+              - { label: Суффикс заголовка, name: titleSuffix, widget: string, hint: 'Добавляется к title каждой страницы, например « — АГРОВОЛЬТАЖ»' }
+              - { label: Описание по умолчанию, name: defaultDescription, widget: text }
+              - { label: Картинка для соцсетей, name: ogImage, widget: image }
+          - { label: ID счётчика Яндекс Метрики, name: yandexMetrikaId, widget: string, required: false, pattern: ['^\d*$', 'Только цифры'] }
+          - { label: Код подтверждения Яндекс Вебмастера, name: yandexVerification, widget: string, required: false, pattern: ['^[A-Za-z0-9]*$', 'Латиница и цифры из meta-тега Вебмастера'] }
+          - { label: Версия согласия на обработку ПД, name: consentVersion, widget: string, hint: 'Поменяйте, когда меняется текст согласия' }
+      - name: models
+        label: Модели John Deere
+        file: src/_data/models.json
+        format: json
+        fields:
+          - label: Серии
+            name: models
+            widget: list
+            root: true
+            summary: '{{fields.series}}'
+            fields:
+              - { label: Серия, name: series, widget: string, hint: 'Например «Тракторы 6 серии»' }
+              - { label: Вид техники, name: category, widget: string, hint: 'Например «Тракторы»' }
+              - { label: Модели, name: models, widget: list }

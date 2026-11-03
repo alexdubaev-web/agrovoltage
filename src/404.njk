@@ -1,0 +1,21 @@
+---
+layout: layouts/base.njk
+permalink: /404.html
+eleventyExcludeFromCollections: true
+title: Страница не найдена
+seo:
+  title: Страница не найдена
+  description: Такой страницы нет. Перейдите в нужный раздел или оставьте заявку.
+  noindex: true
+---
+<section class="section container page-404">
+  <h1>Страница не найдена</h1>
+  <p class="lead">Возможно, адрес изменился или в нём опечатка.</p>
+  <div class="actions">
+    {%- if "/" | pageExists(collections.all) %}
+    <a class="btn btn--primary" href="/">На главную</a>
+    {%- endif %}
+    <a class="btn btn--ghost" href="#zayavka" data-lead-open>Оставить заявку</a>
+    <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a>
+  </div>
+</section>

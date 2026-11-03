@@ -1,0 +1,23 @@
+{
+  "brand": "АГРОВОЛЬТАЖ",
+  "phone": "+7 962 001 19 90",
+  "phoneHref": "tel:+79620011990",
+  "email": "[ПОЧТА — впиши]",
+  "maxUrl": "[MAX — впиши ссылку]",
+  "address": "[АДРЕС — впиши]",
+  "hours": "[ЧАСЫ РАБОТЫ — впиши]",
+  "regions": ["Ставропольский край", "Краснодарский край"],
+  "legal": {
+    "operator": "[ОПЕРАТОР — впиши]",
+    "inn": "[ИНН — впиши]",
+    "ogrn": "[ОГРН — впиши]"
+  },
+  "seo": {
+    "titleSuffix": " — АГРОВОЛЬТАЖ",
+    "defaultDescription": "Диагностика и ремонт электрики, электрооборудования и кондиционеров сельхозтехники John Deere в Ставропольском и Краснодарском крае.",
+    "ogImage": "/assets/brand/og-default.png"
+  },
+  "yandexMetrikaId": "",
+  "yandexVerification": "",
+  "consentVersion": "1"
+}

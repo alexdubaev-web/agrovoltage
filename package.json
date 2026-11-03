@@ -1,0 +1,24 @@
+{
+  "name": "agrovoltage-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Сайт АГРОВОЛЬТАЖ: Eleventy 3 + Sveltia CMS + PHP-обработчик заявок",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "validate": "node scripts/validate-content.mjs",
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs",
+    "test": "npm run build && node --test \"tests/*.test.mjs\""
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.7",
+    "@11ty/eleventy-img": "^7.1.1",
+    "@fontsource/manrope": "^5.3.0",
+    "ajv": "^8.20.0",
+    "esbuild": "^0.28.2",
+    "jsdom": "^30.1.3"
+  }
+}

@@ -1,0 +1,16 @@
+---
+permalink: /robots.txt
+eleventyExcludeFromCollections: true
+---
+{%- if site.indexable -%}
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
+Disallow: /korzina/
+Clean-param: utm_source&utm_medium&utm_campaign&utm_term&utm_content&yclid&gclid&ysclid /
+
+Sitemap: {{ site.url }}/sitemap.xml
+{% else -%}
+User-agent: *
+Disallow: /
+{% endif -%}
