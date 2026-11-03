@@ -1,4 +1,5 @@
 import { faqLd } from "../../lib/seo.js";
+import { urls } from "../../lib/urls.js";
 
 export default {
   eleventyComputed: {
@@ -10,7 +11,11 @@ export default {
       ...(data.region.data.seo || {}),
     }),
     lastmod: (data) => data.region.date,
-    breadcrumbs: (data) => [{ name: "Главная", url: "/" }, { name: data.region.data.title }],
+    breadcrumbs: (data) => [
+      { name: "Главная", url: "/" },
+      { name: "Регионы", url: urls.regions() },
+      { name: data.region.data.title, url: data.region.url },
+    ],
     jsonld: (data) => [faqLd(data.region.data.faq)].filter(Boolean),
   },
 };

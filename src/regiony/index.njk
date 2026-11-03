@@ -1,0 +1,28 @@
+---
+layout: layouts/base.njk
+permalink: /regiony/
+title: Регионы работы
+---
+<section class="section">
+  <div class="container">
+    <h1>Регионы работы</h1>
+    <p class="lead">Диагностика и ремонт электрики, электрооборудования и кондиционеров сельхозтехники John Deere. Выберите регион, чтобы посмотреть населённые пункты, услуги и ответы на вопросы.</p>
+    {%- if collections.regions.length %}
+    <div class="grid">
+      {%- for region in collections.regions %}
+      <article class="card">
+        <h2><a href="{{ region.url }}">{{ region.data.title }}</a></h2>
+        {%- if region.data.lead %}<p class="muted">{{ region.data.lead }}</p>{% endif %}
+        <p><a href="{{ region.url }}">Подробнее о регионе</a></p>
+      </article>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+  </div>
+</section>
+<section class="section section--alt">
+  <div class="container">
+    {% set leadForm = { type: "callback", id: "regions", title: "Оставить заявку", message: "" } %}
+    {% include "partials/lead-form.njk" %}
+  </div>
+</section>

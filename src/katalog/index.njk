@@ -38,11 +38,11 @@ seo:
     <h2>Категории</h2>
     <div class="grid">
       {%- for category in collections.categories %}
-      {%- set inCategory = collections.products | selectattr("data.category", "equalto", category.slug) | list %}
+      {%- set inCategory = categoryCounts[category.slug] or 0 %}
       <article class="card">
         <h3><a href="{{ category.url }}">{{ category.data.title }}</a></h3>
         {%- if category.data.description %}<p class="muted">{{ category.data.description }}</p>{% endif %}
-        <p><a href="{{ category.url }}">{% if inCategory.length %}Товаров: {{ inCategory.length }}{% else %}Скоро появятся{% endif %}</a></p>
+        <p><a href="{{ category.url }}">{% if inCategory %}Товаров: {{ inCategory }}{% else %}Скоро появятся{% endif %}</a></p>
       </article>
       {%- endfor %}
     </div>
@@ -55,9 +55,10 @@ seo:
     {%- if collections.products.length %}
     <h2>Все товары</h2>
     <div class="grid">
-      {%- for product in collections.products %}
+      {#- asyncEach: в карточке асинхронный шорткод image, обычный for теряет его вывод. #}
+      {%- asyncEach product in collections.products %}
       {% include "./_product-card.html" %}
-      {%- endfor %}
+      {%- endeach %}
     </div>
     {%- else %}
     <h2>Товары скоро появятся</h2>

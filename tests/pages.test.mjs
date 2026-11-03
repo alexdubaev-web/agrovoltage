@@ -107,6 +107,24 @@ describe("главная", () => {
 });
 
 describe("регионы", () => {
+  test("F2: /regiony/ — список регионов из коллекции, крошки, ItemList; крошка «Регионы» ведёт на неё", () => {
+    const files = fs.readdirSync(path.join(ROOT, "src/content/regions")).filter((f) => f.endsWith(".md"));
+    const slugs = files.map((f) => f.replace(/\.md$/, ""));
+    assert.ok(fs.existsSync(path.join(DIST, "regiony", "index.html")), "/regiony/ собрана");
+    const doc = page("/regiony");
+    const links = [...doc.querySelectorAll("main .card a[href^='/regiony/']")].map((a) => a.getAttribute("href"));
+    assert.deepEqual([...new Set(links)].sort(), slugs.map((s) => `/regiony/${s}/`).sort());
+    const crumbs = [...doc.querySelectorAll(".breadcrumbs li")].map(text);
+    assert.deepEqual(crumbs, ["Главная", "Регионы"]);
+    const list = ldNode(doc, "ItemList");
+    assert.equal(list.itemListElement.length, slugs.length);
+    for (const slug of slugs) {
+      const crumb = page(`/regiony/${slug}`).querySelector('.breadcrumbs a[href="/regiony/"]');
+      assert.ok(crumb, `${slug}: ссылка на /regiony/ в крошках`);
+      assert.equal(text(crumb), "Регионы");
+    }
+  });
+
   for (const [slug, name] of [["stavropolskij-kraj", "Ставропольск"], ["krasnodarskij-kraj", "Краснодарск"]]) {
     test(`/regiony/${slug}/: регион в title и H1, населённые пункты с пометкой, услуги, FAQ, форма`, () => {
       const doc = page(`/regiony/${slug}`);

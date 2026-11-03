@@ -11,9 +11,10 @@ permalink: "{{ category.url }}"
     {%- if category.data.description %}<p class="lead">{{ category.data.description }}</p>{% endif %}
     {%- if categoryProducts.length %}
     <div class="grid">
-      {%- for product in categoryProducts %}
+      {#- asyncEach: в карточке асинхронный шорткод image, обычный for теряет его вывод. #}
+      {%- asyncEach product in categoryProducts %}
       {% include "./_product-card.html" %}
-      {%- endfor %}
+      {%- endeach %}
     </div>
     {%- else %}
     <h2>Товары скоро появятся</h2>

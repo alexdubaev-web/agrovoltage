@@ -123,6 +123,27 @@ describe("страницы каталога в dist/", () => {
     assert.equal(list.itemListElement.length, inCategory.length);
   });
 
+  test("F2: списки без поиска — 12 карточек на /katalog/, в категории столько карточек, сколько товаров", () => {
+    const items = index();
+    const catalog = page("/katalog/");
+    const cards = catalog.querySelectorAll("[data-catalog-browse] [data-product-card]");
+    assert.equal(cards.length, 12, "карточки под «Все товары»");
+    for (const card of cards) {
+      assert.ok(card.querySelector("h3 a[href^='/katalog/']"), "в карточке ссылка на товар");
+      assert.ok(card.querySelector("[data-add-to-cart][data-slug]"), "в карточке кнопка «В корзину»");
+    }
+    assert.doesNotMatch(catalog.querySelector("main").textContent, /Скоро появятся/);
+    for (const category of new Set(items.map((i) => i.category))) {
+      const expected = items.filter((i) => i.category === category);
+      const link = catalog.querySelector(`[data-catalog-browse] .card p a[href="/katalog/${category}/"]`);
+      assert.equal(link.textContent.trim(), `Товаров: ${expected.length}`, category);
+      const doc = page(`/katalog/${category}/`);
+      const slugs = [...doc.querySelectorAll("main [data-product-card] [data-add-to-cart]")].map((b) => b.dataset.slug);
+      assert.deepEqual(slugs.sort(), expected.map((i) => i.slug).sort(), category);
+      assert.doesNotMatch(doc.querySelector("main").textContent, /Товары скоро появятся/, category);
+    }
+  });
+
   test("/katalog/ подключает поиск, форма поиска скрыта до загрузки JS", () => {
     const doc = page("/katalog/");
     assert.ok(doc.querySelector('script[src="/assets/js/catalog-search.js"]'));
@@ -165,6 +186,23 @@ describe("пустой каталог и пустая категория", () =>
     assert.ok(doc.querySelector("main form[data-lead-form]"));
     assert.equal(doc.querySelector("main [data-product-card]"), null);
     assert.deepEqual(JSON.parse(fs.readFileSync(path.join(out, "katalog", "index.json"), "utf8")), []);
+  });
+
+  test("F2: «Скоро появятся» только у пустой категории, у полной — число товаров и карточка", () => {
+    const out = build({
+      "categories/pusto.json": JSON.stringify({ title: "Пустая", slug: "pusto", order: 1 }),
+      "categories/polno.json": JSON.stringify({ title: "Полная", slug: "polno", order: 2 }),
+      "products/tovar.md": [
+        "---", "title: Товар", "slug: tovar", "sku: T-2", "category: polno", "price: 100", "inStock: true",
+        "compatibility: [John Deere 6155M]", "images: []", "summary: Тест", "demo: true", "seo: {}", "---", "Описание.", "",
+      ].join("\n"),
+    });
+    const catalog = dom(path.join(out, "katalog", "index.html"));
+    assert.equal(catalog.querySelector('.card p a[href="/katalog/pusto/"]').textContent.trim(), "Скоро появятся");
+    assert.equal(catalog.querySelector('.card p a[href="/katalog/polno/"]').textContent.trim(), "Товаров: 1");
+    assert.equal(catalog.querySelectorAll("main [data-product-card]").length, 1);
+    const full = dom(path.join(out, "katalog", "polno", "index.html"));
+    assert.equal(full.querySelectorAll("main [data-product-card]").length, 1);
   });
 
   test("товар без фото: показана заглушка, а не picture", () => {
