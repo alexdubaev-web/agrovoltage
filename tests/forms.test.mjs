@@ -305,7 +305,8 @@ describe("плавающая кнопка связи", () => {
     assert.match(src, /settings\.maxUrl/);
     // Стили кнопки лежат в main.css (подключён из <head>).
     const css = fs.readFileSync(path.join(ROOT, "src/assets/css/main.css"), "utf8");
-    assert.match(css, /@media\s*\(min-width:\s*768px\)\s*\{[^}]*\.contact-fab\s*\{\s*display:\s*none/);
+    // Панель видна на ширине до 768 включительно (R04).
+    assert.match(css, /@media\s*\(min-width:\s*769px\)\s*\{[^}]*\.contact-fab\s*\{\s*display:\s*none/);
     const page = path.join(ROOT, "dist", "index.html");
     if (fs.existsSync(page)) {
       const doc = new JSDOM(fs.readFileSync(page, "utf8")).window.document;

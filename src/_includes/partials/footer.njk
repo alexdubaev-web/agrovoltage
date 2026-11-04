@@ -1,36 +1,18 @@
+{#- Подвал. Края не перечисляются (R11): только ссылка «Где работаем» на /regiony/. -#}
 <footer class="site-footer">
-  <div class="container site-footer__grid">
-    <div class="site-footer__brand">
-      {% image "/assets/brand/logo.png", settings.brand, "120px" %}
-      <p>{{ settings.seo.defaultDescription }}</p>
-    </div>
-    <div>
-      <p class="site-footer__title">Контакты</p>
-      <ul class="site-footer__list">
-        <li><a href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a></li>
-        <li>Почта: {% if settings.email | isPlaceholder %}{% set value = settings.email %}{% include "partials/contact-value.njk" %}{% else %}<a href="mailto:{{ settings.email }}">{{ settings.email }}</a>{% endif %}</li>
-        <li>MAX: {% if settings.maxUrl | isPlaceholder %}{% set value = settings.maxUrl %}{% include "partials/contact-value.njk" %}{% else %}<a href="{{ settings.maxUrl }}" rel="noopener">написать в MAX</a>{% endif %}</li>
-        <li>Адрес: {% set value = settings.address %}{% include "partials/contact-value.njk" %}</li>
-        <li>Часы работы: {% set value = settings.hours %}{% include "partials/contact-value.njk" %}</li>
-      </ul>
-    </div>
-    <div>
-      <p class="site-footer__title">Регионы работы</p>
-      <ul class="site-footer__list">
-        {%- for name in settings.regions %}
-        {%- set region = collections.regions | findByTitle(name) %}
-        <li>{% if region and (region.url | pageExists(collections.all)) %}<a href="{{ region.url }}">{{ name }}</a>{% else %}{{ name }}{% endif %}</li>
-        {%- endfor %}
-      </ul>
-    </div>
-    <nav aria-label="Разделы сайта">
-      <p class="site-footer__title">Разделы</p>
-      <ul class="site-footer__list">
+  <div class="container site-footer__top">
+    <a class="site-footer__logo" href="/" aria-label="{{ settings.brand }}, на главную">{% image "/assets/brand/logo-horizontal.png", settings.brand, "180px" %}</a>
+    <nav class="site-footer__nav" aria-label="Разделы сайта">
+      <ul>
         {%- for item in navItems %}{% if item.url | pageExists(collections.all) %}
         <li><a href="{{ item.url }}">{{ item.name }}</a></li>
         {%- endif %}{% endfor %}
+        {%- if "/regiony/" | pageExists(collections.all) %}
+        <li><a href="/regiony/">Где работаем</a></li>
+        {%- endif %}
       </ul>
     </nav>
+    <a class="site-footer__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a>
   </div>
   <div class="container site-footer__bottom">
     <p>© {{ buildDate.getFullYear() }} {{ settings.brand }}. Оператор: {% set value = settings.legal.operator %}{% include "partials/contact-value.njk" %}, ИНН {% set value = settings.legal.inn %}{% include "partials/contact-value.njk" %}, ОГРН {% set value = settings.legal.ogrn %}{% include "partials/contact-value.njk" %}</p>

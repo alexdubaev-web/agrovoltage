@@ -112,6 +112,17 @@ describe("валидатор контента", () => {
     assert.equal(loadCollection("categories", content).at(-1).slug, "datchiki-i-rele");
   });
 
+  test("R03.1: симптом главной с неизвестным system не проходит проверку", () => {
+    const home = VALID_CONTENT["pages/home.md"].replace(
+      "faq: []",
+      "faq: []\nsymptoms:\n  - label: Не заводится\n    system: engine\n    service: test-service\n    hint: стартер",
+    );
+    const content = writeFiles(tempDir("bad-symptom"), { ...VALID_CONTENT, "pages/home.md": home });
+    const v = spawnSync(process.execPath, ["scripts/validate-content.mjs"], { cwd: ROOT, encoding: "utf8", env: { ...process.env, CONTENT_DIR: content } });
+    assert.notEqual(v.status, 0);
+    assert.match(v.stderr, /home\.md: поле symptoms\[0\]\.system — допустимые значения: start, charge, ecu, cab, harness, climate/);
+  });
+
   test("корректный контент проходит", () => {
     const content = writeFiles(tempDir("ok"), VALID_CONTENT);
     const v = spawnSync(process.execPath, ["scripts/validate-content.mjs"], { cwd: ROOT, encoding: "utf8", env: { ...process.env, CONTENT_DIR: content } });
@@ -177,11 +188,36 @@ describe("dist/ после npm run build", () => {
     for (const a of d.querySelectorAll("header nav a[href^='/']")) assert.ok(resolveLocal(a.getAttribute("href")), "меню ведёт в 404");
   });
 
-  test("подвал главной ссылается на страницы регионов", () => {
+  test("R11: подвал ведёт на «Где работаем» без перечня краёв; края остаются в JSON-LD", () => {
     const d = dom(path.join(DIST, "index.html"));
-    for (const url of ["/regiony/stavropolskij-kraj/", "/regiony/krasnodarskij-kraj/"]) {
-      assert.ok(d.querySelector(`footer a[href="${url}"]`), `нет ссылки ${url} в подвале`);
-    }
+    const footer = d.querySelector("footer");
+    assert.ok(footer.querySelector('a[href="/regiony/"]'), "нет ссылки /regiony/ в подвале");
+    for (const r of REGIONS) assert.ok(!footer.textContent.includes(r), `край «${r}» в подвале`);
+    assert.ok(!footer.querySelector('a[href^="/regiony/"][href$="-kraj/"]'), "ссылки на края в подвале");
+    assert.deepEqual(ldNode(d, "AutoRepair").areaServed.map((a) => a.name), REGIONS);
+  });
+
+  test("R11: первый экран главной не показывает края из настроек", () => {
+    const hero = dom(path.join(DIST, "index.html")).querySelector("main .hero");
+    assert.ok(hero, "нет первого экрана .hero");
+    // H1 — текст из контента (его переписывает тикет 03); шаблон сам краёв не добавляет.
+    const rest = hero.cloneNode(true);
+    rest.querySelector("h1")?.remove();
+    for (const r of REGIONS) assert.ok(!rest.textContent.includes(r), `«${r}» на первом экране`);
+  });
+
+  test("R04: мобильная панель «Позвонить» и «Заявка», шрифты Unbounded и Golos Text без Manrope", () => {
+    const d = dom(path.join(DIST, "index.html"));
+    const bar = d.querySelector(".contact-fab");
+    assert.ok(bar.querySelector('a[href="tel:+79620011990"]'), "Позвонить");
+    assert.ok(bar.querySelector('a[href="#zayavka"][data-lead-open]'), "Заявка");
+    const css = read("assets/css/main.css");
+    assert.doesNotMatch(css, /manrope/i);
+    assert.doesNotMatch(read("index.html"), /manrope/i);
+    for (const family of ["Unbounded", "Golos Text"]) assert.match(css, new RegExp(`font-family:\\s*"?${family}"?;[^}]*font-display:\\s*swap`), family);
+    const preload = [...d.querySelectorAll('link[rel="preload"][as="font"]')].map((l) => l.getAttribute("href"));
+    assert.ok(preload.some((h) => /unbounded|golos/.test(h)), preload.join());
+    for (const h of preload) assert.ok(fs.existsSync(path.join(DIST, h)), h);
   });
 
   test("меню в шапке и подвале ведёт на собранные разделы", () => {

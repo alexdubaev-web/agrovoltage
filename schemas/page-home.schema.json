@@ -85,6 +85,44 @@
         }
       }
     },
+    "symptoms": {
+      "type": "array",
+      "description": "симптомы на первом экране главной",
+      "items": {
+        "type": "object",
+        "required": [
+          "label",
+          "system",
+          "service",
+          "hint"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "system": {
+            "enum": [
+              "start",
+              "charge",
+              "ecu",
+              "cab",
+              "harness",
+              "climate"
+            ]
+          },
+          "service": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "slug услуги, например remont-elektriki"
+          },
+          "hint": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
     "seo": {
       "type": "object",
       "properties": {

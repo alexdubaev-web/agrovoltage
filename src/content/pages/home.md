@@ -32,6 +32,31 @@ faq:
     a: Ориентиры указаны на страницах услуг. Точную сумму называем после диагностики. Цены на сайте тестовые, пока не заменены в панели управления.
   - q: Как оставить заявку?
     a: Позвоните по телефону +7 962 001 19 90 или заполните форму на сайте. Перезвоним в рабочее время.
+symptoms:
+  - label: Не заводится
+    system: start
+    service: remont-elektriki
+    hint: стартер или реле стартера
+  - label: Не заряжает АКБ
+    system: charge
+    service: remont-generatorov-i-starterov
+    hint: щётки или регулятор напряжения генератора
+  - label: Ошибки на мониторе
+    system: ecu
+    service: diagnostika-elektriki
+    hint: датчик, разъём или обрыв провода к блоку управления
+  - label: Не работает свет
+    system: cab
+    service: elektrooborudovanie-kabiny-i-osveshcheniya
+    hint: предохранитель, реле или плохая масса в кабине
+  - label: Повреждён жгут
+    system: harness
+    service: remont-provodki-i-zhgutov
+    hint: перетёртый провод или окисленный разъём
+  - label: Не холодит кондиционер
+    system: climate
+    service: diagnostika-i-remont-kondicionerov
+    hint: утечка хладагента или муфта компрессора
 seo:
   title: Ремонт электрики и кондиционеров John Deere в Ставропольском и Краснодарском крае
   description: Диагностика и ремонт электрики, проводки, электрооборудования и кондиционеров сельхозтехники John Deere. Ставропольский и Краснодарский край. +7 962 001 19 90.

@@ -1,10 +1,12 @@
-{#- Плавающая кнопка связи на мобильных (A01): звонок и MAX. На ширине от 768px скрыта.
-    Ссылка MAX появляется, когда в настройках вписан адрес вместо заглушки.
-    Стили — в main.css. -#}
+{#- Липкая панель связи на ширине до 768 px (R04): «Позвонить» и «Заявка», как в мобильном макете.
+    Ссылка MAX появляется, когда в настройках вписан адрес вместо заглушки. Стили — в main.css
+    (body получает отступ снизу, чтобы панель не закрывала контент). -#}
+{%- from "partials/icon.njk" import icon -%}
 {%- set fabMax = settings.maxUrl and not (settings.maxUrl | isPlaceholder) -%}
 <nav class="contact-fab" aria-label="Быстрая связь">
+  <a class="btn btn--ghost contact-fab__call" href="{{ settings.phoneHref }}" data-goal="phone" aria-label="Позвонить {{ settings.phone }}">{{ icon("phone") }}Позвонить</a>
   {%- if fabMax %}
-  <a class="contact-fab__btn contact-fab__btn--max" href="{{ settings.maxUrl }}" rel="noopener" target="_blank" data-goal="max" aria-label="Написать в MAX">MAX</a>
+  <a class="btn btn--ghost contact-fab__max" href="{{ settings.maxUrl }}" rel="noopener" target="_blank" data-goal="max" aria-label="Написать в MAX">MAX</a>
   {%- endif %}
-  <a class="contact-fab__btn contact-fab__btn--call" href="{{ settings.phoneHref }}" data-goal="phone" aria-label="Позвонить {{ settings.phone }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></a>
+  <a class="btn btn--primary contact-fab__lead" href="#zayavka" data-lead-open>Заявка</a>
 </nav>

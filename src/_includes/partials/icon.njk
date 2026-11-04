@@ -1,0 +1,3 @@
+{#- Иконка из спрайта partials/icons.njk (один набор, обводка 2 px, 24×24).
+    Использование: {% from "partials/icon.njk" import icon %}{{ icon("phone") }} -#}
+{% macro icon(name, cls = "") %}<svg class="icon{% if cls %} {{ cls }}{% endif %}" aria-hidden="true" focusable="false"><use href="#i-{{ name }}"></use></svg>{% endmacro %}

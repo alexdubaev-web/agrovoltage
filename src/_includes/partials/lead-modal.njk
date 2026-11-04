@@ -1,12 +1,13 @@
 {#- Модальное окно заявки. Открывается ссылкой href="#zayavka" (без JS — через :target).
     Открыватели: <a href="#zayavka" data-lead-open data-service="…" data-message="…">;
     forms.js может подставить data-service/data-message в форму. Закрытие — [data-lead-close]. -#}
+{%- from "partials/icon.njk" import icon -%}
 <div class="modal" id="zayavka" role="dialog" aria-modal="true" aria-labelledby="zayavka-title">
   <a class="modal__backdrop" href="#_" tabindex="-1" aria-hidden="true" data-lead-close></a>
   <div class="modal__box">
-    <a class="modal__close" href="#_" aria-label="Закрыть" data-lead-close>×</a>
+    <a class="modal__close" href="#_" aria-label="Закрыть" data-lead-close>{{ icon("close") }}</a>
     <p class="modal__title" id="zayavka-title">Оставить заявку</p>
-    <p class="modal__lead">Перезвоним в рабочее время. Срочно — звоните: <a href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a></p>
+    <p class="modal__lead">Перезвоним в рабочее время. Если техника стоит, звоните сразу: <a href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a></p>
     {% set leadForm = { type: "callback", id: "modal" } %}
     {% include "partials/lead-form.njk" %}
   </div>

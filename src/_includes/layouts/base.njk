@@ -33,12 +33,12 @@
 <meta name="twitter:title" content="{{ pageTitle }}">
 <meta name="twitter:description" content="{{ pageDescription }}">
 <meta name="twitter:image" content="{{ ogImage }}">
-<meta name="theme-color" content="#006512">
+<meta name="theme-color" content="#0F3D22">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" href="/assets/brand/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
-<link rel="preload" href="/assets/fonts/manrope-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/assets/fonts/manrope-cyrillic-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/unbounded-cyrillic-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/golos-text-cyrillic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/main.css">
 {%- for name in scripts | pageScripts(jsModules) %}
 <script type="module" src="/assets/js/{{ name }}.js"></script>
@@ -52,6 +52,7 @@
 {%- endfor %}
 </head>
 <body{% if bodyClass %} class="{{ bodyClass }}"{% endif %}>
+{% include "partials/icons.njk" %}
 <a class="skip-link" href="#main">Перейти к содержимому</a>
 {% include "partials/header.njk" %}
 <main id="main">

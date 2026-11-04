@@ -1,23 +1,27 @@
+{%- from "partials/icon.njk" import icon -%}
 {%- set homeExists = "/" | pageExists(collections.all) -%}
+{%- set cartExists = "/korzina/" | pageExists(collections.all) -%}
 <header class="site-header">
   <div class="container site-header__inner">
-    {% if homeExists %}<a class="logo" href="/" aria-label="{{ settings.brand }} — на главную">{% else %}<span class="logo">{% endif %}
+    {% if homeExists %}<a class="logo" href="/" aria-label="{{ settings.brand }}, на главную">{% else %}<span class="logo">{% endif %}
       {% image "/assets/brand/logo-horizontal.png", settings.brand, "180px", true %}
     {% if homeExists %}</a>{% else %}</span>{% endif %}
-    <input type="checkbox" id="nav-toggle" class="nav-toggle visually-hidden" aria-controls="site-nav">
-    <label for="nav-toggle" class="nav-burger" aria-label="Меню"><span aria-hidden="true"></span></label>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle visually-hidden" aria-label="Меню" aria-controls="site-nav">
     <nav class="site-nav" id="site-nav" aria-label="Основное меню">
       <ul>
         {%- for item in navItems %}{% if item.url | pageExists(collections.all) %}
         <li><a href="{{ item.url }}"{% if page.url.startsWith(item.url) %} aria-current="page"{% endif %}>{{ item.name }}</a></li>
         {%- endif %}{% endfor %}
       </ul>
-      <a class="btn btn--primary site-nav__cta" href="#zayavka" data-lead-open>Оставить заявку</a>
     </nav>
-    <a class="site-header__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a>
-    {% if "/korzina/" | pageExists(collections.all) %}<a class="site-header__cart" href="/korzina/" aria-label="Корзина">{% else %}<span class="site-header__cart" aria-label="Корзина">{% endif %}
-      <svg aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L21 7H6"/></svg>
-      <span class="cart-count" data-cart-count></span>
-    {% if "/korzina/" | pageExists(collections.all) %}</a>{% else %}</span>{% endif %}
+    <div class="site-header__tools">
+      <a class="site-header__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}<span class="site-header__phone-text">{{ settings.phone }}</span></a>
+      {% if cartExists %}<a class="site-header__cart" href="/korzina/" aria-label="Корзина">{% else %}<span class="site-header__cart" aria-label="Корзина">{% endif %}
+        {{ icon("cart") }}
+        <span class="cart-count" data-cart-count></span>
+      {% if cartExists %}</a>{% else %}</span>{% endif %}
+      <a class="btn btn--primary site-header__cta" href="#zayavka" data-lead-open>Оставить заявку</a>
+      <label for="nav-toggle" class="nav-burger" aria-hidden="true"><span></span></label>
+    </div>
   </div>
 </header>

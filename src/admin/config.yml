@@ -255,7 +255,31 @@ collections:
             fields:
               - { label: Заголовок, name: title, widget: string }
               - { label: Текст, name: text, widget: text }
-          - { label: 'Как мы работаем (шаги)', name: steps, widget: list, required: false }
+          - label: 'Как мы работаем (шаги)'
+            name: steps
+            widget: list
+            required: false
+            hint: 'Шаг можно записать как «Заголовок: пояснение» — на главной заголовок станет крупнее'
+          - label: Симптомы на первом экране
+            name: symptoms
+            widget: list
+            required: false
+            summary: '{{fields.label}}'
+            hint: 'Кнопки «Что случилось?» над картинкой трактора. Картинка и точка неисправности выбираются по полю «Система»'
+            fields:
+              - { label: Надпись на кнопке, name: label, widget: string }
+              - label: Система
+                name: system
+                widget: select
+                options:
+                  - { label: 'Пуск (стартер)', value: start }
+                  - { label: 'Заряд (генератор, АКБ)', value: charge }
+                  - { label: 'Блок управления, ошибки', value: ecu }
+                  - { label: 'Кабина и свет', value: cab }
+                  - { label: 'Проводка и жгуты', value: harness }
+                  - { label: 'Кондиционер', value: climate }
+              - { label: Услуга, name: service, widget: relation, collection: services, value_field: slug, search_fields: [title], display_fields: [title] }
+              - { label: 'Чаще всего причина', name: hint, widget: string, hint: 'Со строчной буквы, например: стартер или реле стартера' }
           - label: Вопросы и ответы
             name: faq
             widget: list

@@ -2,7 +2,8 @@
     Вход — переменная leadForm перед include:
       {% set leadForm = { type: "callback"|"service"|"order", id: "уникальный-на-странице",
                           service: "название услуги", message: "текст по умолчанию",
-                          title: "заголовок", submit: "текст кнопки", messageLabel: "подпись" } %}
+                          title: "заголовок", submit: "текст кнопки", messageLabel: "подпись",
+                          variant: "inline" — поля в строку (контакт-полоса главной) } %}
       {% include "partials/lead-form.njk" %}
     Разметка для forms.js:
       form[data-lead-form] — тип заявки; [data-error-for="<поле>"] — текст ошибки у поля;
@@ -11,7 +12,7 @@
 {%- set lf = leadForm or {} -%}
 {%- set lfType = lf.type or "callback" -%}
 {%- set lfId = lf.id or lfType -%}
-<form class="lead-form" id="lead-{{ lfId }}" data-lead-form="{{ lfType }}" action="/api/lead.php" method="post">
+<form class="form lead-form{% if lf.variant %} lead-form--{{ lf.variant }}{% endif %}" id="lead-{{ lfId }}" data-lead-form="{{ lfType }}" action="/api/lead.php" method="post">
   {%- if lf.title %}
   <p class="lead-form__title">{{ lf.title }}</p>
   {%- endif %}
@@ -27,7 +28,7 @@
   </div>
   <div class="field">
     <label class="field__label" for="{{ lfId }}-message">{{ lf.messageLabel or "Сообщение (необязательно)" }}</label>
-    <textarea class="field__input" id="{{ lfId }}-message" name="message" rows="3" maxlength="2000" aria-describedby="{{ lfId }}-message-error">{{ lf.message }}</textarea>
+    <textarea class="field__input" id="{{ lfId }}-message" name="message" rows="{{ 1 if lf.variant == 'inline' else 3 }}" maxlength="2000" aria-describedby="{{ lfId }}-message-error">{{ lf.message }}</textarea>
     <p class="field__error" id="{{ lfId }}-message-error" data-error-for="message" hidden></p>
   </div>
   <input type="hidden" name="service" value="{{ lf.service }}">

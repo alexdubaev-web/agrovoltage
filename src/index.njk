@@ -1,116 +1,200 @@
 ---
 layout: layouts/base.njk
 permalink: /
+bodyClass: page-home
 ---
+{#- Главная по макету B (docs/mockups/home-*-b-xray.png). Данные первого экрана, групп услуг
+    и запчастей готовит src/index.11tydata.js. Поведение «рентгена» — src/assets/js/xray.js. -#}
+{%- from "partials/icon.njk" import icon -%}
 {%- set home = collections.pages | findBySlug("home") -%}
 {%- set h = home.data -%}
-<section class="section">
-  <div class="container">
-    <h1>{{ h.hero.title }}</h1>
-    <p class="lead">{{ h.hero.lead }}</p>
-    <p class="muted">{{ settings.regions | join(" · ") }}</p>
-    <div class="actions">
-      <a class="btn btn--primary" href="{{ settings.phoneHref }}" data-goal="phone">Позвонить: {{ settings.phone }}</a>
-      <a class="btn btn--ghost" href="#zayavka" data-lead-open>Оставить заявку</a>
+{%- set first = heroSymptoms[0] -%}
+{%- set xraySizes = "(min-width: 1100px) 780px, (min-width: 769px) 60vw, 100vw" -%}
+<section class="hero" aria-labelledby="hero-title">
+  <div class="container hero__grid">
+    <div class="hero__text">
+      <h1 id="hero-title">{{ h.hero.title }}</h1>
+      <p class="hero__lead">{{ h.hero.lead }}</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="#zayavka" data-lead-open>Оставить заявку</a>
+        <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}Позвонить</a>
+      </div>
     </div>
-    {%- if h.hero.image %}
-    <p>{% image h.hero.image, h.hero.title, "(min-width: 960px) 960px, 100vw", true %}</p>
+
+    <div class="xray" data-xray data-active="{{ xray.active }}">
+      <div class="xray__stage">
+        {%- if heroSymptoms.length %}
+        {%- asyncEach v in xray.variants %}
+        <div class="xray__variant{% if v.system == xray.active %} is-active{% endif %}" data-xray-variant="{{ v.system }}" data-x="{{ v.x }}" data-y="{{ v.y }}" data-tone="{{ v.tone }}"{% if v.system != xray.active %} aria-hidden="true"{% endif %}>
+          {% image v.src, v.alt, xraySizes, v.system == xray.active %}
+        </div>
+        {%- endeach %}
+        {%- else %}
+        <div class="xray__variant is-active">{% image xray.base.src, xray.base.alt, xraySizes, true %}</div>
+        {%- endif %}
+        {%- for n in xray.nodes %}
+        <span class="xray__node xray__node--{{ n.side }}" data-xray-node data-system="{{ n.system }}" style="left: {{ n.x }}%; top: {{ n.y }}%"><span class="xray__tag">{{ n.label }}</span></span>
+        {%- endfor %}
+        {%- if heroSymptoms.length and xray.fault %}
+        <span class="xray__fault" data-xray-fault data-tone="{{ xray.fault.tone }}" style="left: {{ xray.fault.x }}%; top: {{ xray.fault.y }}%"></span>
+        {%- endif %}
+      </div>
+    </div>
+
+    {%- if heroSymptoms.length %}
+    <div class="hero__ask">
+      <p class="hero__ask-title" id="xray-ask">Что случилось?</p>
+      <ul class="symptoms" role="list" aria-labelledby="xray-ask">
+        {%- for s in heroSymptoms %}
+        <li><a class="symptom" href="{{ s.serviceUrl }}" data-xray-symptom data-system="{{ s.system }}" data-hint="{{ s.hint }}" data-service="{{ s.serviceTitle }}" data-service-url="{{ s.serviceUrl }}" data-price="{{ s.price }}">{{ icon(s.system, "symptom__icon") }}<span class="symptom__label">{{ s.label }}</span><span class="symptom__mark">{{ icon("check") }}</span></a></li>
+        {%- endfor %}
+      </ul>
+    </div>
+
+    <div class="xray-card" data-xray-card aria-live="polite">
+      <span class="xray-card__icon">{{ icon("gear") }}</span>
+      <div class="xray-card__body">
+        <p class="xray-card__title">Чаще всего причина: <span data-xray-hint>{{ first.hint }}</span></p>
+        <p class="xray-card__meta"><a href="{{ first.serviceUrl }}" data-xray-service>{{ first.serviceTitle }}</a> <span class="xray-card__price" data-xray-price>{{ first.price or "по запросу" }}</span></p>
+      </div>
+      <a class="btn btn--primary xray-card__cta" href="#zayavka" data-lead-open data-service="{{ first.serviceTitle }}" data-xray-cta>Записаться</a>
+    </div>
     {%- endif %}
   </div>
 </section>
 
-<section class="section section--alt" id="uslugi">
+{%- if serviceGroups.length %}
+<section class="section" id="uslugi" aria-labelledby="uslugi-title">
   <div class="container">
-    <h2>Услуги</h2>
-    <div class="grid">
-      {%- for item in collections.services %}
-      <article class="card">
-        {%- if item.data.image %}{% image item.data.image, item.data.title, "(min-width: 960px) 300px, 100vw" %}{% endif %}
-        <h3><a href="{{ item.url }}">{{ item.data.title }}</a>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h3>
-        <p>{{ item.data.summary }}</p>
-        <p><strong>{% if item.data.priceFrom %}от {{ item.data.priceFrom | price }}{% else %}по запросу{% endif %}</strong></p>
-      </article>
-      {%- endfor %}
+    <div class="section__head">
+      <h2 id="uslugi-title">Услуги</h2>
+      {%- if "/uslugi/" | pageExists(collections.all) %}<a class="section__more" href="/uslugi/">Все услуги и цены</a>{% endif %}
     </div>
-    <p><a class="btn btn--ghost" href="/uslugi/">Все услуги</a></p>
-  </div>
-</section>
-
-{%- if models and models.length %}
-<section class="section" id="modeli">
-  <div class="container">
-    <h2>Модели John Deere</h2>
-    <p class="lead">Основная марка, с которой работаем. Другие марки — по согласованию.</p>
-    <div class="grid">
-      {%- for series in models %}
-      <div class="card">
-        <h3>{{ series.series }}</h3>
-        <p class="muted">{{ series.models | join(", ") }}</p>
+    <div class="service-list">
+      {%- asyncEach g in serviceGroups %}
+      <div class="service-group">
+        <h3 class="service-group__title">{{ icon(g.icon) }}{{ g.name }}</h3>
+        <ul class="service-group__rows" role="list">
+          {%- asyncEach s in g.items %}
+          <li class="service-row">
+            <span class="service-row__media">{% if s.image %}{% image s.image, s.title, "(min-width: 769px) 136px, 112px" %}{% endif %}</span>
+            <span class="service-row__text">
+              <a class="service-row__link" href="{{ s.url }}">{{ s.title }}</a>
+              <span class="service-row__summary">{{ s.summary }}</span>
+            </span>
+            <span class="service-row__price">{{ s.price or "по запросу" }}</span>
+            <span class="btn-round" aria-hidden="true">{{ icon("arrow") }}</span>
+          </li>
+          {%- endeach %}
+        </ul>
       </div>
-      {%- endfor %}
-    </div>
-  </div>
-</section>
-{%- endif %}
-
-{%- if h.advantages and h.advantages.length %}
-<section class="section section--alt" id="preimushchestva">
-  <div class="container">
-    <h2>Почему к нам</h2>
-    <div class="grid">
-      {%- for item in h.advantages %}
-      <div class="card">
-        <h3>{{ item.title }}</h3>
-        <p>{{ item.text }}</p>
-      </div>
-      {%- endfor %}
+      {%- endeach %}
     </div>
   </div>
 </section>
 {%- endif %}
 
 {%- if h.steps and h.steps.length %}
-<section class="section" id="etapy">
-  <div class="container prose">
-    <h2>Как мы работаем</h2>
-    <ol>{% for step in h.steps %}<li>{{ step }}</li>{% endfor %}</ol>
-  </div>
-</section>
-{%- endif %}
-
-{%- if h.faq and h.faq.length %}
-<section class="section section--alt" id="faq">
-  <div class="container prose">
-    <h2>Вопросы и ответы</h2>
-    {%- for item in h.faq %}
-    <details><summary>{{ item.q }}</summary><p>{{ item.a }}</p></details>
-    {%- endfor %}
-  </div>
-</section>
-{%- endif %}
-
-{%- if collections.articles.length %}
-<section class="section" id="stati">
+<section class="section" id="etapy" aria-labelledby="etapy-title">
   <div class="container">
-    <h2>Последние статьи</h2>
-    <div class="grid">
-      {%- for item in collections.articles %}{% if loop.index0 < 3 %}
-      <article class="card">
-        {%- if item.data.cover %}{% image item.data.cover, item.data.title, "(min-width: 960px) 300px, 100vw" %}{% endif %}
-        <p class="muted"><time datetime="{{ item.data.date }}">{{ item.data.date | dateRu }}</time>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</p>
-        <h3><a href="{{ item.url }}">{{ item.data.title }}</a></h3>
-        <p>{{ item.data.excerpt }}</p>
-      </article>
-      {%- endif %}{% endfor %}
+    <h2 id="etapy-title">Как проходит ремонт</h2>
+    <ol class="steps">
+      {%- for step in h.steps %}
+      {%- set parts = step.split(": ") %}
+      <li class="steps__item">
+        <span class="steps__num" aria-hidden="true">{{ "0" if loop.index < 10 }}{{ loop.index }}</span>
+        <span class="steps__body">
+          <span class="steps__title">{{ parts[0] }}</span>
+          {%- if parts.length > 1 %}<span class="steps__text">{{ parts.slice(1).join(": ") }}</span>{% endif %}
+        </span>
+      </li>
+      {%- endfor %}
+    </ol>
+  </div>
+</section>
+{%- endif %}
+
+{%- set fieldService = collections.services | findBySlug("vyezd-v-pole") %}
+<section class="photo-band" id="vyezd" aria-labelledby="vyezd-title">
+  {%- if h.hero.image %}
+  <div class="photo-band__media">{% image h.hero.image, "Мастер с ноутбуком проверяет трактор в поле", "100vw" %}</div>
+  {%- endif %}
+  <div class="container photo-band__inner">
+    <h2 id="vyezd-title">Выезжаем к технике</h2>
+    <p>Если машину нельзя везти, приедем в хозяйство или в поле.</p>
+    <a class="btn btn--primary" href="#zayavka" data-lead-open data-service="{{ fieldService.data.title if fieldService else 'Выезд мастера' }}">Вызвать мастера</a>
+  </div>
+</section>
+
+{%- if homeProducts.length %}
+<section class="section" id="zapchasti" aria-labelledby="zapchasti-title">
+  <div class="container">
+    <div class="section__head">
+      <h2 id="zapchasti-title">Запчасти в наличии</h2>
+      {%- if "/katalog/" | pageExists(collections.all) %}<a class="section__more" href="/katalog/">Весь каталог</a>{% endif %}
     </div>
-    <p><a class="btn btn--ghost" href="/stati/">Все статьи</a></p>
+    <div class="grid-products grid-products--row">
+      {%- asyncEach p in homeProducts %}
+      {%- set pImg = p.data.images | first %}
+      <article class="product-card" data-product-card>
+        <a class="product-card__media" href="{{ p.url }}" tabindex="-1" aria-hidden="true">{% image pImg, p.data.title, "(min-width: 1100px) 128px, (min-width: 769px) 22vw, 45vw" %}</a>
+        <div class="product-card__body">
+          <h3 class="product-card__title"><a href="{{ p.url }}">{{ p.data.title }}</a></h3>
+          <p class="product-card__price">{{ p.data.price | price }}</p>
+          <button class="btn btn--primary btn--sm" type="button" data-add-to-cart data-slug="{{ p.slug }}" data-title="{{ p.data.title }}" data-price="{% if p.data.price is number %}{{ p.data.price }}{% endif %}">{{ icon("cart") }}В корзину</button>
+        </div>
+      </article>
+      {%- endeach %}
+    </div>
   </div>
 </section>
 {%- endif %}
 
-<section class="section section--alt" id="forma">
-  <div class="container">
-    {% set leadForm = { type: "callback", id: "home", title: "Оставьте заявку, перезвоним в рабочее время" } %}
+{%- set latest = collections.articles.slice(0, 3) %}
+{%- if (h.faq and h.faq.length) or latest.length %}
+<div class="section split">
+  <div class="container split__grid">
+    {%- if h.faq and h.faq.length %}
+    <section id="faq" aria-labelledby="faq-title">
+      <h2 id="faq-title">Частые вопросы</h2>
+      <div class="faq">
+        {%- for item in h.faq %}
+        <details>
+          <summary>{{ item.q }}{{ icon("chevron", "faq__chevron") }}</summary>
+          <div class="faq__answer"><p>{{ item.a }}</p></div>
+        </details>
+        {%- endfor %}
+      </div>
+    </section>
+    {%- endif %}
+    {%- if latest.length %}
+    <section id="stati" aria-labelledby="stati-title">
+      <div class="section__head">
+        <h2 id="stati-title">Статьи</h2>
+        {%- if "/stati/" | pageExists(collections.all) %}<a class="section__more" href="/stati/">Все статьи</a>{% endif %}
+      </div>
+      <div class="article-cards">
+        {%- asyncEach a in latest %}
+        <article class="article-card">
+          <span class="article-card__media">{% if a.data.cover %}{% image a.data.cover, a.data.title, "(min-width: 1100px) 190px, (min-width: 769px) 30vw, 100vw" %}{% endif %}</span>
+          <h3 class="article-card__title"><a href="{{ a.url }}">{{ a.data.title }}</a></h3>
+          <span class="btn-round btn-round--sm" aria-hidden="true">{{ icon("arrow") }}</span>
+        </article>
+        {%- endeach %}
+      </div>
+    </section>
+    {%- endif %}
+  </div>
+</div>
+{%- endif %}
+
+<section class="contact-band" id="forma" aria-labelledby="forma-title">
+  <div class="container contact-band__inner">
+    <div class="contact-band__head">
+      <h2 id="forma-title">Обсудим вашу задачу</h2>
+      <a class="contact-band__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+    </div>
+    {% set leadForm = { type: "callback", id: "home", variant: "inline", messageLabel: "Комментарий" } %}
     {% include "partials/lead-form.njk" %}
   </div>
 </section>
