@@ -5,12 +5,19 @@ pagination:
   alias: category
 permalink: "{{ category.url }}"
 ---
-<section class="section">
+{#- Категория каталога. Карточки — ./_product-card.html с заголовком H2: над ними только H1. -#}
+<section class="page-head">
   <div class="container">
-    <h1>{{ category.data.title }}</h1>
+    <h1>{{ category.data.title }} для техники John Deere</h1>
     {%- if category.data.description %}<p class="lead">{{ category.data.description }}</p>{% endif %}
+  </div>
+</section>
+
+<section class="section section--tight">
+  <div class="container">
     {%- if categoryProducts.length %}
-    <div class="grid">
+    {%- set cardHeading = "h2" %}
+    <div class="grid-products">
       {#- asyncEach: в карточке асинхронный шорткод image, обычный for теряет его вывод. #}
       {%- asyncEach product in categoryProducts %}
       {% include "./_product-card.html" %}
@@ -18,10 +25,25 @@ permalink: "{{ category.url }}"
     </div>
     {%- else %}
     <h2>Товары скоро появятся</h2>
-    <p class="lead">В этой категории пока нет позиций. Напишите, что нужно, и мы подберём запчасть.</p>
+    <p class="lead">В этой категории пока нет позиций. Напишите, какая деталь нужна, подберём по модели.</p>
     {% set leadForm = { type: "callback", id: "category", service: "Каталог запчастей", message: "Нужна запчасть из категории «" + category.data.title + "»: ", title: "Спросить менеджера" } %}
     {% include "partials/lead-form.njk" %}
     {%- endif %}
-    <p><a href="/katalog/">Весь каталог</a></p>
   </div>
 </section>
+
+{%- set others = [] %}
+{%- for c in collections.categories %}{% if c.slug != category.slug %}{% set others = (others.push(c), others) %}{% endif %}{% endfor %}
+{%- if others.length %}
+<nav class="section section--tight" aria-labelledby="drugie-title">
+  <div class="container">
+    <h2 id="drugie-title" class="h-small">Другие категории</h2>
+    <ul class="chip-list" role="list">
+      <li><a class="chip" href="/katalog/">Весь каталог</a></li>
+      {%- for c in others %}
+      <li><a class="chip" href="{{ c.url }}">{{ c.data.title }}</a></li>
+      {%- endfor %}
+    </ul>
+  </div>
+</nav>
+{%- endif %}

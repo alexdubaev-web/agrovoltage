@@ -7,40 +7,50 @@ breadcrumbs:
     url: /
   - name: Контакты
 ---
-<section class="section">
+{#- Контакты: телефон, почта, MAX, адрес, часы, края (из settings), карта по клику, форма. -#}
+{%- from "partials/icon.njk" import icon -%}
+<section class="page-head">
   <div class="container">
     <h1>Контакты</h1>
-    <p class="lead">Позвоните или оставьте заявку. Работаем {{ regionText }}.</p>
-    <div class="grid">
-      <div class="card">
-        <h2>Связаться</h2>
-        <p>Телефон: <a href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a></p>
-        <p>Почта: {% if settings.email | isPlaceholder %}{% set value = settings.email %}{% include "partials/contact-value.njk" %}{% else %}<a href="mailto:{{ settings.email }}">{{ settings.email }}</a>{% endif %}</p>
-        <p>MAX: {% if settings.maxUrl | isPlaceholder %}{% set value = settings.maxUrl %}{% include "partials/contact-value.njk" %}{% else %}<a href="{{ settings.maxUrl }}" rel="noopener">написать в MAX</a>{% endif %}</p>
-      </div>
-      <div class="card">
-        <h2>Адрес и часы работы</h2>
-        <p>Адрес: {% set value = settings.address %}{% include "partials/contact-value.njk" %}</p>
-        <p>Часы работы: {% set value = settings.hours %}{% include "partials/contact-value.njk" %}</p>
-      </div>
-      <div class="card">
-        <h2>Регионы работы</h2>
-        <ul>
-          {%- for name in settings.regions %}
-          <li>{% set found = false %}{% for region in collections.regions %}{% if region.data.title == name %}{% set found = region.url %}{% endif %}{% endfor %}{% if found %}<a href="{{ found }}">{{ name }}</a>{% else %}{{ name }}{% endif %}</li>
-          {%- endfor %}
-        </ul>
-      </div>
-    </div>
+    <p class="lead">Позвоните мастеру или оставьте заявку. Работаем {{ regionText }}.</p>
   </div>
 </section>
 
-<section class="section section--alt" id="karta">
+<section class="section section--tight" aria-label="Как связаться">
+  <div class="container contact-grid">
+    <section class="plane contact-card contact-card--main" aria-labelledby="svyaz-title">
+      <h2 id="svyaz-title">Связаться</h2>
+      <a class="contact-card__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+      <dl class="contact-list">
+        <div><dt>Почта</dt><dd>{% if settings.email | isPlaceholder %}{% set value = settings.email %}{% include "partials/contact-value.njk" %}{% else %}<a href="mailto:{{ settings.email }}">{{ settings.email }}</a>{% endif %}</dd></div>
+        <div><dt>MAX</dt><dd>{% if settings.maxUrl | isPlaceholder %}{% set value = settings.maxUrl %}{% include "partials/contact-value.njk" %}{% else %}<a href="{{ settings.maxUrl }}" rel="noopener">Написать в MAX</a>{% endif %}</dd></div>
+      </dl>
+      <p class="actions"><a class="btn btn--primary" href="#zayavka" data-lead-open>Оставить заявку</a></p>
+    </section>
+    <section class="plane contact-card" aria-labelledby="adres-title">
+      <h2 id="adres-title">Адрес и часы работы</h2>
+      <dl class="contact-list">
+        <div><dt>Адрес</dt><dd>{% set value = settings.address %}{% include "partials/contact-value.njk" %}</dd></div>
+        <div><dt>Часы работы</dt><dd>{% set value = settings.hours %}{% include "partials/contact-value.njk" %}</dd></div>
+      </dl>
+    </section>
+    <section class="plane contact-card" aria-labelledby="regiony-title">
+      <h2 id="regiony-title">Где работаем</h2>
+      <ul class="contact-regions" role="list">
+        {%- for name in settings.regions %}
+        <li>{% set found = false %}{% for region in collections.regions %}{% if region.data.title == name %}{% set found = region.url %}{% endif %}{% endfor %}{% if found %}<a href="{{ found }}">{{ name }}</a>{% else %}{{ name }}{% endif %}</li>
+        {%- endfor %}
+      </ul>
+    </section>
+  </div>
+</section>
+
+<section class="section section--tight" id="karta" aria-labelledby="karta-title">
   <div class="container">
-    <h2>Карта</h2>
+    <h2 id="karta-title">Карта</h2>
     {%- set mapQuery = settings.regions | join(", ") if (settings.address | isPlaceholder) else settings.address %}
     {%- if settings.address | isPlaceholder %}
-    <p class="muted">Точный адрес появится после внесения в настройках. Пока карта показывает регионы работы.</p>
+    <p class="muted">Точный адрес появится после того, как его внесут в настройки. Пока карта показывает края, где работаем.</p>
     {%- endif %}
     <div id="map-box" data-map-src="https://yandex.ru/map-widget/v1/?text={{ mapQuery | urlencode }}">
       <button class="btn btn--ghost" type="button" id="map-load">Показать карту</button>
@@ -65,9 +75,13 @@ breadcrumbs:
   </div>
 </section>
 
-<section class="section">
-  <div class="container">
-    {% set leadForm = { type: "callback", id: "page", title: "Написать нам" } %}
+<section class="contact-band" id="forma" aria-labelledby="forma-title">
+  <div class="container contact-band__inner">
+    <div class="contact-band__head">
+      <h2 id="forma-title">Написать нам</h2>
+      <a class="contact-band__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+    </div>
+    {% set leadForm = { type: "callback", id: "page", variant: "inline", messageLabel: "Что с машиной" } %}
     {% include "partials/lead-form.njk" %}
   </div>
 </section>

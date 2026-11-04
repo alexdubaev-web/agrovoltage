@@ -5,113 +5,153 @@ pagination:
   size: 1
   alias: service
 ---
+{#- Страница услуги, порядок блоков по истории 9: признаки, диагностика, работы, этапы, модели,
+    FAQ, цены с «Записаться», форма. id блоков — контракт tests/pages.test.mjs. -#}
+{%- from "partials/icon.njk" import icon -%}
 {%- set s = service.data -%}
-<article>
-  <section class="section">
-    <div class="container">
-      <h1>{{ s.title }} John Deere {{ regionText }}{% if s.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h1>
-      <p class="lead">{{ s.summary }}</p>
-      <p class="muted">{% if s.priceFrom %}от {{ s.priceFrom | price }}{% else %}Стоимость по запросу{% endif %}</p>
-      <div class="actions">
-        <a class="btn btn--primary" href="#zayavka" data-lead-open data-service="{{ s.title }}" data-message="Нужна услуга: {{ s.title }}">Оставить заявку</a>
-        <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a>
+<article class="service-page">
+  <section class="page-head{% if s.image %} page-head--media{% endif %}">
+    <div class="container page-head__grid">
+      <div class="page-head__text">
+        <h1>{{ s.title }} John Deere</h1>
+        <p class="lead">{{ s.summary }}</p>
+        <p class="page-head__price">
+          <span class="page-head__price-value">{% if s.priceFrom %}от {{ s.priceFrom | price }}{% else %}Цена по запросу{% endif %}</span>
+          <span class="page-head__price-note">точную сумму называем после диагностики</span>
+          {%- if s.demo %} <span class="badge badge--demo">Демо</span>{% endif %}
+        </p>
+        <div class="actions">
+          <a class="btn btn--primary" href="#zayavka" data-lead-open data-service="{{ s.title }}" data-message="Нужна услуга: {{ s.title }}">Записаться</a>
+          <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}Позвонить</a>
+        </div>
       </div>
       {%- if s.image %}
-      <p>{% image s.image, s.title, "(min-width: 960px) 960px, 100vw", true %}</p>
-      {%- endif %}
-      {%- if service.content %}
-      <div class="prose">{{ service.content | safe }}</div>
+      <div class="page-head__media">{% image s.image, s.title, "(min-width: 1024px) 520px, 100vw", true %}</div>
       {%- endif %}
     </div>
   </section>
-  {%- if s.symptoms and s.symptoms.length %}
-  <section class="section section--alt" id="priznaki">
-    <div class="container prose">
-      <h2>Признаки неисправности</h2>
-      <ul>{% for item in s.symptoms %}<li>{{ item }}</li>{% endfor %}</ul>
-    </div>
-  </section>
+
+  {%- if service.content %}
+  <div class="section section--tight">
+    <div class="container prose">{{ service.content | safe }}</div>
+  </div>
   {%- endif %}
-  {%- if s.diagnosticsSteps and s.diagnosticsSteps.length %}
-  <section class="section" id="diagnostika">
-    <div class="container prose">
-      <h2>Что входит в диагностику</h2>
-      <ul>{% for item in s.diagnosticsSteps %}<li>{{ item }}</li>{% endfor %}</ul>
+
+  {%- set hasSymptoms = s.symptoms and s.symptoms.length %}
+  {%- set hasChecks = s.diagnosticsSteps and s.diagnosticsSteps.length %}
+  {%- if hasSymptoms or hasChecks %}
+  <div class="section section--tight">
+    <div class="container pair">
+      {%- if hasSymptoms %}
+      <section class="plane" id="priznaki" aria-labelledby="priznaki-title">
+        <h2 id="priznaki-title">Признаки неисправности</h2>
+        <ul class="mark-list mark-list--fault" role="list">{% for item in s.symptoms %}<li>{{ item }}</li>{% endfor %}</ul>
+      </section>
+      {%- endif %}
+      {%- if hasChecks %}
+      <section class="plane" id="diagnostika" aria-labelledby="diagnostika-title">
+        <h2 id="diagnostika-title">Что проверяем на диагностике</h2>
+        <ul class="mark-list" role="list">{% for item in s.diagnosticsSteps %}<li>{{ icon("check") }}{{ item }}</li>{% endfor %}</ul>
+      </section>
+      {%- endif %}
     </div>
-  </section>
+  </div>
   {%- endif %}
+
   {%- if s.works and s.works.length %}
-  <section class="section section--alt" id="raboty">
-    <div class="container prose">
-      <h2>Выполняем работы</h2>
-      <ul>{% for item in s.works %}<li>{{ item }}</li>{% endfor %}</ul>
-    </div>
-  </section>
-  {%- endif %}
-  {%- if s.stages and s.stages.length %}
-  <section class="section" id="etapy">
-    <div class="container prose">
-      <h2>Как проходит ремонт</h2>
-      <ol>{% for item in s.stages %}<li>{{ item }}</li>{% endfor %}</ol>
-      <p class="muted">Ремонт начинаем только после согласования перечня работ и стоимости.</p>
-    </div>
-  </section>
-  {%- endif %}
-  {%- if models and models.length %}
-  <section class="section section--alt" id="modeli">
+  <section class="section" id="raboty" aria-labelledby="raboty-title">
     <div class="container">
-      <h2>Модели John Deere, с которыми работаем</h2>
-      <div class="grid">
+      <h2 id="raboty-title">Что ремонтируем и меняем</h2>
+      <ul class="mark-list mark-list--cols" role="list">{% for item in s.works %}<li>{{ icon("check") }}{{ item }}</li>{% endfor %}</ul>
+    </div>
+  </section>
+  {%- endif %}
+
+  {%- if s.stages and s.stages.length %}
+  <section class="section section--alt" id="etapy" aria-labelledby="etapy-title">
+    <div class="container">
+      <h2 id="etapy-title">Как проходит ремонт</h2>
+      <ol class="steps steps--on-surface">
+        {%- for item in s.stages %}
+        <li class="steps__item">
+          <span class="steps__num" aria-hidden="true">{{ "0" if loop.index < 10 }}{{ loop.index }}</span>
+          <span class="steps__body"><span class="steps__title">{{ item }}</span></span>
+        </li>
+        {%- endfor %}
+      </ol>
+      <p class="note">Ремонт начинаем только после того, как вы согласовали перечень работ и стоимость.</p>
+    </div>
+  </section>
+  {%- endif %}
+
+  {%- if models and models.length %}
+  <section class="section" id="modeli" aria-labelledby="modeli-title">
+    <div class="container">
+      <h2 id="modeli-title">Модели John Deere, с которыми работаем</h2>
+      <ul class="model-grid" role="list">
         {%- for series in models %}
-        <div class="card">
-          <h3>{{ series.series }}</h3>
-          <p class="muted">{{ series.models | join(", ") }}</p>
-        </div>
+        <li class="model-grid__item">
+          <h3 class="model-grid__title">{{ series.series }}</h3>
+          <p class="model-grid__list">{{ series.models | join(", ") }}</p>
+        </li>
+        {%- endfor %}
+      </ul>
+      <p class="note">Другую модель или марку назовите при звонке: скажем, возьмёмся ли.</p>
+    </div>
+  </section>
+  {%- endif %}
+
+  {%- if s.faq and s.faq.length %}
+  <section class="section" id="faq" aria-labelledby="faq-title">
+    <div class="container aside-layout">
+      <h2 id="faq-title">Частые вопросы</h2>
+      <div class="faq">
+        {%- for item in s.faq %}
+        <details>
+          <summary>{{ item.q }}{{ icon("chevron", "faq__chevron") }}</summary>
+          <div class="faq__answer"><p>{{ item.a }}</p></div>
+        </details>
         {%- endfor %}
       </div>
-      <p class="muted">Другие марки и модели — по запросу.</p>
     </div>
   </section>
   {%- endif %}
-  {%- if s.faq and s.faq.length %}
-  <section class="section" id="faq">
-    <div class="container prose">
-      <h2>Вопросы и ответы</h2>
-      {%- for item in s.faq %}
-      <details>
-        <summary>{{ item.q }}</summary>
-        <p>{{ item.a }}</p>
-      </details>
-      {%- endfor %}
-    </div>
-  </section>
-  {%- endif %}
+
   {%- if s.prices and s.prices.length %}
-  <section class="section section--alt" id="ceny">
+  <section class="section section--alt" id="ceny" aria-labelledby="ceny-title">
     <div class="container">
-      <h2>Цены{% if s.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h2>
-      <p class="muted">Цены ориентировочные, точную сумму называем после диагностики.</p>
+      <div class="section__head">
+        <h2 id="ceny-title">Цены на работы</h2>
+        <p class="section__note">Цены ориентировочные. Точную сумму называем после диагностики, до начала ремонта.</p>
+      </div>
       {%- for group in s.prices %}
-      <h3>{{ group.group }}</h3>
-      <table class="price-table">
-        <thead><tr><th>Работа</th><th>Цена</th><th></th></tr></thead>
-        <tbody>
-          {%- for item in group.items %}
-          <tr>
-            <td data-label="Работа">{{ item.name }}</td>
-            <td data-label="Цена">{{ item.price | price }}</td>
-            <td><a class="btn btn--primary" href="#zayavka" data-lead-open data-service="{{ s.title }}" data-message="{{ s.title }}: {{ item.name }}">Записаться</a></td>
-          </tr>
-          {%- endfor %}
-        </tbody>
-      </table>
+      <div class="price-group">
+        {%- if s.prices.length > 1 or group.group %}<h3 class="price-group__title">{{ group.group }}</h3>{% endif %}
+        <table class="price-table">
+          <thead><tr><th scope="col">Работа</th><th scope="col">Цена</th><th scope="col"><span class="visually-hidden">Запись</span></th></tr></thead>
+          <tbody>
+            {%- for item in group.items %}
+            <tr>
+              <td data-label="Работа">{{ item.name }}</td>
+              <td data-label="Цена">{{ item.price | price }}</td>
+              <td><a class="btn btn--primary" href="#zayavka" data-lead-open data-service="{{ s.title }}" data-message="{{ s.title }}: {{ item.name }}">Записаться</a></td>
+            </tr>
+            {%- endfor %}
+          </tbody>
+        </table>
+      </div>
       {%- endfor %}
     </div>
   </section>
   {%- endif %}
-  <section class="section" id="zayavka-uslugi">
-    <div class="container">
-      {% set leadForm = { type: "service", id: "service", service: s.title, title: "Записаться на услугу", message: "Нужна услуга: " + s.title, submit: "Записаться" } %}
+
+  <section class="contact-band" id="zayavka-uslugi" aria-labelledby="zayavka-uslugi-title">
+    <div class="container contact-band__inner">
+      <div class="contact-band__head">
+        <h2 id="zayavka-uslugi-title">Записаться на услугу</h2>
+        <a class="contact-band__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+      </div>
+      {% set leadForm = { type: "service", id: "service", service: s.title, message: "Нужна услуга: " + s.title, submit: "Записаться", variant: "inline", messageLabel: "Модель и что случилось" } %}
       {% include "partials/lead-form.njk" %}
     </div>
   </section>

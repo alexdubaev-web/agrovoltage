@@ -1,17 +1,18 @@
 import { serviceLd, faqLd } from "../../lib/seo.js";
-import { regionsIn } from "./region-text.js";
 
+// Края в H1 и title услуги не называются (история 17): они остаются в JSON-LD (areaServed).
 export default {
   eleventyComputed: {
     permalink: (data) => data.service.url,
-    // «в Ставропольском и Краснодарском крае» — из settings.regions.
-    regionText: (data) => regionsIn(data.settings?.regions),
-    title: (data) => `${data.service.data.title} John Deere ${regionsIn(data.settings?.regions)}`.trim(),
-    seo: (data) => ({
-      title: `${data.service.data.title} John Deere ${regionsIn(data.settings?.regions)}`.trim(),
-      ...(data.service.data.seo || {}),
-      ogImage: data.service.data.seo?.ogImage || data.service.data.image || "",
-    }),
+    title: (data) => `${data.service.data.title} John Deere`,
+    seo: (data) => {
+      const seo = data.service.data.seo || {};
+      return {
+        ...seo,
+        title: seo.title || `${data.service.data.title} John Deere: цены и сроки`,
+        ogImage: seo.ogImage || data.service.data.image || "",
+      };
+    },
     lastmod: (data) => data.service.date,
     sitemapImages: (data) => [data.service.data.image].filter(Boolean),
     breadcrumbs: (data) => [

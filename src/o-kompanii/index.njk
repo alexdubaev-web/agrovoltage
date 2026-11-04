@@ -1,26 +1,31 @@
 ---
 layout: layouts/base.njk
 ---
+{#- Страница из src/content/pages/about.md: заголовок, лид, текст, заявка. -#}
+{%- from "partials/icon.njk" import icon -%}
 {%- set doc = collections.pages | findBySlug("about") %}
-<article class="section">
-  <div class="container">
-    <h1>{{ doc.data.title }}</h1>
-    {%- if doc.data.lead %}
-    <p class="lead">{{ doc.data.lead }}</p>
-    {%- endif %}
-    <div class="prose">
+<article>
+  <section class="page-head">
+    <div class="container">
+      <h1>{{ doc.data.title }}</h1>
+      {%- if doc.data.lead %}
+      <p class="lead">{{ doc.data.lead }}</p>
+      {%- endif %}
+    </div>
+  </section>
+  <div class="section section--tight">
+    <div class="container prose doc-body">
       {{ doc.content | safe }}
     </div>
-    {%- if "about" == "delivery" or "about" == "about" %}
-    <p class="actions"><a class="btn btn--primary" href="#zayavka" data-lead-open>Оставить заявку</a> <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a></p>
-    {%- endif %}
   </div>
 </article>
-{%- if "about" == "delivery" or "about" == "about" %}
-<section class="section section--alt">
-  <div class="container">
-    {% set leadForm = { type: "callback", id: "page", title: "Задать вопрос" } %}
+<section class="contact-band" id="forma" aria-labelledby="forma-title">
+  <div class="container contact-band__inner">
+    <div class="contact-band__head">
+      <h2 id="forma-title">Расскажите, что с машиной</h2>
+      <a class="contact-band__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+    </div>
+    {% set leadForm = { type: "callback", id: "page", variant: "inline", messageLabel: "Модель и неисправность" } %}
     {% include "partials/lead-form.njk" %}
   </div>
 </section>
-{%- endif %}

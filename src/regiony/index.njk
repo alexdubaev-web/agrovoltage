@@ -1,28 +1,40 @@
 ---
 layout: layouts/base.njk
 permalink: /regiony/
-title: Регионы работы
+title: Где работаем
 ---
-<section class="section">
+{#- Края называются только здесь, на страницах краёв, /kontakty/ и /dostavka/ (история 17). -#}
+{%- from "partials/icon.njk" import icon -%}
+<section class="page-head">
   <div class="container">
-    <h1>Регионы работы</h1>
-    <p class="lead">Диагностика и ремонт электрики, электрооборудования и кондиционеров сельхозтехники John Deere. Выберите регион, чтобы посмотреть населённые пункты, услуги и ответы на вопросы.</p>
-    {%- if collections.regions.length %}
-    <div class="grid">
-      {%- for region in collections.regions %}
-      <article class="card">
-        <h2><a href="{{ region.url }}">{{ region.data.title }}</a></h2>
-        {%- if region.data.lead %}<p class="muted">{{ region.data.lead }}</p>{% endif %}
-        <p><a href="{{ region.url }}">Подробнее о регионе</a></p>
-      </article>
-      {%- endfor %}
-    </div>
-    {%- endif %}
+    <h1>Где работаем</h1>
+    <p class="lead">Чиним электрику, электрооборудование и кондиционеры техники John Deere в этих краях. На странице края — населённые пункты, услуги и ответы на вопросы.</p>
   </div>
 </section>
-<section class="section section--alt">
+
+{%- if collections.regions.length %}
+<section class="section section--tight" aria-label="Края">
   <div class="container">
-    {% set leadForm = { type: "callback", id: "regions", title: "Оставить заявку", message: "" } %}
+    <ul class="region-grid" role="list">
+      {%- for region in collections.regions %}
+      <li class="region-card">
+        <h2 class="region-card__title"><a href="{{ region.url }}">{{ region.data.title }}</a></h2>
+        {%- if region.data.lead %}<p class="region-card__lead">{{ region.data.lead }}</p>{% endif %}
+        <span class="btn-round" aria-hidden="true">{{ icon("arrow") }}</span>
+      </li>
+      {%- endfor %}
+    </ul>
+  </div>
+</section>
+{%- endif %}
+
+<section class="contact-band" id="forma" aria-labelledby="forma-title">
+  <div class="container contact-band__inner">
+    <div class="contact-band__head">
+      <h2 id="forma-title">Нет вашего района?</h2>
+      <a class="contact-band__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+    </div>
+    {% set leadForm = { type: "callback", id: "regions", variant: "inline", messageLabel: "Район и что с машиной" } %}
     {% include "partials/lead-form.njk" %}
   </div>
 </section>

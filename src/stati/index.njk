@@ -6,26 +6,36 @@ pagination:
   alias: articlesPage
   generatePageOnEmptyData: true
 ---
-<section class="section">
+{#- Список статей, 12 на страницу. -#}
+{%- from "partials/icon.njk" import icon -%}
+<section class="page-head">
   <div class="container">
-    <h1>Статьи об электрике и ремонте сельхозтехники</h1>
-    <p class="lead">Советы по диагностике, ремонту электрики, проводки и кондиционеров техники John Deere.</p>
+    <h1>Статьи об электрике сельхозтехники{% if pagination.pageNumber > 0 %}, страница {{ pagination.pageNumber + 1 }}{% endif %}</h1>
+    <p class="lead">Разбираем неисправности электрики, проводки и кондиционеров John Deere: как проявляются, что проверить самому и когда звать мастера.</p>
+  </div>
+</section>
+
+<section class="section section--tight" aria-label="Список статей">
+  <div class="container">
     {%- if articlesPage.length %}
-    <div class="grid">
-      {%- for item in articlesPage %}
-      <article class="card">
-        {%- if item.data.cover %}{% image item.data.cover, item.data.title, "(min-width: 960px) 300px, 100vw" %}{% endif %}
-        <p class="muted"><time datetime="{{ item.data.date }}">{{ item.data.date | dateRu }}</time>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</p>
-        <h2><a href="{{ item.url }}">{{ item.data.title }}</a></h2>
-        <p>{{ item.data.excerpt }}</p>
-      </article>
-      {%- endfor %}
-    </div>
+    <ul class="post-grid" role="list">
+      {%- asyncEach item in articlesPage %}
+      <li class="post-card">
+        <span class="post-card__media">{% if item.data.cover %}{% image item.data.cover, item.data.title, "(min-width: 1100px) 380px, (min-width: 769px) 45vw, 100vw" %}{% endif %}</span>
+        <span class="post-card__body">
+          <span class="post-card__meta"><time datetime="{{ item.data.date }}">{{ item.data.date | dateRu }}</time>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</span>
+          <h2 class="post-card__title"><a href="{{ item.url }}">{{ item.data.title }}</a></h2>
+          <span class="post-card__excerpt">{{ item.data.excerpt }}</span>
+        </span>
+        <span class="btn-round btn-round--sm" aria-hidden="true">{{ icon("arrow") }}</span>
+      </li>
+      {%- endeach %}
+    </ul>
     {%- else %}
-    <p>Статьи скоро появятся.</p>
+    <p class="plane">Статей пока нет. Если есть вопрос по электрике машины, позвоните: <a href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a>.</p>
     {%- endif %}
     {%- if pagination.pages.length > 1 %}
-    <nav class="actions" aria-label="Страницы списка">
+    <nav class="pager" aria-label="Страницы списка">
       {%- if pagination.href.previous %}<a class="btn btn--ghost" rel="prev" href="{{ pagination.href.previous }}">Назад</a>{% endif %}
       <span class="muted">Страница {{ pagination.pageNumber + 1 }} из {{ pagination.pages.length }}</span>
       {%- if pagination.href.next %}<a class="btn btn--ghost" rel="next" href="{{ pagination.href.next }}">Дальше</a>{% endif %}
@@ -33,9 +43,14 @@ pagination:
     {%- endif %}
   </div>
 </section>
-<section class="section section--alt">
-  <div class="container">
-    {% set leadForm = { type: "callback", id: "page", title: "Остались вопросы? Оставьте заявку" } %}
+
+<section class="contact-band" id="forma" aria-labelledby="forma-title">
+  <div class="container contact-band__inner">
+    <div class="contact-band__head">
+      <h2 id="forma-title">Не нашли ответ?</h2>
+      <a class="contact-band__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+    </div>
+    {% set leadForm = { type: "callback", id: "page", variant: "inline", messageLabel: "Ваш вопрос" } %}
     {% include "partials/lead-form.njk" %}
   </div>
 </section>

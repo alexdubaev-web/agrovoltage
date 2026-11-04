@@ -31,7 +31,9 @@ describe("страницы услуг", () => {
       const doc = page(`/uslugi/${slug}`);
       const h1s = doc.querySelectorAll("h1");
       assert.equal(h1s.length, 1);
-      assert.match(text(h1s[0]), /John Deere в Ставропольском и Краснодарском крае/);
+      // История 17: в H1 услуги главный запрос с John Deere, края не называются.
+      assert.match(text(h1s[0]), /John Deere$/);
+      for (const r of SETTINGS.regions) assert.ok(!text(h1s[0]).includes(r.split(" ")[0].slice(0, -2)), `край в H1: ${text(h1s[0])}`);
 
       const crumbs = [...doc.querySelectorAll(".breadcrumbs li")].map(text);
       assert.deepEqual(crumbs.slice(0, 2), ["Главная", "Услуги"]);
@@ -45,7 +47,7 @@ describe("страницы услуг", () => {
       assert.match(text(doc.getElementById("modeli")), /6R 130/);
       assert.match(text(doc.getElementById("modeli")), /S660/);
 
-      const title = text(h1s[0]).split(" John Deere")[0].replace(/\s*Демо$/, "");
+      const title = text(h1s[0]).split(" John Deere")[0];
       const buttons = [...doc.querySelectorAll("#ceny a[data-lead-open]")];
       assert.ok(buttons.length >= 3);
       for (const b of buttons) {
@@ -73,12 +75,18 @@ describe("страницы услуг", () => {
 });
 
 describe("/uslugi/", () => {
-  test("группы, цена «от» или «по запросу», ItemList", () => {
+  test("строки услуг по группам как на главной, цена «от» или «по запросу», ItemList", () => {
     const doc = page("/uslugi");
-    const groups = [...doc.querySelectorAll("section[id] > .container > h2")].map(text);
-    assert.deepEqual(groups, ["Диагностика", "Электрика и проводка", "Электрооборудование", "Кондиционеры", "Выезд"]);
-    assert.equal(doc.querySelectorAll("article.card").length, 8);
-    const prices = [...doc.querySelectorAll("article.card strong")].map(text);
+    const groups = [...doc.querySelectorAll(".service-group > h2.service-group__title")].map(text);
+    assert.deepEqual(groups, ["Электрика", "Электрооборудование", "Климат"]);
+    const rows = doc.querySelectorAll(".service-group .service-row");
+    assert.equal(rows.length, 8);
+    for (const row of rows) assert.match(row.querySelector(".service-row__link").getAttribute("href"), /^\/uslugi\/[a-z-]+\/$/);
+    assert.deepEqual(
+      [...doc.querySelectorAll("#climate .service-row__link")].map((a) => a.getAttribute("href")).sort(),
+      ["/uslugi/diagnostika-i-remont-kondicionerov/", "/uslugi/zapravka-kondicionera/"],
+    );
+    const prices = [...doc.querySelectorAll(".service-row__price")].map(text);
     assert.ok(prices.some((p) => /^от 2.?500 ₽$/.test(p)), prices.join("|"));
     assert.ok(prices.includes("по запросу"));
     assert.ok(ldTypes(doc).includes("ItemList"));
@@ -111,7 +119,7 @@ describe("регионы", () => {
     const slugs = files.map((f) => f.replace(/\.md$/, ""));
     assert.ok(fs.existsSync(path.join(DIST, "regiony", "index.html")), "/regiony/ собрана");
     const doc = page("/regiony");
-    const links = [...doc.querySelectorAll("main .card a[href^='/regiony/']")].map((a) => a.getAttribute("href"));
+    const links = [...doc.querySelectorAll("main .region-card a[href^='/regiony/']")].map((a) => a.getAttribute("href"));
     assert.deepEqual([...new Set(links)].sort(), slugs.map((s) => `/regiony/${s}/`).sort());
     const crumbs = [...doc.querySelectorAll(".breadcrumbs li")].map(text);
     assert.deepEqual(crumbs, ["Главная", "Регионы"]);
@@ -131,7 +139,7 @@ describe("регионы", () => {
       assert.ok(text(doc.querySelector("h1")).includes(name));
       const places = [...doc.querySelectorAll("li")].map(text).filter((t) => t.includes("[уточнить]"));
       assert.ok(places.length >= 3);
-      assert.equal(doc.querySelectorAll("section .card a[href^='/uslugi/']").length, 8);
+      assert.equal(doc.querySelectorAll("#uslugi .service-row__link[href^='/uslugi/']").length, 8);
       assert.ok(doc.querySelector("#faq details"));
       assert.ok(doc.querySelector("form[data-lead-form]#lead-region"));
       assert.ok(ldTypes(doc).includes("FAQPage"));
@@ -142,8 +150,9 @@ describe("регионы", () => {
 describe("статьи", () => {
   test("/stati/: три статьи с бейджем «Демо», без пагинации при ≤ 12", () => {
     const doc = page("/stati");
-    assert.equal(doc.querySelectorAll("article.card").length, 3);
-    assert.equal(doc.querySelectorAll("article.card .badge--demo").length, 3);
+    assert.equal(doc.querySelectorAll(".post-card").length, 3);
+    assert.equal(doc.querySelectorAll(".post-card .badge--demo").length, 3);
+    for (const card of doc.querySelectorAll(".post-card")) assert.match(card.querySelector("h2 a").getAttribute("href"), /^\/stati\/[a-z-]+\/$/);
     assert.equal(doc.querySelector('nav[aria-label="Страницы списка"]'), null);
     assert.ok(ldTypes(doc).includes("ItemList"));
   });
@@ -151,7 +160,7 @@ describe("статьи", () => {
   test("/stati/<slug>/: Article JSON-LD, связанные услуги, форма", () => {
     const doc = page("/stati/pochemu-ne-holodit-kondicioner");
     assert.ok(ldTypes(doc).includes("Article"));
-    const related = [...doc.querySelectorAll("section.section--alt h3 a")].map((a) => a.getAttribute("href"));
+    const related = [...doc.querySelectorAll("section.section--alt .service-row__link")].map((a) => a.getAttribute("href"));
     assert.deepEqual(related, ["/uslugi/diagnostika-i-remont-kondicionerov/", "/uslugi/zapravka-kondicionera/"]);
     assert.match(text(doc.querySelector("section.section--alt h2")), /Связанные услуги/);
     assert.ok(doc.querySelector("form#lead-article"));
@@ -232,19 +241,22 @@ describe("демо-флаг и пагинация (отдельная сборк
     const off = page("/uslugi/diagnostika-elektriki", out);
     assert.equal(off.querySelector(".badge--demo"), null);
     const offArticle = page("/stati/provodka-i-grizuny", out);
-    assert.equal(offArticle.querySelector(".prose .badge--demo"), null);
-    assert.ok(page("/stati/pochemu-ne-holodit-kondicioner", out).querySelector(".prose .badge--demo"));
+    assert.equal(offArticle.querySelector(".post .badge--demo"), null);
+    assert.ok(page("/stati/pochemu-ne-holodit-kondicioner", out).querySelector(".post .badge--demo"));
     const list = page("/uslugi", out);
-    const card = [...list.querySelectorAll("article.card")].find((c) => c.querySelector('a[href="/uslugi/diagnostika-elektriki/"]'));
+    const card = [...list.querySelectorAll(".service-row")].find((c) => c.querySelector('a[href="/uslugi/diagnostika-elektriki/"]'));
+    assert.ok(card, "строка услуги на /uslugi/");
+    const demoRow = [...list.querySelectorAll(".service-row")].find((c) => c.querySelector('a[href="/uslugi/remont-elektriki/"]'));
+    assert.equal(text(demoRow.querySelector(".badge--demo")), "Демо");
     assert.equal(card.querySelector(".badge--demo"), null);
   });
 
   test("/stati/: 12 на страницу, вторая страница и ссылки между ними", () => {
     const first = page("/stati", out);
-    assert.equal(first.querySelectorAll("article.card").length, 12);
+    assert.equal(first.querySelectorAll(".post-card").length, 12);
     assert.equal(first.querySelector('a[rel="next"]').getAttribute("href"), "/stati/page/2/");
     const second = page("/stati/page/2", out);
-    assert.equal(second.querySelectorAll("article.card").length, 3);
+    assert.equal(second.querySelectorAll(".post-card").length, 3);
     assert.equal(second.querySelector('a[rel="prev"]').getAttribute("href"), "/stati/");
   });
 });
@@ -296,14 +308,18 @@ describe("регионы из настроек (сборка с подменён
     assert.deepEqual(hits, []);
   });
 
-  test("новые регионы на страницах услуг, /uslugi/ и /kontakty/", () => {
-    const svc = page("/uslugi/diagnostika-elektriki", out);
-    assert.match(text(svc.querySelector("h1")), /John Deere в Ростовской и Волгоградской области/);
-    for (const url of ["/uslugi", "/kontakty"]) {
+  // История 17: края видны на /kontakty/ и /regiony/, на услугах их нет ни в H1, ни в тексте шаблона.
+  test("новые регионы на /kontakty/ и /regiony/, на услугах и /uslugi/ их нет", () => {
+    for (const url of ["/kontakty", "/regiony"]) {
       const doc = page(url, out);
       const all = text(doc.querySelector("main")) + " " + doc.querySelector('meta[name="description"]').getAttribute("content");
       assert.match(all, /Ростовск/, url);
       assert.match(all, /Волгоградск/, url);
+    }
+    for (const url of ["/uslugi", "/uslugi/diagnostika-elektriki"]) {
+      const doc = page(url, out);
+      const all = text(doc.querySelector("main")) + " " + doc.title;
+      assert.doesNotMatch(all, /Ростовск|Волгоградск/, url);
     }
   });
 });
@@ -323,5 +339,25 @@ describe("нет неподтверждённых утверждений о ма
         if (/выезж|выезд|привез|приним.*техник/i.test(t)) assert.match(t, /\[уточнить/, t);
       }
     }
+  });
+});
+
+// История 17 (R11): края называются только на /regiony/ и страницах краёв, /kontakty/ и /dostavka/.
+// Остальные страницы — ни в видимом тексте, ни в title. В JSON-LD (areaServed) края остаются.
+describe("края только на своих страницах", () => {
+  test("на остальных страницах нет названий краёв в тексте и title", () => {
+    const stems = SETTINGS.regions.map((r) => r.split(" ")[0].slice(0, -2));
+    const re = new RegExp(stems.join("|"), "i");
+    const allowed = (rel) => /^(regiony|kontakty|dostavka)([\\/]|$)/.test(rel);
+    const hits = [];
+    for (const rel of fs.readdirSync(DIST, { recursive: true })) {
+      if (!rel.endsWith(".html") || rel.startsWith("admin") || allowed(rel)) continue;
+      const doc = dom(path.join(DIST, rel));
+      doc.querySelectorAll("script, template").forEach((el) => el.remove());
+      const visible = text(doc.body) + " " + doc.title;
+      const m = visible.match(re);
+      if (m) hits.push(`${rel}: …${visible.slice(Math.max(0, m.index - 40), m.index + 30)}…`);
+    }
+    assert.deepEqual(hits, []);
   });
 });

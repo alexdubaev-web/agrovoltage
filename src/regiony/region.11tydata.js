@@ -5,11 +5,15 @@ export default {
   eleventyComputed: {
     permalink: (data) => data.region.url,
     title: (data) => data.region.data.title,
-    seo: (data) => ({
-      title: `Ремонт электрики John Deere: ${data.region.data.title}`,
-      description: data.region.data.lead,
-      ...(data.region.data.seo || {}),
-    }),
+    // Fallback title не совпадает с H1 («Ремонт электрики John Deere: <край>»).
+    seo: (data) => {
+      const seo = data.region.data.seo || {};
+      return {
+        ...seo,
+        title: seo.title || `Электрика и кондиционеры John Deere: ${data.region.data.title}`,
+        description: seo.description || data.region.data.lead,
+      };
+    },
     lastmod: (data) => data.region.date,
     breadcrumbs: (data) => [
       { name: "Главная", url: "/" },

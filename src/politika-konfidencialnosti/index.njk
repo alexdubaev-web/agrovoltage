@@ -1,26 +1,22 @@
 ---
 layout: layouts/base.njk
 ---
+{#- Документ из src/content/pages/privacy.md. -#}
 {%- set doc = collections.pages | findBySlug("privacy") %}
-<article class="section">
-  <div class="container">
-    <h1>{{ doc.data.title }}</h1>
-    {%- if doc.data.lead %}
-    <p class="lead">{{ doc.data.lead }}</p>
-    {%- endif %}
-    <div class="prose">
-      {{ doc.content | safe }}
+<article>
+  <section class="page-head">
+    <div class="container">
+      <h1>{{ doc.data.title }}</h1>
+      {%- if doc.data.lead %}
+      <p class="lead">{{ doc.data.lead }}</p>
+      {%- endif %}
     </div>
-    {%- if "privacy" == "delivery" or "privacy" == "about" %}
-    <p class="actions"><a class="btn btn--primary" href="#zayavka" data-lead-open>Оставить заявку</a> <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a></p>
-    {%- endif %}
+  </section>
+  <div class="section section--tight">
+    <div class="container">
+      <div class="prose doc-body doc-body--legal plane">
+        {{ doc.content | safe }}
+      </div>
+    </div>
   </div>
 </article>
-{%- if "privacy" == "delivery" or "privacy" == "about" %}
-<section class="section section--alt">
-  <div class="container">
-    {% set leadForm = { type: "callback", id: "page", title: "Задать вопрос" } %}
-    {% include "partials/lead-form.njk" %}
-  </div>
-</section>
-{%- endif %}

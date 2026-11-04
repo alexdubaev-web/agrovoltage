@@ -8,7 +8,7 @@ export default {
     categoryProducts: (data) => inCategory(data),
     title: (data) => data.category.data.title,
     seo: (data) => ({
-      title: data.category.data.seo?.title || `${data.category.data.title} для John Deere`,
+      title: data.category.data.seo?.title || `${data.category.data.title} для John Deere: цены и наличие`,
       description: data.category.data.seo?.description || data.category.data.description || "",
       ogImage: data.category.data.seo?.ogImage || data.category.data.image || undefined,
       noindex: data.category.data.seo?.noindex,

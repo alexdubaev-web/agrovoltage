@@ -7,33 +7,68 @@ breadcrumbs:
     url: /
   - name: Услуги
 ---
-<section class="section">
+{#- Услуги строками по группам, как на главной (макет B). Группы — index.11tydata.js. -#}
+{%- from "partials/icon.njk" import icon -%}
+{%- set home = collections.pages | findBySlug("home") -%}
+<section class="page-head">
   <div class="container">
-    <h1>Услуги по диагностике и ремонту электрики John Deere</h1>
-    <p class="lead">Диагностика неисправностей, ремонт электрики, проводки, электрооборудования и систем кондиционирования сельхозтехники {{ regionText }}.</p>
+    <h1>Диагностика и ремонт электрики John Deere</h1>
+    <p class="lead">Ищем причину неисправности, ремонтируем проводку, генераторы, стартеры, оборудование кабины и кондиционеры. Точную сумму называем после диагностики.</p>
   </div>
 </section>
-{%- for group in serviceGroups %}
-<section class="section{% if loop.index0 % 2 == 0 %} section--alt{% endif %}" id="{{ group.key }}">
+
+<section class="section section--tight" aria-label="Список услуг">
   <div class="container">
-    <h2>{{ group.name }}</h2>
-    <div class="grid">
-      {%- for item in group.items %}
-      <article class="card">
-        {%- if item.data.image %}{% image item.data.image, item.data.title, "(min-width: 960px) 300px, 100vw" %}{% endif %}
-        <h3><a href="{{ item.url }}">{{ item.data.title }}</a>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h3>
-        <p>{{ item.data.summary }}</p>
-        <p><strong>{% if item.data.priceFrom %}от {{ item.data.priceFrom | price }}{% else %}по запросу{% endif %}</strong></p>
-        <a class="btn btn--ghost" href="{{ item.url }}">Подробнее</a>
-      </article>
-      {%- endfor %}
+    <div class="service-list">
+      {%- asyncEach g in serviceGroups %}
+      <div class="service-group" id="{{ g.key }}">
+        <h2 class="service-group__title">{{ icon(g.icon) }}{{ g.name }}</h2>
+        <ul class="service-group__rows" role="list">
+          {%- asyncEach s in g.items %}
+          <li class="service-row">
+            <span class="service-row__media">{% if s.data.image %}{% image s.data.image, s.data.title, "(min-width: 769px) 136px, 112px" %}{% endif %}</span>
+            <span class="service-row__text">
+              <a class="service-row__link" href="{{ s.url }}">{{ s.data.title }}</a>
+              <span class="service-row__summary">{{ s.data.summary }}{% if s.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</span>
+            </span>
+            <span class="service-row__price">{% if s.data.priceFrom %}от {{ s.data.priceFrom | price }}{% else %}по запросу{% endif %}</span>
+            <span class="btn-round" aria-hidden="true">{{ icon("arrow") }}</span>
+          </li>
+          {%- endeach %}
+        </ul>
+      </div>
+      {%- endeach %}
     </div>
   </div>
 </section>
-{%- endfor %}
-<section class="section">
+
+{%- if home and home.data.steps and home.data.steps.length %}
+<section class="section" id="etapy" aria-labelledby="etapy-title">
   <div class="container">
-    {% set leadForm = { type: "callback", id: "page", title: "Не нашли нужную услугу? Опишите задачу" } %}
+    <h2 id="etapy-title">Как проходит ремонт</h2>
+    <ol class="steps">
+      {%- for step in home.data.steps %}
+      {%- set parts = step.split(": ") %}
+      <li class="steps__item">
+        <span class="steps__num" aria-hidden="true">{{ "0" if loop.index < 10 }}{{ loop.index }}</span>
+        <span class="steps__body">
+          <span class="steps__title">{{ parts[0] }}</span>
+          {%- if parts.length > 1 %}<span class="steps__text">{{ parts.slice(1).join(": ") }}</span>{% endif %}
+        </span>
+      </li>
+      {%- endfor %}
+    </ol>
+  </div>
+</section>
+{%- endif %}
+
+<section class="contact-band" id="forma" aria-labelledby="forma-title">
+  <div class="container contact-band__inner">
+    <div class="contact-band__head">
+      <h2 id="forma-title">Не нашли свою неисправность?</h2>
+      <a class="contact-band__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+    </div>
+    {% set leadForm = { type: "callback", id: "page", variant: "inline", messageLabel: "Что с машиной" } %}
     {% include "partials/lead-form.njk" %}
   </div>
 </section>

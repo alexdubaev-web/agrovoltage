@@ -4,18 +4,42 @@ permalink: /404.html
 eleventyExcludeFromCollections: true
 title: Страница не найдена
 seo:
-  title: Страница не найдена
-  description: Такой страницы нет. Перейдите в нужный раздел или оставьте заявку.
+  title: "Страница не найдена: адрес изменился или с опечаткой"
+  description: Такой страницы на сайте нет. Откройте услуги, каталог запчастей или статьи, позвоните мастеру или оставьте заявку на ремонт электрики John Deere.
   noindex: true
 ---
-<section class="section container page-404">
-  <h1>Страница не найдена</h1>
-  <p class="lead">Возможно, адрес изменился или в нём опечатка.</p>
-  <div class="actions">
-    {%- if "/" | pageExists(collections.all) %}
-    <a class="btn btn--primary" href="/">На главную</a>
-    {%- endif %}
-    <a class="btn btn--ghost" href="#zayavka" data-lead-open>Оставить заявку</a>
-    <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ settings.phone }}</a>
+{#- 404: куда идти дальше — разделы строками, телефон и заявка. -#}
+{%- from "partials/icon.njk" import icon -%}
+<section class="page-head page-404">
+  <div class="container">
+    <p class="page-404__code" aria-hidden="true">404</p>
+    <h1>Страница не найдена</h1>
+    <p class="lead">Возможно, адрес изменился или в нём опечатка. Выберите раздел или позвоните.</p>
+    <div class="actions">
+      <a class="btn btn--primary" href="#zayavka" data-lead-open>Оставить заявку</a>
+      <a class="btn btn--ghost" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+    </div>
   </div>
 </section>
+<nav class="section section--tight" aria-labelledby="razdely-title">
+  <div class="container">
+    <h2 id="razdely-title">Разделы сайта</h2>
+    <ul class="link-rows" role="list">
+      {%- for link in [
+        { url: "/", name: "Главная", note: "Подбор причины по симптому" },
+        { url: "/uslugi/", name: "Услуги и цены", note: "Диагностика, проводка, генераторы, кондиционеры" },
+        { url: "/katalog/", name: "Каталог запчастей", note: "Поиск по названию и артикулу" },
+        { url: "/stati/", name: "Статьи", note: "Разборы неисправностей" },
+        { url: "/kontakty/", name: "Контакты", note: "Телефон и форма заявки" }
+      ] %}
+      {%- if link.url | pageExists(collections.all) %}
+      <li class="link-row">
+        <a class="link-row__link" href="{{ link.url }}">{{ link.name }}</a>
+        <span class="link-row__note">{{ link.note }}</span>
+        <span class="btn-round btn-round--sm" aria-hidden="true">{{ icon("arrow") }}</span>
+      </li>
+      {%- endif %}
+      {%- endfor %}
+    </ul>
+  </div>
+</nav>

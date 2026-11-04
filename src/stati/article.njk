@@ -5,40 +5,55 @@ pagination:
   size: 1
   alias: article
 ---
+{#- Статья: колонка текста 72 знака, связанные услуги строками, форма. -#}
+{%- from "partials/icon.njk" import icon -%}
 {%- set a = article.data -%}
-<article>
-  <section class="section">
-    <div class="container prose">
+<article class="post">
+  <div class="page-head">
+    <div class="container post__head">
+      <p class="post__meta"><time datetime="{{ a.date }}">{{ a.date | dateRu }}</time>{% if a.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</p>
       <h1>{{ a.title }}</h1>
-      <p class="muted"><time datetime="{{ a.date }}">{{ a.date | dateRu }}</time>{% if a.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</p>
       <p class="lead">{{ a.excerpt }}</p>
-      {%- if a.cover %}<p>{% image a.cover, a.title, "(min-width: 960px) 720px, 100vw", true %}</p>{% endif %}
+    </div>
+  </div>
+  <div class="section section--tight">
+    <div class="container prose post__body">
+      {%- if a.cover %}<figure class="post__cover">{% image a.cover, a.title, "(min-width: 900px) 760px, 100vw", true %}</figure>{% endif %}
       {{ article.content | safe }}
     </div>
-  </section>
+  </div>
   {%- set related = [] %}
   {%- for slug in a.relatedServices or [] %}
   {%- set found = collections.services | findBySlug(slug) %}
   {%- if found %}{% set related = (related.push(found), related) %}{% endif %}
   {%- endfor %}
   {%- if related | length %}
-  <section class="section section--alt">
+  <section class="section section--alt" aria-labelledby="related-title">
     <div class="container">
-      <h2>Связанные услуги</h2>
-      <div class="grid">
-        {%- for item in related %}
-        <article class="card">
-          <h3><a href="{{ item.url }}">{{ item.data.title }}</a>{% if item.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</h3>
-          <p>{{ item.data.summary }}</p>
-        </article>
-        {%- endfor %}
-      </div>
+      <h2 id="related-title">Связанные услуги</h2>
+      <ul class="service-group__rows service-rows" role="list">
+        {%- asyncEach item in related %}
+        <li class="service-row">
+          <span class="service-row__media">{% if item.data.image %}{% image item.data.image, item.data.title, "(min-width: 769px) 136px, 112px" %}{% endif %}</span>
+          <span class="service-row__text">
+            <a class="service-row__link" href="{{ item.url }}">{{ item.data.title }}</a>
+            <span class="service-row__summary">{{ item.data.summary }}</span>
+          </span>
+          <span class="service-row__price">{% if item.data.priceFrom %}от {{ item.data.priceFrom | price }}{% else %}по запросу{% endif %}</span>
+          <span class="btn-round" aria-hidden="true">{{ icon("arrow") }}</span>
+        </li>
+        {%- endeach %}
+      </ul>
     </div>
   </section>
   {%- endif %}
-  <section class="section">
-    <div class="container">
-      {% set leadForm = { type: "callback", id: "article", title: "Нужна консультация? Оставьте заявку", message: "Вопрос по статье: " + a.title } %}
+  <section class="contact-band" id="forma" aria-labelledby="forma-title">
+    <div class="container contact-band__inner">
+      <div class="contact-band__head">
+        <h2 id="forma-title">Похоже на вашу поломку?</h2>
+        <a class="contact-band__phone" href="{{ settings.phoneHref }}" data-goal="phone">{{ icon("phone") }}{{ settings.phone }}</a>
+      </div>
+      {% set leadForm = { type: "callback", id: "article", variant: "inline", message: "Вопрос по статье: " + a.title, messageLabel: "Что с машиной" } %}
       {% include "partials/lead-form.njk" %}
     </div>
   </section>

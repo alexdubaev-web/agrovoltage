@@ -3,39 +3,52 @@ permalink: /korzina/
 title: Корзина
 sitemap: false
 seo:
-  title: Корзина
-  description: Состав заказа запчастей. Заказ оформляется как заявка, оплата онлайн не требуется.
+  title: Корзина запчастей John Deere, заказ без онлайн-оплаты
+  description: Состав заказа запчастей для техники John Deere. Заказ уходит заявкой, оплата онлайн не нужна, наличие, цену и срок поставки подтвердит менеджер.
   noindex: true
 ---
-<section class="section" data-cart-page>
+{#- Корзина. Строки, итог и форму заказа заполняет cart.js по data-cart-*. -#}
+{%- from "partials/icon.njk" import icon -%}
+<section class="page-head">
   <div class="container">
     <h1>Корзина</h1>
+  </div>
+</section>
 
-    <noscript><p class="lead">Корзине нужен включённый JavaScript. Позвоните нам: <a href="{{ settings.phoneHref }}">{{ settings.phone }}</a>.</p></noscript>
+<section class="section section--tight cart-page" data-cart-page>
+  <div class="container">
+    <noscript><p class="plane">Корзине нужен включённый JavaScript. Позвоните, примем заказ по телефону: <a href="{{ settings.phoneHref }}">{{ settings.phone }}</a>.</p></noscript>
 
-    <div class="cart-empty" data-cart-empty>
-      <p class="lead">Корзина пуста</p>
-      <p><a class="btn btn--primary" href="/katalog/">Перейти в каталог</a></p>
+    <div class="cart-empty plane" data-cart-empty>
+      <span class="cart-empty__icon">{{ icon("cart") }}</span>
+      <p class="cart-empty__title">Корзина пуста</p>
+      <p class="muted">Добавьте детали из каталога или позвоните, подберём по модели машины.</p>
+      <p class="actions"><a class="btn btn--primary" href="/katalog/">Перейти в каталог</a></p>
     </div>
 
-    <div class="cart-sent" data-cart-sent hidden role="status">
-      <p class="lead"><strong>Заказ отправлен.</strong> <span data-cart-sent-id></span> Мы свяжемся с вами в рабочее время.</p>
-      <p><a class="btn btn--primary" href="/katalog/">Вернуться в каталог</a></p>
+    <div class="cart-sent plane" data-cart-sent hidden role="status">
+      <span class="cart-empty__icon cart-empty__icon--ok">{{ icon("check") }}</span>
+      <p class="cart-empty__title">Заказ отправлен</p>
+      <p><span data-cart-sent-id></span> Менеджер перезвонит в рабочее время и подтвердит наличие и цену.</p>
+      <p class="actions"><a class="btn btn--primary" href="/katalog/">Вернуться в каталог</a></p>
     </div>
 
-    <div data-cart-content hidden>
-      <ul class="cart-list" data-cart-rows></ul>
-      <p class="cart-stale-note" data-cart-stale-note hidden>Позиции, помеченные «Товар больше не продаётся», не войдут в заказ. Удалите их из корзины.</p>
-      <div class="cart-total">
-        <p class="cart-total__line"><span>Итого</span> <strong data-cart-total>0 ₽</strong></p>
-        <p class="muted" data-cart-note hidden></p>
-        <p class="muted">Оплата онлайн не требуется: менеджер подтвердит наличие, итоговую цену и срок поставки.</p>
+    <div class="cart-layout" data-cart-content hidden>
+      <div class="cart-layout__main">
+        <ul class="cart-list" data-cart-rows></ul>
+        <p class="cart-stale-note" data-cart-stale-note hidden>Позиции с пометкой «Товар больше не продаётся» в заказ не войдут. Удалите их из корзины.</p>
       </div>
-
-      <div class="cart-order" data-cart-order hidden>
-        <h2>Оформить заказ</h2>
-        {% set leadForm = { type: "order", id: "order", service: "Заказ запчастей", title: "Контакты для заказа", messageLabel: "Комментарий к заказу (необязательно)", submit: "Отправить заказ" } %}
-        {% include "partials/lead-form.njk" %}
+      <div class="cart-layout__side plane">
+        <div class="cart-total">
+          <p class="cart-total__line"><span>Итого</span> <strong data-cart-total>0 ₽</strong></p>
+          <p class="muted" data-cart-note hidden></p>
+          <p class="cart-total__hint">Оплата онлайн не нужна. Менеджер подтвердит наличие, итоговую цену и срок поставки.</p>
+        </div>
+        <div class="cart-order" data-cart-order hidden>
+          <h2>Оформить заказ</h2>
+          {% set leadForm = { type: "order", id: "order", service: "Заказ запчастей", messageLabel: "Комментарий к заказу (необязательно)", submit: "Отправить заказ" } %}
+          {% include "partials/lead-form.njk" %}
+        </div>
       </div>
     </div>
   </div>

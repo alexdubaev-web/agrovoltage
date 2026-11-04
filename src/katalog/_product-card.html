@@ -1,12 +1,18 @@
-{#- Карточка товара в списке. Вход: product (элемент коллекции products). Файл .html: Eleventy не собирает его как страницу. -#}
+{#- Карточка товара в списке. Вход: product (элемент коллекции products), cardHeading — уровень
+    заголовка карточки ("h2" в категории, где над карточками только H1; по умолчанию "h3").
+    Файл .html: Eleventy не собирает его как страницу. -#}
+{%- from "partials/icon.njk" import icon -%}
 {%- set pImg = product.data.images | first -%}
-<article class="card product-card" data-product-card>
+{%- set hTag = cardHeading or "h3" -%}
+<article class="product-card" data-product-card>
   <a class="product-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
-    {%- if pImg %}{% image pImg, product.data.title, "(min-width: 900px) 280px, 50vw" %}{% else %}<span class="product-ph" aria-hidden="true"></span>{% endif -%}
+    {%- if pImg %}{% image pImg, product.data.title, "(min-width: 1100px) 280px, (min-width: 769px) 30vw, 50vw" %}{% else %}<span class="product-ph" aria-hidden="true"></span>{% endif -%}
   </a>
-  <h3><a href="{{ product.url }}">{{ product.data.title }}</a></h3>
-  <p class="muted">Арт. {{ product.data.sku }}</p>
-  <p class="product-card__price">{{ product.data.price | price }}</p>
-  <p class="product-card__stock">{% if product.data.inStock %}В наличии{% else %}Под заказ{% endif %}</p>
-  <button class="btn btn--primary" type="button" data-add-to-cart data-slug="{{ product.slug }}" data-title="{{ product.data.title }}" data-price="{% if product.data.price is number %}{{ product.data.price }}{% endif %}">В корзину</button>
+  <div class="product-card__body">
+    <{{ hTag }} class="product-card__title"><a href="{{ product.url }}">{{ product.data.title }}</a></{{ hTag }}>
+    <p class="product-card__sku">Арт. {{ product.data.sku }}</p>
+    <p class="product-card__price">{{ product.data.price | price }}</p>
+    <p class="product-card__stock{% if product.data.inStock %} is-in{% endif %}">{% if product.data.inStock %}В наличии{% else %}Под заказ{% endif %}</p>
+    <button class="btn btn--primary btn--sm" type="button" data-add-to-cart data-slug="{{ product.slug }}" data-title="{{ product.data.title }}" data-price="{% if product.data.price is number %}{{ product.data.price }}{% endif %}">{{ icon("cart") }}В корзину</button>
+  </div>
 </article>

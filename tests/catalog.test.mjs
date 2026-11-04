@@ -135,8 +135,9 @@ describe("страницы каталога в dist/", () => {
     assert.doesNotMatch(catalog.querySelector("main").textContent, /Скоро появятся/);
     for (const category of new Set(items.map((i) => i.category))) {
       const expected = items.filter((i) => i.category === category);
-      const link = catalog.querySelector(`[data-catalog-browse] .card p a[href="/katalog/${category}/"]`);
-      assert.equal(link.textContent.trim(), `Товаров: ${expected.length}`, category);
+      const tile = catalog.querySelector(`[data-catalog-browse] .cat-card:has(a[href="/katalog/${category}/"])`);
+      assert.ok(tile, `плитка категории ${category}`);
+      assert.equal(tile.querySelector(".cat-card__count").textContent.trim(), `Позиций: ${expected.length}`, category);
       const doc = page(`/katalog/${category}/`);
       const slugs = [...doc.querySelectorAll("main [data-product-card] [data-add-to-cart]")].map((b) => b.dataset.slug);
       assert.deepEqual(slugs.sort(), expected.map((i) => i.slug).sort(), category);
@@ -198,8 +199,8 @@ describe("пустой каталог и пустая категория", () =>
       ].join("\n"),
     });
     const catalog = dom(path.join(out, "katalog", "index.html"));
-    assert.equal(catalog.querySelector('.card p a[href="/katalog/pusto/"]').textContent.trim(), "Скоро появятся");
-    assert.equal(catalog.querySelector('.card p a[href="/katalog/polno/"]').textContent.trim(), "Товаров: 1");
+    assert.equal(catalog.querySelector('.cat-card:has(a[href="/katalog/pusto/"]) .cat-card__count').textContent.trim(), "Скоро появятся");
+    assert.equal(catalog.querySelector('.cat-card:has(a[href="/katalog/polno/"]) .cat-card__count').textContent.trim(), "Позиций: 1");
     assert.equal(catalog.querySelectorAll("main [data-product-card]").length, 1);
     const full = dom(path.join(out, "katalog", "polno", "index.html"));
     assert.equal(full.querySelectorAll("main [data-product-card]").length, 1);
