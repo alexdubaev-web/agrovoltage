@@ -155,6 +155,7 @@ a.btn-round:hover, .service-row:hover .btn-round, .article-card:hover .btn-round
 .service-row__link:hover { color: var(--brand); }
 .service-row__link:focus-visible { outline: none; box-shadow: none; }
 .service-row:has(.service-row__link:focus-visible) { outline: 3px solid var(--live); outline-offset: 2px; border-radius: var(--r-field); }
+.service-row__demo { justify-self: start; }
 .service-row__summary { display: none; font-size: .875rem; color: var(--muted); line-height: 1.45; }
 .service-row__price { grid-area: price; align-self: start; font-weight: 600; white-space: nowrap; color: var(--ink); }
 .service-row .btn-round { grid-area: btn; }
@@ -182,6 +183,9 @@ a.btn-round:hover, .service-row:hover .btn-round, .article-card:hover .btn-round
   .steps__title { justify-self: start; padding-right: 12px; background: var(--bg); }
   .steps__body { padding-top: 9px; }
   .steps__text { padding-right: 8px; }
+  /* Больше 4 этапов — по 3 в ряд, иначе заголовки рвутся на 3+ строки. */
+  .steps:has(> .steps__item:nth-child(5)) { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-flow: row; row-gap: 32px; }
+  .steps:has(> .steps__item:nth-child(5)) > .steps__item:nth-child(3n)::after { display: none; }
 }
 
 /* .faq — вопросы и ответы на <details>. */
@@ -247,6 +251,8 @@ details > :not(summary) { margin: 0; padding: 0 16px 16px; color: var(--ink); }
 .product-card__price { font: 600 var(--step-1)/1.3 var(--font-text); color: var(--ink); }
 .product-card__stock { font-size: .875rem; color: var(--muted); }
 .product-card .btn { margin-top: auto; }
+/* Строка «Запчасти» на главной: та же карточка каталога, без артикула и наличия — как в макете. */
+.grid-products--row .product-card__sku, .grid-products--row .product-card__stock { display: none; }
 @media (min-width: 1024px) {
   .grid-products--row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .grid-products--row .product-card { flex-direction: row; align-items: center; gap: 12px; padding: 12px; }
@@ -264,7 +270,8 @@ details > :not(summary) { margin: 0; padding: 0 16px 16px; color: var(--ink); }
 .field__input::placeholder { color: #7A8B80; }
 textarea.field__input { resize: vertical; min-height: 96px; }
 .field__input:hover { border-color: var(--muted); }
-.field__input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px rgba(123, 199, 77, .45); }
+/* Кольцо фокуса — --brand: на белом 5,4:1 (нужно ≥ 3:1). */
+.field__input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand); }
 .field__input[aria-invalid="true"] { border-color: var(--fault); box-shadow: 0 0 0 1px var(--fault); }
 .field__error { margin: 0; color: var(--fault-ink); font-size: .875rem; }
 .field--check { grid-template-columns: auto 1fr; align-items: start; column-gap: 12px; }
@@ -431,7 +438,8 @@ a.symptom .symptom__mark { display: none; }
 .xray__variant img, .xray__variant picture { width: 100%; height: 100%; }
 .xray__variant.is-active, .xray__variant.is-prev, [data-xray-ready] .xray__variant { display: block; }
 .xray__variant.is-active { opacity: 1; z-index: 2; }
-.xray__variant.is-prev { opacity: 1; z-index: 1; transition: none; }
+/* Смена 300 мс: новый проявляется, прежний одновременно гаснет — две цепи разом и потемнение от multiply не держатся. */
+.xray__variant.is-prev { opacity: 0; z-index: 1; }
 @starting-style { .xray__variant.is-active { opacity: 0; } }
 
 .xray__node { position: absolute; z-index: 3; width: 0; height: 0; --lead: 16px; }
@@ -519,6 +527,8 @@ a.symptom .symptom__mark { display: none; }
 .article-card__title a:focus-visible { outline: none; box-shadow: none; }
 .article-card:has(a:focus-visible) { outline: 3px solid var(--live); outline-offset: 2px; }
 .article-card .btn-round { margin-right: 12px; align-self: center; }
+/* «Демо» поверх миниатюры: видна и в строчной раскладке на 375. */
+.article-card__demo { position: absolute; top: 8px; left: 8px; z-index: 1; background: var(--surface); }
 
 .contact-band { padding-block: 40px; background: var(--surface); border-top: 1px solid var(--line); }
 .contact-band__inner { display: grid; gap: 20px; }
@@ -658,6 +668,7 @@ a.symptom .symptom__mark { display: none; }
 .product-card__title a { color: var(--forest); text-decoration: none; }
 .product-card__title a:hover { color: var(--brand); text-decoration: underline; }
 .product-card__sku { font-size: .8125rem; color: var(--muted); }
+.product-card__demo { align-self: flex-start; }
 .product-card__stock.is-in { color: var(--brand-strong); }
 .product-card .btn .icon { width: 18px; height: 18px; }
 .product-card.card { padding: 12px; }

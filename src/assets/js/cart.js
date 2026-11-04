@@ -147,14 +147,16 @@ function handleAddClick(event) {
     price: priceAttr === null || priceAttr === "" ? null : Number(priceAttr),
     qty: qtyInput ? cleanQty(qtyInput.value) : 1,
   });
-  const label = btn.getAttribute("data-label") || btn.textContent;
-  btn.setAttribute("data-label", label);
+  // Исходная разметка кнопки (с иконкой) запоминается один раз: повторное нажатие
+  // во время «Добавлено» не должно затереть её текстом.
+  if (btn._agvHtml === undefined) btn._agvHtml = btn.innerHTML;
+  const label = btn._agvHtml;
   btn.textContent = "Добавлено";
   const status = holder?.querySelector("[data-add-status]");
   if (status) status.textContent = `«${btn.getAttribute("data-title")}» в корзине`;
   clearTimeout(btn._agvTimer);
   btn._agvTimer = setTimeout(() => {
-    btn.textContent = label;
+    btn.innerHTML = label;
     if (status) status.textContent = "";
   }, 1600);
 }

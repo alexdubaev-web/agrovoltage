@@ -130,6 +130,23 @@ describe("cart.js: API", () => {
     win.document.querySelector("[data-add-to-cart]").click();
     assert.deepEqual(cart.getCart().items, [{ slug: "gen", title: "Генератор", price: null, qty: 2 }]);
   });
+
+  test("после «Добавлено» кнопка возвращает прежнюю разметку вместе с иконкой", async (t) => {
+    t.mock.timers.enable({ apis: ["setTimeout"] });
+    const win = setup(`${SHELL.replace("<main></main>", "")}`);
+    const original = '<svg class="icon" aria-hidden="true"><use href="#i-cart"></use></svg>В корзину';
+    win.document.body.insertAdjacentHTML(
+      "beforeend",
+      `<div data-product-card><button data-add-to-cart data-slug="gen" data-title="Генератор" data-price="100">${original}</button></div>`,
+    );
+    await load();
+    const btn = win.document.querySelector("[data-add-to-cart]");
+    btn.click();
+    assert.equal(btn.textContent, "Добавлено");
+    btn.click(); // повторное нажатие, пока висит «Добавлено»
+    t.mock.timers.tick(5000);
+    assert.equal(btn.innerHTML, original);
+  });
 });
 
 describe("страница /korzina/", () => {

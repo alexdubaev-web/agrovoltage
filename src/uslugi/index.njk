@@ -29,7 +29,8 @@ breadcrumbs:
             <span class="service-row__media">{% if s.data.image %}{% image s.data.image, s.data.title, "(min-width: 769px) 136px, 112px" %}{% endif %}</span>
             <span class="service-row__text">
               <a class="service-row__link" href="{{ s.url }}">{{ s.data.title }}</a>
-              <span class="service-row__summary">{{ s.data.summary }}{% if s.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</span>
+              {% if s.data.demo %}<span class="badge badge--demo service-row__demo">Демо</span>{% endif %}
+              <span class="service-row__summary">{{ s.data.summary }}</span>
             </span>
             <span class="service-row__price">{% if s.data.priceFrom %}от {{ s.data.priceFrom | price }}{% else %}по запросу{% endif %}</span>
             <span class="btn-round" aria-hidden="true">{{ icon("arrow") }}</span>

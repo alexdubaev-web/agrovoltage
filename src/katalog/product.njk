@@ -16,7 +16,7 @@ permalink: "{{ product.url }}"
       </div>
       <div class="product__info">
         <h1>{{ product.data.title }}</h1>
-        <p class="product__sku">Артикул: {{ product.data.sku }}{% if product.data.demo %} <span class="badge badge--demo">Тестовый товар</span>{% endif %}</p>
+        <p class="product__sku">Артикул: {{ product.data.sku }}{% if product.data.demo %} <span class="badge badge--demo">Демо</span>{% endif %}</p>
         <div class="product__buy plane">
           <p class="product__price">{{ product.data.price | price }}</p>
           <p class="product__stock">{% if product.data.inStock %}<span class="badge badge--live">{{ icon("check") }}В наличии</span>{% else %}<span class="badge badge--demo">Под заказ</span>{% endif %}</p>

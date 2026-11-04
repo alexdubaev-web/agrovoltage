@@ -8,9 +8,10 @@
 //   [data-xray-card] с [data-xray-hint], [data-xray-service], [data-xray-price], [data-xray-cta].
 // Скрипт превращает ссылки в кнопки с aria-pressed. Неактивные варианты картинки получают
 // возможность загрузиться (data-xray-ready) после первого взаимодействия или в простое.
-// Перекрёстная смена — CSS (opacity 300 мс, без анимации при prefers-reduced-motion).
+// Перекрёстная смена — CSS: прежний вариант (is-prev) гаснет до opacity 0 одновременно с проявлением
+// нового, оба за 300 мс (история 3), без анимации при prefers-reduced-motion.
 
-const FADE_MS = 320;
+const FADE_MS = 300;
 
 export function initXray(win = window) {
   const doc = win.document;
@@ -52,7 +53,7 @@ export function initXray(win = window) {
     root.dataset.active = system;
 
     if (next && next !== prev) {
-      // Прежний вариант остаётся под новым, пока тот проявляется.
+      // Прежний вариант гаснет под новым за те же 300 мс; is-prev держит его видимым до конца перехода.
       win.clearTimeout(fadeTimer);
       for (const v of variants) {
         v.classList.remove("is-prev");

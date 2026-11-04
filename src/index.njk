@@ -80,6 +80,8 @@ bodyClass: page-home
             <span class="service-row__media">{% if s.image %}{% image s.image, s.title, "(min-width: 769px) 136px, 112px" %}{% endif %}</span>
             <span class="service-row__text">
               <a class="service-row__link" href="{{ s.url }}">{{ s.title }}</a>
+              {%- set sDoc = collections.services | findByTitle(s.title) %}
+              {%- if sDoc and sDoc.data.demo %}<span class="badge badge--demo service-row__demo">Демо</span>{% endif %}
               <span class="service-row__summary">{{ s.summary }}</span>
             </span>
             <span class="service-row__price">{{ s.price or "по запросу" }}</span>
@@ -134,16 +136,10 @@ bodyClass: page-home
       {%- if "/katalog/" | pageExists(collections.all) %}<a class="section__more" href="/katalog/">Весь каталог</a>{% endif %}
     </div>
     <div class="grid-products grid-products--row">
-      {%- asyncEach p in homeProducts %}
-      {%- set pImg = p.data.images | first %}
-      <article class="product-card" data-product-card>
-        <a class="product-card__media" href="{{ p.url }}" tabindex="-1" aria-hidden="true">{% image pImg, p.data.title, "(min-width: 1100px) 128px, (min-width: 769px) 22vw, 45vw" %}</a>
-        <div class="product-card__body">
-          <h3 class="product-card__title"><a href="{{ p.url }}">{{ p.data.title }}</a></h3>
-          <p class="product-card__price">{{ p.data.price | price }}</p>
-          <button class="btn btn--primary btn--sm" type="button" data-add-to-cart data-slug="{{ p.slug }}" data-title="{{ p.data.title }}" data-price="{% if p.data.price is number %}{{ p.data.price }}{% endif %}">{{ icon("cart") }}В корзину</button>
-        </div>
-      </article>
+      {#- Карточка каталога; asyncEach — в ней асинхронный шорткод image. #}
+      {%- set cardSizes = "(min-width: 1100px) 128px, (min-width: 769px) 22vw, 45vw" %}
+      {%- asyncEach product in homeProducts %}
+      {% include "./katalog/_product-card.html" %}
       {%- endeach %}
     </div>
   </div>
@@ -176,6 +172,7 @@ bodyClass: page-home
       <div class="article-cards">
         {%- asyncEach a in latest %}
         <article class="article-card">
+          {%- if a.data.demo %}<span class="badge badge--demo article-card__demo">Демо</span>{% endif %}
           <span class="article-card__media">{% if a.data.cover %}{% image a.data.cover, a.data.title, "(min-width: 1100px) 190px, (min-width: 769px) 30vw, 100vw" %}{% endif %}</span>
           <h3 class="article-card__title"><a href="{{ a.url }}">{{ a.data.title }}</a></h3>
           <span class="btn-round btn-round--sm" aria-hidden="true">{{ icon("arrow") }}</span>

@@ -1,14 +1,19 @@
 {#- Карточка товара в списке. Вход: product (элемент коллекции products), cardHeading — уровень
-    заголовка карточки ("h2" в категории, где над карточками только H1; по умолчанию "h3").
+    заголовка карточки ("h2" в категории, где над карточками только H1; по умолчанию "h3"),
+    cardSizes — sizes картинки (на главной карточка уже). В цикле подключать через asyncEach:
+    шорткод image асинхронный, обычный for теряет его вывод.
     Файл .html: Eleventy не собирает его как страницу. -#}
 {%- from "partials/icon.njk" import icon -%}
 {%- set pImg = product.data.images | first -%}
 {%- set hTag = cardHeading or "h3" -%}
 <article class="product-card" data-product-card>
   <a class="product-card__media" href="{{ product.url }}" tabindex="-1" aria-hidden="true">
-    {%- if pImg %}{% image pImg, product.data.title, "(min-width: 1100px) 280px, (min-width: 769px) 30vw, 50vw" %}{% else %}<span class="product-ph" aria-hidden="true"></span>{% endif -%}
+    {%- if pImg %}{% image pImg, product.data.title, cardSizes or "(min-width: 1100px) 280px, (min-width: 769px) 30vw, 50vw" %}{% else %}<span class="product-ph" aria-hidden="true"></span>{% endif -%}
   </a>
   <div class="product-card__body">
+    {%- if product.data.demo %}
+    <span class="badge badge--demo product-card__demo">Демо</span>
+    {%- endif %}
     <{{ hTag }} class="product-card__title"><a href="{{ product.url }}">{{ product.data.title }}</a></{{ hTag }}>
     <p class="product-card__sku">Арт. {{ product.data.sku }}</p>
     <p class="product-card__price">{{ product.data.price | price }}</p>

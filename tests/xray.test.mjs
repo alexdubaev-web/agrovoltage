@@ -126,7 +126,9 @@ describe("главная: рентген трактора", () => {
     const link = doc.querySelector("[data-xray-service]");
     assert.equal(link.getAttribute("href"), `/uslugi/${s.service}/`);
     assert.equal(norm(link.textContent), norm(svc.title));
-    assert.equal(norm(doc.querySelector("[data-xray-price]").textContent), "от 4 000 ₽");
+    // Ожидаемая цена — из priceFrom выбранной услуги в контенте.
+    assert.ok(typeof svc.priceFrom === "number", "у услуги есть priceFrom");
+    assert.equal(norm(doc.querySelector("[data-xray-price]").textContent), norm(`от ${svc.priceFrom.toLocaleString("ru-RU")} ₽`));
     const cta = doc.querySelector("[data-xray-cta]");
     assert.ok(cta.hasAttribute("data-lead-open"));
     assert.equal(cta.getAttribute("href"), "#zayavka");

@@ -251,6 +251,45 @@ describe("демо-флаг и пагинация (отдельная сборк
     assert.equal(card.querySelector(".badge--demo"), null);
   });
 
+  // Метка «Демо» должна быть видна и на 375: не внутри .service-row__summary (там она скрыта на мобильных).
+  const demoOf = (el) => {
+    const b = el.querySelector(".badge--demo");
+    return b && !b.closest(".service-row__summary") ? text(b) : null;
+  };
+  const REGION_PAGES = ["/regiony/stavropolskij-kraj", "/regiony/krasnodarskij-kraj"];
+  test("«Демо» у каждой позиции с demo: true в списках, вне скрытого описания строки", () => {
+    // Основная сборка: все услуги, товары и статьи помечены demo: true.
+    const home = page("/");
+    const lists = [
+      ["главная: услуги", home.querySelectorAll("#uslugi .service-row"), 8],
+      ["главная: запчасти", home.querySelectorAll("#zapchasti [data-product-card]"), 1],
+      ["главная: статьи", home.querySelectorAll("#stati article"), 3],
+      ["каталог", page("/katalog").querySelectorAll("[data-product-card]"), 12],
+      ["/uslugi/", page("/uslugi").querySelectorAll(".service-row"), 8],
+      ...REGION_PAGES.map((u) => [u, page(u).querySelectorAll("#uslugi .service-row"), 8]),
+    ];
+    for (const [name, items, min] of lists) {
+      assert.ok(items.length >= min, `${name}: ${items.length}`);
+      for (const el of items) assert.equal(demoOf(el), "Демо", name);
+    }
+    // Отдельная сборка: у diagnostika-elektriki demo снят — метки нет.
+    const rowOf = (doc, href) => [...doc.querySelectorAll(".service-row")].find((r) => r.querySelector(`a[href="${href}"]`));
+    for (const u of ["/", "/uslugi", ...REGION_PAGES]) {
+      const doc = page(u, out);
+      assert.equal(demoOf(rowOf(doc, "/uslugi/remont-elektriki/")), "Демо", u);
+      assert.equal(rowOf(doc, "/uslugi/diagnostika-elektriki/").querySelector(".badge--demo"), null, u);
+    }
+  });
+
+  test("главная: блок «Запчасти» собран из _product-card.html (артикул и наличие как в каталоге)", () => {
+    const cards = [...page("/").querySelectorAll("#zapchasti [data-product-card]")];
+    assert.ok(cards.length > 0);
+    for (const c of cards) {
+      assert.ok(c.querySelector(".product-card__sku"), "артикул");
+      assert.ok(c.querySelector(".product-card__stock"), "наличие");
+    }
+  });
+
   test("/stati/: 12 на страницу, вторая страница и ссылки между ними", () => {
     const first = page("/stati", out);
     assert.equal(first.querySelectorAll(".post-card").length, 12);
