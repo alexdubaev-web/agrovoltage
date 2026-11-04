@@ -11,9 +11,9 @@ window.STATE =
   "memoryFile": "AGENTS.md",
   "memoryOwner": "autopilot",
   "skillDir": "C:/Users/Alexandr/.claude/skills/autopilot",
-  "baseCommit": null,
+  "baseCommit": "96aae2a",
   "startedAt": "2026-11-03T14:28:04+03:00",
-  "updatedAt": "2026-11-03T14:33:19+03:00",
+  "updatedAt": "2026-11-04T10:14:49+03:00",
   "finishedAt": null,
   "stages": [
     {
@@ -43,12 +43,14 @@ window.STATE =
     },
     {
       "id": "plan",
-      "status": "active",
-      "startedAt": "2026-11-03T14:33:08+03:00"
+      "status": "done",
+      "startedAt": "2026-11-03T14:33:08+03:00",
+      "finishedAt": "2026-11-03T14:33:23+03:00"
     },
     {
       "id": "build",
-      "status": "pending"
+      "status": "active",
+      "startedAt": "2026-11-03T14:33:23+03:00"
     },
     {
       "id": "review",
@@ -60,9 +62,9 @@ window.STATE =
     }
   ],
   "requirements": {
-    "total": 10,
+    "total": 16,
     "done": 0,
-    "inTicket": 10,
+    "inTicket": 16,
     "inSpec": 0,
     "placeholder": 0,
     "deferred": 0,
@@ -70,8 +72,27 @@ window.STATE =
   },
   "tickets": [
     {
+      "id": "00",
+      "title": "Иллюстрации «рентген трактора» через /codex-image",
+      "requirements": [
+        "R08",
+        "R12"
+      ],
+      "blockedBy": [],
+      "wave": 1,
+      "zone": [
+        "src/assets/images/xray/"
+      ],
+      "review": "нет",
+      "model": "оркестратор (скилл /codex-image)",
+      "status": "in-progress",
+      "startedAt": "2026-11-04T10:14:42+03:00",
+      "retries": 0,
+      "repairs": 0
+    },
+    {
       "id": "01",
-      "title": "Дизайн-система, шапка и подвал, главная со схемой трактора",
+      "title": "Дизайн-система B, шапка и подвал, главная с «рентгеном» трактора",
       "requirements": [
         "R01",
         "R02",
@@ -81,30 +102,39 @@ window.STATE =
         "R04.1",
         "R04.2",
         "R06",
-        "R07i"
+        "R07i",
+        "R09",
+        "R10",
+        "R11",
+        "R12",
+        "R13"
       ],
-      "blockedBy": [],
-      "wave": 1,
+      "blockedBy": [
+        "00"
+      ],
+      "wave": 2,
       "zone": [
         "src/assets/css/main.css",
         "src/assets/fonts/",
         "src/_includes/",
         "src/index.njk",
         "src/index.11tydata.js",
-        "src/assets/js/symptoms.js",
+        "src/assets/js/xray.js",
         "src/content/pages/home.md",
         "symptoms",
         "schemas/page-home.schema.json",
         "src/admin/config.yml",
         "eleventy.config.js",
+        "lib/images.js",
         "tests/build.test.mjs",
         "tests/forms.test.mjs",
-        "tests/symptoms.test.mjs",
+        "tests/xray.test.mjs",
         "docs/design-brief.md"
       ],
       "review": "да — фундамент",
       "model": "сильная",
-      "status": "pending",
+      "status": "in-progress",
+      "startedAt": "2026-11-03T14:33:23+03:00",
       "retries": 0,
       "repairs": 0
     },
@@ -117,12 +147,16 @@ window.STATE =
         "G01",
         "G03",
         "R02",
-        "R07i"
+        "R07i",
+        "R09",
+        "R10",
+        "R11",
+        "R13"
       ],
       "blockedBy": [
         "01"
       ],
-      "wave": 2,
+      "wave": 3,
       "zone": [
         "src/uslugi/",
         "src/katalog/",
@@ -153,12 +187,13 @@ window.STATE =
       "title": "Тексты всего сайта и SEO-поля",
       "requirements": [
         "G02",
-        "G03"
+        "G03",
+        "R11"
       ],
       "blockedBy": [
         "01"
       ],
-      "wave": 2,
+      "wave": 3,
       "zone": [
         "src/content/services/",
         "src/content/products/",
@@ -205,15 +240,43 @@ window.STATE =
     "2026-11-03T14:32:27+03:00",
     "2026-11-03T14:33:08+03:00",
     "2026-11-03T14:33:18+03:00",
-    "2026-11-03T14:33:19+03:00"
+    "2026-11-03T14:33:19+03:00",
+    "2026-11-03T14:33:22+03:00",
+    "2026-11-03T14:33:23+03:00",
+    "2026-11-03T14:48:22+03:00",
+    "2026-11-03T15:03:54+03:00",
+    "2026-11-03T15:06:34+03:00",
+    "2026-11-03T15:09:00+03:00",
+    "2026-11-04T10:14:39+03:00",
+    "2026-11-04T10:14:40+03:00",
+    "2026-11-04T10:14:41+03:00",
+    "2026-11-04T10:14:42+03:00",
+    "2026-11-04T10:14:47+03:00",
+    "2026-11-04T10:14:48+03:00",
+    "2026-11-04T10:14:49+03:00"
   ],
-  "rev": 13,
+  "rev": 28,
   "waiting": null,
   "waits": [
     {
       "kind": "briefing",
       "from": "2026-11-03T14:28:37+03:00",
       "to": "2026-11-03T14:31:02+03:00"
+    },
+    {
+      "kind": "stop",
+      "from": "2026-11-03T14:48:22+03:00",
+      "to": "2026-11-03T15:03:54+03:00"
+    },
+    {
+      "kind": "spec",
+      "from": "2026-11-03T15:03:54+03:00",
+      "to": "2026-11-03T15:06:34+03:00"
+    },
+    {
+      "kind": "spec",
+      "from": "2026-11-03T15:09:00+03:00",
+      "to": "2026-11-04T10:14:39+03:00"
     }
   ],
   "log": [
@@ -290,6 +353,93 @@ window.STATE =
       "g": "G3",
       "ok": true,
       "problems": 0
+    },
+    {
+      "t": "2026-11-03T14:33:23+03:00",
+      "k": "stage",
+      "id": "build",
+      "act": "start"
+    },
+    {
+      "t": "2026-11-03T14:33:23+03:00",
+      "k": "ticket",
+      "ids": [
+        "01"
+      ],
+      "act": "start"
+    },
+    {
+      "t": "2026-11-03T14:48:22+03:00",
+      "k": "ask",
+      "kind": "stop",
+      "note": "пользователь остановил сборку на таске 01"
+    },
+    {
+      "t": "2026-11-03T15:03:54+03:00",
+      "k": "answered",
+      "kind": "stop"
+    },
+    {
+      "t": "2026-11-03T15:03:54+03:00",
+      "k": "ask",
+      "kind": "spec",
+      "note": "выбор одного из трёх макетов главной (A фото, B рентген трактора, C ночь)"
+    },
+    {
+      "t": "2026-11-03T15:06:34+03:00",
+      "k": "answered",
+      "kind": "spec"
+    },
+    {
+      "t": "2026-11-03T15:09:00+03:00",
+      "k": "ask",
+      "kind": "spec",
+      "note": "согласование мобильного макета B перед вёрсткой"
+    },
+    {
+      "t": "2026-11-04T10:14:39+03:00",
+      "k": "answered",
+      "kind": "spec"
+    },
+    {
+      "t": "2026-11-04T10:14:40+03:00",
+      "k": "tickets",
+      "n": 4
+    },
+    {
+      "t": "2026-11-04T10:14:41+03:00",
+      "k": "gate",
+      "g": "G3",
+      "ok": false,
+      "problems": 1
+    },
+    {
+      "t": "2026-11-04T10:14:42+03:00",
+      "k": "ticket",
+      "ids": [
+        "00"
+      ],
+      "act": "start"
+    },
+    {
+      "t": "2026-11-04T10:14:47+03:00",
+      "k": "tickets",
+      "n": 4
+    },
+    {
+      "t": "2026-11-04T10:14:48+03:00",
+      "k": "gate",
+      "g": "G3",
+      "ok": true,
+      "problems": 0
+    },
+    {
+      "t": "2026-11-04T10:14:49+03:00",
+      "k": "ticket",
+      "ids": [
+        "00"
+      ],
+      "act": "start"
     }
   ],
   "reqList": [
@@ -342,6 +492,36 @@ window.STATE =
       "id": "G03",
       "text": "«заголовки по всем правилам SEO»",
       "status": "in-ticket"
+    },
+    {
+      "id": "R08",
+      "text": "«почему графику не генерируешь через /codex-image»",
+      "status": "in-ticket"
+    },
+    {
+      "id": "R09",
+      "text": "«сгенерируй сначала макет через /codex-image , покажи мен и если согласую, приступишь к реализации»",
+      "status": "in-ticket"
+    },
+    {
+      "id": "R10",
+      "text": "«может /ui-ux-pro-max тогда используй»",
+      "status": "in-ticket"
+    },
+    {
+      "id": "R11",
+      "text": "«Ставропольский край, Краснодарский край не надо тулить это куда попало, это должно быть ньюансно а не на главной»",
+      "status": "in-ticket"
+    },
+    {
+      "id": "R12",
+      "text": "«схему трактора идея нормальная, реализация через svg гавно»",
+      "status": "in-ticket"
+    },
+    {
+      "id": "R13",
+      "text": "«B — рентген трактора»",
+      "status": "in-ticket"
     }
   ],
   "gates": {
@@ -360,7 +540,7 @@ window.STATE =
     },
     "G3": {
       "ok": true,
-      "at": "2026-11-03T14:33:19+03:00",
+      "at": "2026-11-04T10:14:48+03:00",
       "problems": 0
     }
   },
