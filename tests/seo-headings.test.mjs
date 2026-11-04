@@ -58,6 +58,17 @@ describe("SEO по всему dist/", () => {
     assert.deepEqual(bad, []);
   });
 
+  test("H1 уникален по всему сайту", () => {
+    const bad = [];
+    const seen = new Map();
+    for (const p of pages) {
+      const h1 = text(p.doc.querySelector("h1"));
+      if (seen.has(h1)) bad.push(`${p.url}: H1 «${h1}» повторяет ${seen.get(h1)}`);
+      else seen.set(h1, p.url);
+    }
+    assert.deepEqual(bad, []);
+  });
+
   test("description уникален, 120–160 символов", () => {
     const bad = [];
     const seen = new Map();
