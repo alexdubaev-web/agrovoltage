@@ -103,4 +103,18 @@
 
 ## Что построил тикет 01
 
-_(заполняет оркестратор по отчёту тикета 01)_
+Коммит T01. Описание системы — `docs/design-brief.md`.
+
+- Кнопки: `.btn`, `.btn--primary`, `.btn--ghost`, `.btn--sm`, `.btn--block` (высота 48 px). `.btn-round` (`--sm`) — круглая стрелка; в строках услуг это span, ссылка строки — `__link`.
+- `.section`, `.section--alt`, `.section__head`, `.section__more` (ссылка «Все …»).
+- Услуги: `.service-list > .service-group(__title,__rows) > .service-row(__media,__text,__link,__summary,__price)`.
+- `.steps > .steps__item(__num,__body,__title,__text)` — в линию, на мобильных вертикально. Пункт `steps` в home.md может быть «Заголовок: пояснение».
+- `.faq > details > summary + .faq__answer`.
+- `.price-table` — на ≤ 639 карточками.
+- `.plane` — белая плоскость r24. `.tag`, `.tag--demo` (синонимы `.badge`, `.badge--demo`). `.prose` — 72ch.
+- Товары: `.grid-products` (`--row`) `> .product-card(__media,__body,__title,__price,__stock)`.
+- `.crumbs` (вместе с `.breadcrumbs`). Формы: `.form` / `.lead-form` (`--inline`), `.field*`; `leadForm.variant: "inline"`.
+- `.photo-band(__media,__inner)`.
+- Иконки: `{% from "partials/icon.njk" import icon %}{{ icon("phone") }}` — phone, cart, arrow, check, chevron, close, start, charge, ecu, cab, harness, climate, bolt, gear, snowflake.
+- xray.js: `initXray(win)`; `[data-xray]`, `[data-xray-variant=<system>]`, `[data-xray-node]`, `[data-xray-fault]`, `a[data-xray-symptom]` → `button[aria-pressed]`, `[data-xray-card]` и поля карточки. Координаты — в `src/index.11tydata.js`.
+- На главной больше не выводятся `advantages` и блок моделей. Блок FAQ главной берётся из `home.md` `faq`.

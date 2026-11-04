@@ -24,15 +24,23 @@
 - `src/_data/settings.json`, `src/_data/models.json` — данные компании и модели техники.
 - `src/*.njk`, `src/_includes/` — страницы и шаблоны (`layouts/base.njk`, `partials/lead-form.njk`).
 - `eleventy.config.js`, `lib/` — коллекции, фильтры, шорткод `{% image %}`, JSON-LD (`lib/seo.js`), адреса (`lib/urls.js`).
-- `src/assets/js/` — клиентский JS: `cart.js`, `forms.js`, `consent.js`, `catalog-search.js`.
+- `src/assets/css/main.css` — вся дизайн-система B: токены в `:root` (`--bg`, `--ink`, `--brand`, `--live`, `--frost`, `--fault`, `--step-*`, `--r-*`) и компоненты. Правки внутренних страниц — только в конец файла под `/* pages */`. Описание — `docs/design-brief.md`, эталон вида — `docs/mockups/home-desktop-b-xray.png` и `home-mobile-b-xray.png`. Шрифты Unbounded и Golos Text — `src/assets/fonts/*.woff2`.
+- «Рентген трактора» на главной: логика — `src/assets/js/xray.js`, картинки — `src/assets/images/xray/` (`tractor-xray-base.png` и по одной на систему), координаты узлов и точек — `src/index.11tydata.js`, разметка — `src/index.njk`, симптомы — поле `symptoms` в `src/content/pages/home.md`.
+- Иконки — `{% from "partials/icon.njk" import icon %}{{ icon("phone") }}`, набор в `src/_includes/partials/icon.njk`.
+- `src/assets/js/` — клиентский JS: `cart.js`, `forms.js`, `consent.js`, `catalog-search.js`, `xray.js`.
 - `public/api/` — точки входа PHP, логика в `backend/src/`; журнал и лог — `storage/`.
 - `src/admin/` — Sveltia CMS (`config.yml` повторяет поля из `schemas/`).
-- `tests/` — тесты, `tests/helpers/` — сборка на фикстурах.
+- `tests/` — тесты, `tests/helpers/` — сборка на фикстурах. SEO-правила — `tests/seo-headings.test.mjs`: на каждой странице один H1, заголовки без пропусков уровней, title уникален, 50–70 символов вместе с суффиксом (`settings.seo.titleSuffix`) и не повторяет H1, description уникален, 120–160. Рентген — `tests/xray.test.mjs`.
 
 ## Подводные камни
 
 - `npm test` и `npm run dev` пишут в один `dist/`. Одновременный запуск роняет dev (sharp: «unable to open for write»).
-- Асинхронный шорткод `{% image %}` внутри обычного `{% for %}` через include теряет вывод. Нужен `asyncEach`.
+- Асинхронный шорткод `{% image %}` внутри обычного `{% for %}` через include теряет вывод. Нужен `asyncEach`. Это касается `src/katalog/_product-card.html`: подключать только внутри `asyncEach`, как в `src/index.njk` и `src/katalog/*.njk`.
+- Названия краёв видны только на `/regiony/` (и страницах краёв), `/kontakty/`, `/dostavka/`. На остальных страницах (текст и title) их быть не должно, иначе упадёт тест в `tests/pages.test.mjs`. В JSON-LD (`areaServed`) края остаются.
+- Жёлтого цвета и логотипов John Deere в дизайне нет. `--fault` — только неисправность и ошибки форм, `--frost` — только климат.
+- Картинки рентгена имеют почти белый фон, на `--bg` их кладут через `mix-blend-mode: multiply`. Не перерисовывать без решения.
+- Заголовки, title и description на новых страницах проверяет `tests/seo-headings.test.mjs`: новая страница с неверной длиной или вторым H1 роняет `npm test`.
+- `@fontsource/manrope` остался в `package.json`, но шрифт не используется (тест `tests/build.test.mjs` даже требует, чтобы Manrope не было в CSS и HTML). Зависимость не удалена, решение за владельцем.
 - В Nunjucks нет теста `equalto` для `selectattr` с путём через точку.
 - Node 24 не принимает папку в `node --test`. Нужен glob `"tests/*.test.mjs"`.
 - В локальном PHP нет openssl, curl и mbstring. SMTP по TLS и HTTPS к MAX локально не работают.

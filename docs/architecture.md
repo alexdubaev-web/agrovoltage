@@ -37,6 +37,15 @@ src/content/*.md|json, src/_data/*.json
 - Журнал хранит записи `kind:"lead"` и `kind:"delivery"`. `php backend/console.php resend` переотправляет недоставленные (`failed`). `skipped` не трогает.
 - Клиент после успеха шлёт событие `agv:lead-sent {type,id}`. Корзина очищается только при `type==="order"`.
 
+## Дизайн-система B и рентген трактора
+
+- Весь вид — один файл `src/assets/css/main.css`: токены в `:root`, затем компоненты (`.btn`, `.section`, `.service-row`, `.steps`, `.faq`, `.plane`, `.grid-products`, `.photo-band` и др.), в конце блок `/* pages */` для правок внутренних страниц. Описание и принципы — `../docs/design-brief.md`, эталон — `../docs/mockups/*-b-xray.png`. Шрифты Unbounded и Golos Text отдаются из `src/assets/fonts/`.
+- Иконки — макрос `partials/icon.njk`, без внешних наборов и фреймворков.
+- Рентген трактора на главной собран из четырёх частей: симптомы (`symptoms` в `src/content/pages/home.md`), координаты узлов и точек неисправности (`src/index.11tydata.js`, в Sveltia их нет), картинки систем (`src/assets/images/xray/`), поведение (`src/assets/js/xray.js`, `initXray(win)`). Разметка — `src/index.njk`.
+- Без JS симптомы остаются ссылками на услуги. `xray.js` превращает их в кнопки с `aria-pressed`, меняет активную картинку, двигает точку и обновляет карточку (подсказка, услуга, цена, кнопка заявки). Смена картинок — CSS, 300 мс, без анимации при `prefers-reduced-motion`.
+- Граница «края только на своих страницах»: названия Ставропольского и Краснодарского краёв (из `settings.regions`) видны только на `/regiony/` и страницах краёв, `/kontakty/`, `/dostavka/`. На остальных страницах их нет ни в тексте, ни в title. В JSON-LD (`areaServed`) края остаются. Проверка — `tests/pages.test.mjs`.
+- Тексты и SEO страниц проверяет `tests/seo-headings.test.mjs` по всему `dist/` кроме `admin/`: один H1, заголовки без пропусков, уникальные title (50–70) и description (120–160).
+
 ## Границы модулей
 
 | Модуль | Владеет | Не делает |
