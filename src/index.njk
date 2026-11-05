@@ -80,6 +80,24 @@ bodyClass: page-home
   </div>
 </section>
 
+{%- if homeProducts.length %}
+<section class="section" id="zapchasti" aria-labelledby="zapchasti-title">
+  <div class="container">
+    <div class="section__head">
+      <h2 id="zapchasti-title">Запчасти в наличии</h2>
+      {%- if "/katalog/" | pageExists(collections.all) %}<a class="section__more" href="/katalog/">Весь каталог</a>{% endif %}
+    </div>
+    <div class="grid-products grid-products--row">
+      {#- Карточка каталога; asyncEach — в ней асинхронный шорткод image. #}
+      {%- set cardSizes = "(min-width: 1100px) 128px, (min-width: 769px) 22vw, 45vw" %}
+      {%- asyncEach product in homeProducts %}
+      {% include "./katalog/_product-card.html" %}
+      {%- endeach %}
+    </div>
+  </div>
+</section>
+{%- endif %}
+
 {%- if serviceGroups.length %}
 <section class="section" id="uslugi" aria-labelledby="uslugi-title">
   <div class="container">
@@ -145,23 +163,6 @@ bodyClass: page-home
   </div>
 </section>
 
-{%- if homeProducts.length %}
-<section class="section" id="zapchasti" aria-labelledby="zapchasti-title">
-  <div class="container">
-    <div class="section__head">
-      <h2 id="zapchasti-title">Запчасти в наличии</h2>
-      {%- if "/katalog/" | pageExists(collections.all) %}<a class="section__more" href="/katalog/">Весь каталог</a>{% endif %}
-    </div>
-    <div class="grid-products grid-products--row">
-      {#- Карточка каталога; asyncEach — в ней асинхронный шорткод image. #}
-      {%- set cardSizes = "(min-width: 1100px) 128px, (min-width: 769px) 22vw, 45vw" %}
-      {%- asyncEach product in homeProducts %}
-      {% include "./katalog/_product-card.html" %}
-      {%- endeach %}
-    </div>
-  </div>
-</section>
-{%- endif %}
 
 {%- set latest = collections.articles.slice(0, 3) %}
 {%- if (h.faq and h.faq.length) or latest.length %}

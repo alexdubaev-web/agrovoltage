@@ -19,10 +19,10 @@ export default function (eleventyConfig) {
   eleventyConfig.addGlobalData("site", site);
   eleventyConfig.addGlobalData("jsModules", () => listJsModules(INPUT));
   eleventyConfig.addGlobalData("buildDate", () => new Date());
-  // Главное меню (не больше 7 пунктов). Пункт показывается, только когда страница собрана.
+  // Главное меню (не больше 7 пунктов). Каталог первым: продажа запчастей важнее услуг. Пункт показывается, только когда страница собрана.
   eleventyConfig.addGlobalData("navItems", [
-    { name: "Услуги", url: "/uslugi/" },
     { name: "Каталог", url: "/katalog/" },
+    { name: "Услуги", url: "/uslugi/" },
     { name: "Статьи", url: "/stati/" },
     { name: "Доставка", url: "/dostavka/" },
     { name: "О компании", url: "/o-kompanii/" },

@@ -96,13 +96,13 @@ describe("/uslugi/", () => {
 
 describe("главная", () => {
   // Макет B (редизайн, тикет 01): края на главной не показываются (R11), блоки — по макету.
-  test("первый экран: H1 про John Deere, tel:, кнопка заявки; блоки ниже по макету B", () => {
+  test("первый экран: H1 про John Deere, tel:, кнопка заявки; блоки ниже: запчасти раньше услуг", () => {
     const doc = page("/");
     assert.match(text(doc.querySelector("h1")), /John Deere/);
     const hero = doc.querySelector("main section");
     assert.equal(hero.querySelector('a[href^="tel:"]').getAttribute("href"), "tel:+79620011990");
     assert.ok(hero.querySelector("a[data-lead-open]"));
-    const ids = ["uslugi", "etapy", "vyezd", "zapchasti", "faq", "stati", "forma"];
+    const ids = ["zapchasti", "uslugi", "etapy", "vyezd", "faq", "stati", "forma"];
     const els = ids.map((id) => doc.getElementById(id));
     assert.ok(els.every(Boolean));
     for (let i = 1; i < els.length; i++) assert.ok(els[i - 1].compareDocumentPosition(els[i]) & 4, ids[i]);
