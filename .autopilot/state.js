@@ -2,7 +2,7 @@ window.STATE =
 {
   "version": 2,
   "slug": "redesign",
-  "dir": "2026-11-03-redesign--wip",
+  "dir": "2026-11-03-redesign",
   "title": "Редизайн сайта АГРОВОЛЬТАЖ",
   "mode": "semi",
   "depth": "normal",
@@ -13,8 +13,8 @@ window.STATE =
   "skillDir": "C:/Users/Alexandr/.claude/skills/autopilot",
   "baseCommit": "96aae2a",
   "startedAt": "2026-11-03T14:28:04+03:00",
-  "updatedAt": "2026-11-05T09:48:32+03:00",
-  "finishedAt": null,
+  "updatedAt": "2026-11-05T10:25:56+03:00",
+  "finishedAt": "2026-11-05T10:25:56+03:00",
   "stages": [
     {
       "id": "preflight",
@@ -30,7 +30,9 @@ window.STATE =
     },
     {
       "id": "briefing",
-      "status": "pending"
+      "status": "skipped",
+      "note": "не понадобился",
+      "finishedAt": "2026-11-05T10:25:56+03:00"
     },
     {
       "id": "spec",
@@ -46,22 +48,27 @@ window.STATE =
     },
     {
       "id": "build",
-      "status": "active",
-      "startedAt": "2026-11-05T09:48:31+03:00"
+      "status": "done",
+      "startedAt": "2026-11-05T09:48:31+03:00",
+      "finishedAt": "2026-11-05T10:00:46+03:00"
     },
     {
       "id": "review",
-      "status": "pending"
+      "status": "done",
+      "startedAt": "2026-11-05T10:00:46+03:00",
+      "finishedAt": "2026-11-05T10:25:43+03:00"
     },
     {
       "id": "final",
-      "status": "pending"
+      "status": "done",
+      "startedAt": "2026-11-05T10:25:43+03:00",
+      "finishedAt": "2026-11-05T10:25:56+03:00"
     }
   ],
   "requirements": {
     "total": 20,
-    "done": 16,
-    "inTicket": 4,
+    "done": 20,
+    "inTicket": 0,
     "inSpec": 0,
     "placeholder": 0,
     "deferred": 0,
@@ -257,10 +264,16 @@ window.STATE =
       ],
       "review": "нет",
       "model": "сильная",
-      "status": "in-progress",
+      "status": "done",
+      "startedAt": "2026-11-05T09:48:32+03:00",
+      "finishedAt": "2026-11-05T10:00:45+03:00",
       "retries": 0,
       "repairs": 0,
-      "startedAt": "2026-11-05T09:48:32+03:00"
+      "tests": {
+        "passed": 161,
+        "failed": 0
+      },
+      "commit": "2e7a7c9"
     },
     {
       "id": "F1",
@@ -326,10 +339,42 @@ window.STATE =
         "failed": 0
       },
       "commit": "184d07c"
+    },
+    {
+      "id": "F3",
+      "title": "Ремонт доработки T04 по ревью",
+      "requirements": [
+        "R15",
+        "R16"
+      ],
+      "blockedBy": [],
+      "wave": 7,
+      "zone": [
+        "src/assets/css/main.css",
+        "src/index.njk",
+        "src/index.11tydata.js",
+        "scripts/make-xray-layers.py",
+        "src/assets/images/xray/",
+        "*-layer.png",
+        "lib/images.js",
+        "tests/xray.test.mjs"
+      ],
+      "review": "нет",
+      "model": "сильная",
+      "status": "done",
+      "retries": 0,
+      "repairs": 0,
+      "startedAt": "2026-11-05T10:11:19+03:00",
+      "finishedAt": "2026-11-05T10:25:41+03:00",
+      "tests": {
+        "passed": 163,
+        "failed": 0
+      },
+      "commit": "6c6601d"
     }
   ],
   "tests": {
-    "passed": 157,
+    "passed": 163,
     "failed": 0
   },
   "debt": {
@@ -350,9 +395,14 @@ window.STATE =
     "src/_includes/partials/icons.njk — i-climate и i-snowflake совпадают до символа",
     "src/assets/js/cart.js — по клику «В корзину» заменяет textContent кнопки, иконка пропадает до перезагрузки",
     "src/uslugi/service.njk — 6 этапов услуги в одну линию на 1280 тесные, заголовки в 3–4 строки",
-    "main.css .service-row — на ≤768 метка «Демо» скрыта вместе с описанием"
+    "main.css .service-row — на ≤768 метка «Демо» скрыта вместе с описанием",
+    "На 977 и 375 карточка причины под трактором меняет высоту, следующая секция сдвигается на 25–50 px (трактор неподвижен)"
   ],
-  "blind": null,
+  "blind": {
+    "checked": 4,
+    "matched": 4,
+    "mismatches": []
+  },
   "beats": [
     "2026-11-03T14:28:04+03:00",
     "2026-11-03T14:28:21+03:00",
@@ -405,9 +455,17 @@ window.STATE =
     "2026-11-05T09:48:29+03:00",
     "2026-11-05T09:48:30+03:00",
     "2026-11-05T09:48:31+03:00",
-    "2026-11-05T09:48:32+03:00"
+    "2026-11-05T09:48:32+03:00",
+    "2026-11-05T10:00:45+03:00",
+    "2026-11-05T10:00:46+03:00",
+    "2026-11-05T10:11:18+03:00",
+    "2026-11-05T10:11:19+03:00",
+    "2026-11-05T10:25:41+03:00",
+    "2026-11-05T10:25:42+03:00",
+    "2026-11-05T10:25:43+03:00",
+    "2026-11-05T10:25:56+03:00"
   ],
-  "rev": 59,
+  "rev": 69,
   "waiting": null,
   "waits": [
     {
@@ -824,6 +882,80 @@ window.STATE =
         "04"
       ],
       "act": "start"
+    },
+    {
+      "t": "2026-11-05T10:00:45+03:00",
+      "k": "ticket",
+      "ids": [
+        "04"
+      ],
+      "act": "done",
+      "tests": {
+        "passed": 161,
+        "failed": 0
+      }
+    },
+    {
+      "t": "2026-11-05T10:00:45+03:00",
+      "k": "add",
+      "key": "concerns",
+      "n": 1
+    },
+    {
+      "t": "2026-11-05T10:00:46+03:00",
+      "k": "stage",
+      "id": "review",
+      "act": "start"
+    },
+    {
+      "t": "2026-11-05T10:11:18+03:00",
+      "k": "gate",
+      "g": "G4",
+      "ok": true,
+      "checked": 4,
+      "matched": 4
+    },
+    {
+      "t": "2026-11-05T10:11:19+03:00",
+      "k": "tickets",
+      "n": 8
+    },
+    {
+      "t": "2026-11-05T10:11:19+03:00",
+      "k": "ticket",
+      "ids": [
+        "F3"
+      ],
+      "act": "start"
+    },
+    {
+      "t": "2026-11-05T10:25:41+03:00",
+      "k": "ticket",
+      "ids": [
+        "F3"
+      ],
+      "act": "done",
+      "tests": {
+        "passed": 163,
+        "failed": 0
+      }
+    },
+    {
+      "t": "2026-11-05T10:25:42+03:00",
+      "k": "tests",
+      "passed": 163,
+      "failed": 0
+    },
+    {
+      "t": "2026-11-05T10:25:43+03:00",
+      "k": "stage",
+      "id": "final",
+      "act": "start"
+    },
+    {
+      "t": "2026-11-05T10:25:56+03:00",
+      "k": "finish",
+      "result": "Трактор в первом экране неподвижен, подсветка причин накладывается слоем, узлы на тракторе нажимаются"
     }
   ],
   "reqList": [
@@ -910,22 +1042,22 @@ window.STATE =
     {
       "id": "R14",
       "text": "«при переключении причины поломки моргает и трактор»",
-      "status": "in-ticket"
+      "status": "done"
     },
     {
       "id": "R15",
       "text": "«нужно чтоб трактор был зафиксирован»",
-      "status": "in-ticket"
+      "status": "done"
     },
     {
       "id": "R16",
       "text": "«а подсветка причин просто накладывалась сверху на него, а не заменяла все изображение»",
-      "status": "in-ticket"
+      "status": "done"
     },
     {
       "id": "R17",
       "text": "«должна быть возможность и нажатия на тракторе на причину, сейчас там нет возможности»",
-      "status": "in-ticket"
+      "status": "done"
     }
   ],
   "gates": {
@@ -939,9 +1071,15 @@ window.STATE =
       "at": "2026-11-05T09:48:29+03:00",
       "open": 0,
       "total": 20
+    },
+    "G4": {
+      "ok": true,
+      "at": "2026-11-05T10:11:18+03:00",
+      "checked": 4,
+      "matched": 4
     }
   },
-  "result": null,
+  "result": "Трактор в первом экране неподвижен, подсветка причин накладывается слоем, узлы на тракторе нажимаются",
   "report": [
     "Фразы про гарантию и «акт по ремонту» в FAQ и на главной помечены «[уточнить]» — подтвердите, выдаёте ли вы акт и какая гарантия"
   ]

@@ -25,7 +25,7 @@
 - `src/*.njk`, `src/_includes/` — страницы и шаблоны (`layouts/base.njk`, `partials/lead-form.njk`).
 - `eleventy.config.js`, `lib/` — коллекции, фильтры, шорткод `{% image %}`, JSON-LD (`lib/seo.js`), адреса (`lib/urls.js`).
 - `src/assets/css/main.css` — вся дизайн-система B: токены в `:root` (`--bg`, `--ink`, `--brand`, `--live`, `--frost`, `--fault`, `--step-*`, `--r-*`) и компоненты. Правки внутренних страниц — только в конец файла под `/* pages */`. Описание — `docs/design-brief.md`, эталон вида — `docs/mockups/home-desktop-b-xray.png` и `home-mobile-b-xray.png`. Шрифты Unbounded и Golos Text — `src/assets/fonts/*.woff2`.
-- «Рентген трактора» на главной: логика — `src/assets/js/xray.js`, картинки — `src/assets/images/xray/` (`tractor-xray-base.png` и по одной на систему), координаты узлов и точек — `src/index.11tydata.js`, разметка — `src/index.njk`, симптомы — поле `symptoms` в `src/content/pages/home.md`.
+- «Рентген трактора» на главной: логика — `src/assets/js/xray.js`, картинки — `src/assets/images/xray/`: база `tractor-xray-base.png` неподвижна, поверх неё прозрачные слои подсветки `tractor-xray-<system>-layer.png`. Слои вырезает `python scripts/make-xray-layers.py` из вариантов `tractor-xray-<system>.png` (numpy + Pillow). Подписи узлов на тракторе — кнопки выбора причины. Координаты узлов и точек — `src/index.11tydata.js`, разметка — `src/index.njk`, симптомы — поле `symptoms` в `src/content/pages/home.md`.
 - Иконки — `{% from "partials/icon.njk" import icon %}{{ icon("phone") }}`, набор в `src/_includes/partials/icon.njk`.
 - `src/assets/js/` — клиентский JS: `cart.js`, `forms.js`, `consent.js`, `catalog-search.js`, `xray.js`.
 - `public/api/` — точки входа PHP, логика в `backend/src/`; журнал и лог — `storage/`.
@@ -39,6 +39,7 @@
 - Названия краёв видны только на `/regiony/` (и страницах краёв), `/kontakty/`, `/dostavka/`. На остальных страницах (текст и title) их быть не должно, иначе упадёт тест в `tests/pages.test.mjs`. В JSON-LD (`areaServed`) края остаются.
 - Жёлтого цвета и логотипов John Deere в дизайне нет. `--fault` — только неисправность и ошибки форм, `--frost` — только климат.
 - Картинки рентгена имеют почти белый фон, на `--bg` их кладут через `mix-blend-mode: multiply`. Не перерисовывать без решения.
+- Трактор не должен сдвигаться при смене причины: высоту карточки держат невидимые копии текста всех причин (`.xray-card__sizer`). Новый симптом с длинным текстом добавляется туда же сам, но вёрстку hero без замера высоты на 375/977/1440 не менять. Слой подсветки ≤ 60 КБ в AVIF 1536 — иначе падает `tests/xray.test.mjs`.
 - Заголовки, title и description на новых страницах проверяет `tests/seo-headings.test.mjs`: новая страница с неверной длиной или вторым H1 роняет `npm test`.
 - `@fontsource/manrope` остался в `package.json`, но шрифт не используется (тест `tests/build.test.mjs` даже требует, чтобы Manrope не было в CSS и HTML). Зависимость не удалена, решение за владельцем.
 - В Nunjucks нет теста `equalto` для `selectattr` с путём через точку.
