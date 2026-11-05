@@ -23,17 +23,23 @@ bodyClass: page-home
 
     <div class="xray" data-xray data-active="{{ xray.active }}">
       <div class="xray__stage">
-        {%- if heroSymptoms.length %}
-        {%- asyncEach v in xray.variants %}
-        <div class="xray__variant{% if v.system == xray.active %} is-active{% endif %}" data-xray-variant="{{ v.system }}" data-x="{{ v.x }}" data-y="{{ v.y }}" data-tone="{{ v.tone }}"{% if v.system != xray.active %} aria-hidden="true"{% endif %}>
-          {% image v.src, v.alt, xraySizes, v.system == xray.active %}
+        {#- База видна всегда; поверх неё — прозрачные слои подсветки по системам (история 19). -#}
+        <div class="xray__art">
+          <div class="xray__base">{% image xray.base.src, xray.base.alt, xraySizes, true %}</div>
+          {%- if heroSymptoms.length %}
+          {%- asyncEach v in xray.layers %}
+          <div class="xray__variant{% if v.system == xray.active %} is-active{% endif %}" data-xray-variant="{{ v.system }}" data-x="{{ v.x }}" data-y="{{ v.y }}" data-tone="{{ v.tone }}"{% if v.system != xray.active %} aria-hidden="true"{% endif %}>
+            {% image v.src, v.alt | capitalize, xraySizes, v.system == xray.active %}
+          </div>
+          {%- endeach %}
+          {%- endif %}
         </div>
-        {%- endeach %}
-        {%- else %}
-        <div class="xray__variant is-active">{% image xray.base.src, xray.base.alt, xraySizes, true %}</div>
-        {%- endif %}
+        {#- Подписи узлов: без JS — ссылки на услуги, с JS — кнопки выбора причины (история 20). -#}
         {%- for n in xray.nodes %}
-        <span class="xray__node xray__node--{{ n.side }}" data-xray-node data-system="{{ n.system }}" style="left: {{ n.x }}%; top: {{ n.y }}%"><span class="xray__tag">{{ n.label }}</span></span>
+        <span class="xray__node xray__node--{{ n.side }}" data-xray-node data-system="{{ n.system }}" style="left: {{ n.x }}%; top: {{ n.y }}%">
+          {%- if n.serviceUrl and heroSymptoms.length %}<a class="xray__tag" href="{{ n.serviceUrl }}" data-system="{{ n.system }}" data-symptom="{{ n.symptom }}">{{ n.label }}</a>
+          {%- else %}<span class="xray__tag">{{ n.label }}</span>{% endif -%}
+        </span>
         {%- endfor %}
         {%- if heroSymptoms.length and xray.fault %}
         <span class="xray__fault" data-xray-fault data-tone="{{ xray.fault.tone }}" style="left: {{ xray.fault.x }}%; top: {{ xray.fault.y }}%"></span>

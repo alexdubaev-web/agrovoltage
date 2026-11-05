@@ -434,11 +434,15 @@ a.symptom .symptom__mark { display: none; }
 
 .xray { grid-area: stage; position: relative; margin: 16px calc(-1 * var(--gutter)) 8px; min-width: 0; }
 .xray__stage { position: relative; aspect-ratio: 3 / 2; }
-.xray__variant { position: absolute; inset: 0; display: none; opacity: 0; mix-blend-mode: multiply; transition: opacity .3s var(--ease); }
-.xray__variant img, .xray__variant picture { width: 100%; height: 100%; }
+/* База и слои подсветки — одна группа в multiply (почти белый фон уходит в --bg). Внутри группы слои
+   ложатся на базу обычным наложением: база не меняется и не темнеет, меняется только подсветка (история 19). */
+.xray__art { position: absolute; inset: 0; isolation: isolate; mix-blend-mode: multiply; }
+.xray__base, .xray__variant { position: absolute; inset: 0; }
+.xray__base img, .xray__base picture, .xray__variant img, .xray__variant picture { display: block; width: 100%; height: 100%; }
+.xray__variant { display: none; opacity: 0; transition: opacity .3s var(--ease); }
 .xray__variant.is-active, .xray__variant.is-prev, [data-xray-ready] .xray__variant { display: block; }
 .xray__variant.is-active { opacity: 1; z-index: 2; }
-/* Смена 300 мс: новый проявляется, прежний одновременно гаснет — две цепи разом и потемнение от multiply не держатся. */
+/* Смена 300 мс: новый слой проявляется, прежний одновременно гаснет. */
 .xray__variant.is-prev { opacity: 0; z-index: 1; }
 @starting-style { .xray__variant.is-active { opacity: 0; } }
 
@@ -446,6 +450,11 @@ a.symptom .symptom__mark { display: none; }
 .xray__node::before { content: ""; position: absolute; left: -4px; top: -4px; width: 8px; height: 8px; border-radius: 50%; background: var(--surface); box-shadow: 0 0 0 2px var(--forest); }
 .xray__node::after { content: ""; position: absolute; background: var(--forest); }
 .xray__tag { position: absolute; white-space: nowrap; padding: 3px 7px; background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; box-shadow: var(--shadow-1); font: 600 .6875rem/1.2 var(--font-text); color: var(--forest); transition: border-color var(--dur), box-shadow var(--dur); }
+/* Подписи-кнопки (история 20): невидимое поле касания не меньше 44×44 вокруг подписи, указатель и выделение при наведении. */
+a.xray__tag, button.xray__tag { margin: 0; cursor: pointer; text-decoration: none; touch-action: manipulation; }
+a.xray__tag::before, button.xray__tag::before { content: ""; position: absolute; left: 50%; top: 50%; width: max(100%, 44px); height: max(100%, 44px); transform: translate(-50%, -50%); }
+a.xray__tag:hover, button.xray__tag:hover { border-color: var(--brand); background: var(--tint-live); }
+a.xray__tag:focus-visible, button.xray__tag:focus-visible { outline: 3px solid var(--live); outline-offset: 2px; box-shadow: 0 0 0 2px var(--forest); }
 .xray__node--up::after { left: -.5px; bottom: 4px; width: 1px; height: var(--lead); }
 .xray__node--up .xray__tag { bottom: calc(var(--lead) + 4px); left: 0; transform: translateX(-50%); }
 .xray__node--down::after { left: -.5px; top: 4px; width: 1px; height: var(--lead); }
@@ -492,13 +501,17 @@ a.symptom .symptom__mark { display: none; }
   .hero h1 { font-size: clamp(var(--step-3), 2.9vw, 2.375rem); }
   .hero__grid { grid-template-columns: minmax(320px, 32%) minmax(0, 1fr); grid-template-areas: "text stage" "ask stage" "ask card"; grid-template-rows: auto 1fr auto; column-gap: 24px; }
   /* Картинка уходит к правому краю окна (не дальше 120 px за контейнер). */
-  .xray { align-self: end; margin: 0 max(-120px, calc(min(0px, (var(--container) + 2 * var(--gutter) - 100vw) / 2) - var(--gutter))) 0 -24px; }
+  /* Трактор занимает все строки сетки и прижат к её низу с запасом под карточку причины. Высоту сетки задаёт левая
+     колонка и сам трактор, карточка в ней не участвует: её текст не двигает трактор (история 18).
+     Карточка прижата к низу сетки и растёт вверх, поверх колёс. */
+  .xray { grid-area: 1 / 2 / 4 / 3; align-self: end; margin: 0 max(-120px, calc(min(0px, (var(--container) + 2 * var(--gutter) - 100vw) / 2) - var(--gutter))) var(--xray-card-room) -24px; }
   .hero__ask { margin-top: 28px; }
   .symptoms { flex-direction: column; flex-wrap: nowrap; gap: 6px; padding: 0; max-width: 340px; }
   .symptom { flex-direction: row; justify-content: flex-start; gap: 12px; width: 100%; min-height: 46px; padding: 8px 12px 8px 16px; border-radius: var(--r-pill); font-size: var(--step-0); text-align: left; }
   .symptom__label { flex: 1 1 auto; }
   .symptom__mark { position: static; width: 22px; height: 22px; }
-  .xray-card { justify-self: end; width: min(100%, 600px); margin-top: -88px; }
+  .hero__grid { --xray-card-room: 48px; }
+  .xray-card { grid-area: 3 / 2 / 4 / 3; align-self: end; justify-self: end; width: min(100%, 600px); margin-top: 0; }
 }
 @media (min-width: 1280px) {
   .hero__grid { grid-template-columns: 420px minmax(0, 1fr); }

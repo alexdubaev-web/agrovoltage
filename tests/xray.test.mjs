@@ -32,6 +32,17 @@ const LABELS = {
   "ЭБУ": ["42.3%", "43%"],
   "Кабина": ["63.5%", "27.3%"],
   "Кондиционер": ["19.5%", "45.9%"],
+  "Жгут": ["46.2%", "54.2%"],
+};
+// Подпись узла → system (spec.md, «Доработка 2026-11-05», история 20).
+const NODE_SYSTEM = {
+  "АКБ": "start",
+  "Стартер": "start",
+  "Генератор": "charge",
+  "ЭБУ": "ecu",
+  "Кабина": "cab",
+  "Кондиционер": "climate",
+  "Жгут": "harness",
 };
 
 function setup({ reduce = false } = {}) {
@@ -44,6 +55,8 @@ function setup({ reduce = false } = {}) {
 }
 const raw = () => new JSDOM(HTML).window.document;
 const buttons = (doc) => [...doc.querySelectorAll("[data-xray-symptom]")];
+const nodeTag = (doc, label) =>
+  [...doc.querySelectorAll("[data-xray-node]")].find((n) => norm(n.textContent) === label).querySelector(".xray__tag");
 const click = (el) => el.dispatchEvent(new el.ownerDocument.defaultView.MouseEvent("click", { bubbles: true, cancelable: true }));
 
 describe("главная: рентген трактора", () => {
@@ -73,19 +86,35 @@ describe("главная: рентген трактора", () => {
     });
   });
 
-  test("картинка: активный вариант eager с fetchpriority и размерами, остальные lazy в <picture>", () => {
+  test("картинка: база всегда видна и грузится сразу, поверх — слой подсветки активной системы", () => {
     const doc = raw();
+    const base = doc.querySelector(".xray__base picture img");
+    assert.ok(base, "база лежит в <picture>");
+    assert.match(base.getAttribute("src"), /tractor-xray-base/);
+    assert.equal(base.getAttribute("loading"), "eager");
+    assert.ok(Number(base.getAttribute("width")) > 0 && Number(base.getAttribute("height")) > 0, "width и height");
+    assert.equal(base.closest("[data-xray-variant]"), null, "база не слой смены");
     const variants = [...doc.querySelectorAll("[data-xray-variant]")];
     assert.deepEqual(variants.map((v) => v.dataset.xrayVariant).sort(), Object.keys(FAULT).sort());
     const active = doc.querySelector(`[data-xray-variant="${SYMPTOMS[0].system}"]`);
-    const img = active.querySelector("picture img");
-    assert.ok(img, "вариант лежит в <picture>");
-    assert.equal(img.getAttribute("loading"), "eager");
-    assert.equal(img.getAttribute("fetchpriority"), "high");
-    assert.ok(Number(img.getAttribute("width")) > 0 && Number(img.getAttribute("height")) > 0, "width и height");
+    assert.equal(active.querySelector("picture img").getAttribute("loading"), "eager");
     for (const v of variants) {
       if (v === active) continue;
       assert.equal(v.querySelector("picture img").getAttribute("loading"), "lazy", v.dataset.xrayVariant);
+    }
+  });
+
+  test("у каждой системы свой прозрачный слой подсветки того же кадра, что база", () => {
+    const doc = raw();
+    const base = doc.querySelector(".xray__base picture img");
+    for (const system of Object.keys(FAULT)) {
+      const img = doc.querySelector(`[data-xray-variant="${system}"] picture img`);
+      assert.ok(img, system);
+      assert.match(img.getAttribute("src"), new RegExp(`tractor-xray-${system}-layer`), system);
+      assert.equal(img.getAttribute("width"), base.getAttribute("width"), `${system}: ширина как у базы`);
+      assert.equal(img.getAttribute("height"), base.getAttribute("height"), `${system}: высота как у базы`);
+      // Слой — PNG с альфой: исходник лежит рядом с базой.
+      assert.ok(fs.existsSync(path.join(ROOT, `src/assets/images/xray/tractor-xray-${system}-layer.png`)), system);
     }
   });
 
@@ -151,6 +180,50 @@ describe("главная: рентген трактора", () => {
     btn.dataset.price = "";
     click(btn);
     assert.equal(norm(doc.querySelector("[data-xray-price]").textContent), "по запросу");
+  });
+
+  test("без JS подписи узлов — ссылки на услуги своей системы", () => {
+    const doc = raw();
+    for (const [label, system] of Object.entries(NODE_SYSTEM)) {
+      const tag = nodeTag(doc, label);
+      const s = SYMPTOMS.find((x) => x.system === system);
+      assert.equal(tag.tagName, "A", label);
+      assert.equal(tag.getAttribute("href"), `/uslugi/${s.service}/`, label);
+    }
+  });
+
+  test("подпись узла — кнопка с понятным именем, нажатие выбирает свою причину", () => {
+    const { doc, root } = setup();
+    for (const [label, system] of Object.entries(NODE_SYSTEM)) {
+      const tag = nodeTag(doc, label);
+      const i = SYMPTOMS.findIndex((x) => x.system === system);
+      const s = SYMPTOMS[i];
+      assert.equal(tag.tagName, "BUTTON", label);
+      const name = tag.getAttribute("aria-label") || "";
+      assert.ok(name.includes(label), `${label}: имя содержит подпись`);
+      assert.ok(name.toLowerCase().includes(`показать причину: ${s.label.toLowerCase()}`), `${label}: ${name}`);
+
+      click(tag);
+      assert.equal(root.dataset.active, system, label);
+      assert.deepEqual(buttons(doc).map((b) => b.getAttribute("aria-pressed")), buttons(doc).map((_, k) => String(k === i)), label);
+      assert.equal(tag.getAttribute("aria-pressed"), "true", label);
+      assert.ok(doc.querySelector(`[data-xray-variant="${system}"]`).classList.contains("is-active"), label);
+      assert.equal(norm(doc.querySelector("[data-xray-hint]").textContent), norm(s.hint), label);
+      assert.equal(doc.querySelector("[data-xray-service]").getAttribute("href"), `/uslugi/${s.service}/`, label);
+      const dot = doc.querySelector("[data-xray-fault]");
+      assert.deepEqual([dot.style.left, dot.style.top], FAULT[system], label);
+    }
+  });
+
+  test("база не участвует в смене: без классов и прозрачности смены", () => {
+    const { doc } = setup();
+    const base = doc.querySelector(".xray__base");
+    const before = base.outerHTML;
+    for (const b of buttons(doc)) click(b);
+    click(nodeTag(doc, "Жгут"));
+    assert.equal(base.outerHTML, before);
+    assert.ok(!base.classList.contains("is-active") && !base.classList.contains("is-prev"));
+    assert.equal(base.style.opacity, "");
   });
 
   test("варианты подгружаются после первого взаимодействия", () => {

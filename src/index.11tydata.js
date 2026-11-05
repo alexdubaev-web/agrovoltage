@@ -14,14 +14,15 @@ const XRAY_SYSTEMS = {
   harness: { x: 46.2, y: 54.2, tone: "fault", alt: "подсвечен главный жгут проводки" },
   climate: { x: 19.5, y: 45.9, tone: "frost", alt: "подсвечен контур кондиционера: компрессор и блок на крыше" },
 };
-// Подписи узлов: side — куда от узла вынесена подпись.
+// Подписи узлов: side — куда от узла вынесена подпись. Подпись — кнопка выбора причины своей system (история 20).
 const XRAY_NODES = [
   { label: "Кабина", x: 63.5, y: 27.3, system: "cab", side: "right" },
   { label: "ЭБУ", x: 42.3, y: 43, system: "ecu", side: "up" },
   { label: "Кондиционер", x: 19.5, y: 45.9, system: "climate", side: "up" },
   { label: "Генератор", x: 27.2, y: 50.8, system: "charge", side: "left" },
+  { label: "Жгут", x: 46.2, y: 54.2, system: "harness", side: "right" },
   { label: "Стартер", x: 31.6, y: 57.6, system: "start", side: "down" },
-  { label: "АКБ", x: 54.7, y: 61, system: "charge", side: "down" },
+  { label: "АКБ", x: 54.7, y: 61, system: "start", side: "down" },
 ];
 
 // Цена «от …» тем же видом, что фильтр price в eleventy.config.js.
@@ -73,19 +74,22 @@ export default {
     lastmod: () => home()?.date,
     heroSymptoms: () => symptoms(loadCollection("services")),
     xray: () => {
-      const first = symptoms(loadCollection("services"))[0];
-      const active = first?.system || "base";
+      const list = symptoms(loadCollection("services"));
+      const active = list[0]?.system || "base";
       return {
         active,
-        base: { src: `${XRAY_DIR}/tractor-xray-base.png`, alt: "Трактор в разрезе: светится вся проводка" },
-        variants: Object.entries(XRAY_SYSTEMS).map(([system, v]) => ({
+        base: { src: `${XRAY_DIR}/tractor-xray-base.png`, alt: "Трактор в разрезе: проводка, генератор, стартер, блок управления и кондиционер" },
+        // Слои подсветки — прозрачные PNG поверх базы, вырезаны scripts/make-xray-layers.py из tractor-xray-<system>.png.
+        layers: Object.entries(XRAY_SYSTEMS).map(([system, v]) => ({
           system,
           ...v,
-          src: `${XRAY_DIR}/tractor-xray-${system}.png`,
-          alt: `Трактор в разрезе: ${v.alt}`,
+          src: `${XRAY_DIR}/tractor-xray-${system}-layer.png`,
         })),
         fault: XRAY_SYSTEMS[active] || null,
-        nodes: XRAY_NODES,
+        nodes: XRAY_NODES.map((n) => {
+          const s = list.find((x) => x.system === n.system);
+          return { ...n, symptom: s?.label || "", serviceUrl: s?.serviceUrl || "" };
+        }),
       };
     },
     serviceGroups: () => {
