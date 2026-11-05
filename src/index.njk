@@ -9,7 +9,8 @@ bodyClass: page-home
 {%- set home = collections.pages | findBySlug("home") -%}
 {%- set h = home.data -%}
 {%- set first = heroSymptoms[0] -%}
-{%- set xraySizes = "(min-width: 1100px) 780px, (min-width: 769px) 60vw, 100vw" -%}
+{#- sizes по замеру ширины сцены: 769–1023 — во всю ширину контейнера, с 1024 — около 64vw, с 1440 — 900 px. -#}
+{%- set xraySizes = "(min-width: 1440px) 900px, (min-width: 1024px) 64vw, (min-width: 769px) calc(100vw - 48px), 100vw" -%}
 <section class="hero" aria-labelledby="hero-title">
   <div class="container hero__grid">
     <div class="hero__text">
@@ -29,7 +30,7 @@ bodyClass: page-home
           {%- if heroSymptoms.length %}
           {%- asyncEach v in xray.layers %}
           <div class="xray__variant{% if v.system == xray.active %} is-active{% endif %}" data-xray-variant="{{ v.system }}" data-x="{{ v.x }}" data-y="{{ v.y }}" data-tone="{{ v.tone }}"{% if v.system != xray.active %} aria-hidden="true"{% endif %}>
-            {% image v.src, v.alt | capitalize, xraySizes, v.system == xray.active %}
+            {% image v.src, v.alt | capitalize, xraySizes, "eager" if v.system == xray.active else false %}
           </div>
           {%- endeach %}
           {%- endif %}
@@ -60,8 +61,18 @@ bodyClass: page-home
     <div class="xray-card" data-xray-card aria-live="polite">
       <span class="xray-card__icon">{{ icon("gear") }}</span>
       <div class="xray-card__body">
-        <p class="xray-card__title">Чаще всего причина: <span data-xray-hint>{{ first.hint }}</span></p>
-        <p class="xray-card__meta"><a href="{{ first.serviceUrl }}" data-xray-service>{{ first.serviceTitle }}</a> <span class="xray-card__price" data-xray-price>{{ first.price or "по запросу" }}</span></p>
+        {#- Невидимые копии текста всех причин в той же ячейке: высота карточки — по самой длинной,
+            смена причины не меняет высоту первого экрана (история 18). -#}
+        {%- for s in heroSymptoms %}
+        <div class="xray-card__sizer" aria-hidden="true">
+          <p class="xray-card__title">Чаще всего причина: {{ s.hint }}</p>
+          <p class="xray-card__meta"><span class="xray-card__service">{{ s.serviceTitle }}</span> <span class="xray-card__price">{{ s.price or "по запросу" }}</span></p>
+        </div>
+        {%- endfor %}
+        <div class="xray-card__text">
+          <p class="xray-card__title">Чаще всего причина: <span data-xray-hint>{{ first.hint }}</span></p>
+          <p class="xray-card__meta"><a class="xray-card__service" href="{{ first.serviceUrl }}" data-xray-service>{{ first.serviceTitle }}</a> <span class="xray-card__price" data-xray-price>{{ first.price or "по запросу" }}</span></p>
+        </div>
       </div>
       <a class="btn btn--primary xray-card__cta" href="#zayavka" data-lead-open data-service="{{ first.serviceTitle }}" data-xray-cta>Записаться</a>
     </div>

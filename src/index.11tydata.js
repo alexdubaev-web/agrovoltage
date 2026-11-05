@@ -3,8 +3,9 @@ import { faqLd, itemListLd } from "../lib/seo.js";
 
 const home = () => loadCollection("pages").find((p) => p.slug === "home");
 
-// «Рентген» трактора (тикет 00): картинки src/assets/images/xray/tractor-xray-<system>.png,
-// координаты в процентах от картинки. Точка неисправности — у узла своей системы.
+// «Рентген» трактора: база src/assets/images/xray/tractor-xray-base.png и поверх неё прозрачные слои
+// tractor-xray-<system>-layer.png (см. layers ниже). Координаты — в процентах от картинки,
+// точка неисправности — у узла своей системы.
 const XRAY_DIR = "/assets/images/xray";
 const XRAY_SYSTEMS = {
   start: { x: 31.6, y: 57.6, tone: "fault", alt: "подсвечена цепь пуска: аккумулятор и стартер" },

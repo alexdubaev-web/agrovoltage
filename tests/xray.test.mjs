@@ -118,6 +118,28 @@ describe("главная: рентген трактора", () => {
     }
   });
 
+  test("высокий приоритет загрузки только у базы, не у слоёв", () => {
+    const doc = raw();
+    assert.equal(doc.querySelector(".xray__base picture img").getAttribute("fetchpriority"), "high");
+    for (const img of doc.querySelectorAll("[data-xray-variant] picture img")) {
+      assert.equal(img.getAttribute("fetchpriority"), null, img.closest("[data-xray-variant]").dataset.xrayVariant);
+    }
+  });
+
+  test("каждый собранный слой подсветки в AVIF весит не больше 60 КБ (spec.md, история 19)", () => {
+    const doc = raw();
+    for (const system of Object.keys(FAULT)) {
+      const source = doc.querySelector(`[data-xray-variant="${system}"] picture source[type="image/avif"]`);
+      assert.ok(source, `${system}: есть AVIF`);
+      const urls = source.getAttribute("srcset").split(",").map((s) => s.trim().split(/\s+/)[0]);
+      assert.ok(urls.length > 0, system);
+      for (const url of urls) {
+        const size = fs.statSync(path.join(DIST, url)).size;
+        assert.ok(size <= 60_000, `${url}: ${size} байт`);
+      }
+    }
+  });
+
   test("подписи узлов — HTML поверх картинки в процентах", () => {
     const doc = raw();
     const nodes = [...doc.querySelectorAll("[data-xray-node]")];
