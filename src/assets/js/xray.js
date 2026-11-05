@@ -95,6 +95,24 @@ export function initXray(win = window) {
     if (cta) cta.dataset.service = btn.dataset.service || "";
   }
 
+  // До 1024 px карточка причины стоит под трактором и после нажатия на узел может оказаться за краем
+  // экрана или под панелью связи. Докручиваем ровно до её низа; трактор может уйти под шапку не больше
+  // чем верхними 15 % (крыша кабины, подписей там нет).
+  function revealCard() {
+    if (!card || typeof win.matchMedia !== "function" || !win.matchMedia("(max-width: 1023px)").matches) return;
+    const bar = doc.querySelector(".contact-fab");
+    const barTop = bar && win.getComputedStyle(bar).display !== "none" ? bar.getBoundingClientRect().top : win.innerHeight;
+    const limit = Math.min(win.innerHeight, barTop) - 12;
+    const over = card.getBoundingClientRect().bottom - limit;
+    if (over <= 0) return;
+    const header = doc.querySelector(".site-header");
+    const stage = root.getBoundingClientRect();
+    const room = stage.top + stage.height * 0.15 - (header ? header.getBoundingClientRect().bottom : 0);
+    const by = Math.min(over, Math.max(0, room));
+    const smooth = !win.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (by > 0) win.scrollBy({ top: by, behavior: smooth ? "smooth" : "auto" });
+  }
+
   const list = buttons[0].closest("ul") || root;
   list.addEventListener("click", (e) => {
     const btn = e.target.closest?.("[data-xray-symptom]");
@@ -107,7 +125,10 @@ export function initXray(win = window) {
     const node = e.target.closest?.("button[data-system]");
     if (!node || !nodeButtons.includes(node)) return;
     const btn = buttons.find((b) => b.dataset.system === node.dataset.system);
-    if (btn) select(btn);
+    if (btn) {
+      select(btn);
+      revealCard();
+    }
   });
   root.addEventListener("pointerover", markReady, { once: true });
   root.addEventListener("focusin", markReady, { once: true });

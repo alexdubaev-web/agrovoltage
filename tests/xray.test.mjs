@@ -245,6 +245,36 @@ describe("главная: рентген трактора", () => {
     }
   });
 
+  test("до 1024 px нажатие на узел докручивает страницу до карточки причины, трактор остаётся на экране", () => {
+    const dom = new JSDOM(HTML, { url: "http://localhost/" });
+    const win = dom.window;
+    win.matchMedia = (q) => ({ matches: /max-width/.test(q), media: q, addEventListener() {}, removeEventListener() {} });
+    Object.defineProperty(win, "innerHeight", { value: 667, configurable: true });
+    const rect = (top, height) => () => ({ top, bottom: top + height, height, left: 0, right: 375, width: 375 });
+    const calls = [];
+    win.scrollBy = (o) => calls.push(o);
+    initXray(win);
+    const doc = win.document;
+    doc.querySelector("[data-xray]").getBoundingClientRect = rect(300, 260);
+    const card = doc.querySelector("[data-xray-card]");
+    card.getBoundingClientRect = rect(560, 170);
+    const header = doc.querySelector(".site-header");
+    if (header) header.getBoundingClientRect = rect(0, 65);
+    const bar = doc.querySelector(".contact-fab");
+    if (bar) bar.getBoundingClientRect = rect(594, 73);
+    // Карточка заканчивается на 730, видимый низ — над панелью связи (594 − 12 = 582): докрутка на 148,
+    // верх трактора (300 − 148 = 152) остаётся ниже шапки.
+    click(nodeTag(doc, "Кабина"));
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].top, bar ? 148 : 75);
+    assert.equal(calls[0].behavior, "smooth");
+    // Карточка уже видна — страница не двигается; симптомы под карточкой не прокручивают страницу.
+    card.getBoundingClientRect = rect(400, 170);
+    click(nodeTag(doc, "ЭБУ"));
+    click(buttons(doc)[2]);
+    assert.equal(calls.length, 1);
+  });
+
   test("база не участвует в смене: без классов и прозрачности смены", () => {
     const { doc } = setup();
     const base = doc.querySelector(".xray__base");

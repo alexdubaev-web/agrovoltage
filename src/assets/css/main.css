@@ -407,12 +407,13 @@ textarea.field__input { resize: vertical; min-height: 96px; }
 
 /* ---------- Главная: первый экран и «рентген» ---------- */
 .hero { position: relative; overflow-x: clip; padding-block: 24px 32px; background-color: var(--bg); background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 24px 24px; background-position: -1px -1px; }
-.hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "stage" "ask" "card"; }
+/* До 1024 px карточка причины с ценой стоит сразу под трактором: выбор узла и его цена видны вместе. */
+.hero__grid { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "text" "stage" "card" "ask"; }
 .hero__text { grid-area: text; }
 .hero h1 { margin-bottom: 12px; overflow-wrap: normal; hyphens: auto; }
 .hero__lead { font-size: var(--step-1); line-height: 1.45; color: var(--ink); max-width: 34ch; margin-bottom: 0; }
 .hero__actions { display: none; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-.hero__ask { grid-area: ask; min-width: 0; }
+.hero__ask { grid-area: ask; min-width: 0; margin-top: 20px; }
 .hero__ask-title { font: 600 var(--step-1)/1.3 var(--font-display); color: var(--forest); margin: 0 0 12px; }
 
 /* Симптомы: на мобильных — горизонтальный ряд плиток, на десктопе — столбец пилюль. */
@@ -489,6 +490,21 @@ a.xray__tag:focus-visible, button.xray__tag:focus-visible { outline: 3px solid v
 .xray-card__service { font-weight: 600; }
 .xray-card__price { white-space: nowrap; color: var(--ink); font-weight: 600; }
 .xray-card__cta { grid-column: 1 / -1; }
+
+/* Телефон: первый экран — заголовок, трактор и карточка причины с ценой; подзаголовок уходит под симптомы.
+   Карточка компактная (без значка, текст во всю ширину), чтобы трактор и цена помещались на экран вместе. */
+@media (max-width: 768px) {
+  .hero__grid { grid-template-areas: "text" "stage" "card" "ask" "lead"; }
+  .hero__text { display: contents; }
+  .hero h1 { grid-area: text; margin-bottom: 0; }
+  .hero__lead { grid-area: lead; margin-top: 20px; }
+  .xray { margin-top: 8px; }
+  .xray-card { grid-template-columns: minmax(0, 1fr); gap: 10px; margin-top: 0; padding: 12px 16px; }
+  .xray-card__icon { display: none; }
+  .xray-card__title { font-size: var(--step-0); }
+  .xray-card__meta { font-size: .875rem; }
+  .xray-card__cta { min-height: 44px; padding-block: 10px; }
+}
 
 @media (min-width: 769px) {
   .hero__actions { display: flex; }
