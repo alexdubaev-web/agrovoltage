@@ -1,4 +1,6 @@
 // Конфигурация Eleventy 3. Границы: interfaces.md §3, §6.
+import fs from "node:fs";
+import path from "node:path";
 import { getSite } from "./lib/site.js";
 import { COLLECTIONS, loadCollection, renderMarkdown } from "./lib/content.js";
 import { urls, absoluteUrl } from "./lib/urls.js";
@@ -47,7 +49,13 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ [`${INPUT}/assets/brand`]: "/assets/brand" });
   eleventyConfig.addPassthroughCopy({ [`${INPUT}/assets/brand/favicon.ico`]: "/favicon.ico" });
   eleventyConfig.addPassthroughCopy({ [`${INPUT}/assets/uploads`]: "/assets/uploads" });
-  eleventyConfig.addPassthroughCopy({ [`${INPUT}/assets/images`]: "/assets/images" });
+  // Картинки контента идут в dist/ как есть: на них ссылаются JSON-LD, og:image и поиск по каталогу.
+  // Исходники рентгена (xray/, ~17 МБ PNG) страница берёт только через {% image %} — их не копируем.
+  for (const dir of fs.readdirSync(path.join(INPUT, "assets/images"), { withFileTypes: true })) {
+    if (dir.isDirectory() && dir.name !== "xray") {
+      eleventyConfig.addPassthroughCopy({ [`${INPUT}/assets/images/${dir.name}`]: `/assets/images/${dir.name}` });
+    }
+  }
 
   eleventyConfig.on("eleventy.after", async () => {
     await buildAssets({ inputDir: INPUT, outputDir });

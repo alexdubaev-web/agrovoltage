@@ -44,6 +44,8 @@ const NODE_SYSTEM = {
   "Кондиционер": "climate",
   "Жгут": "harness",
 };
+// Узел, у которого без JS своя услуга, а не услуга симптома его system.
+const NODE_SERVICE = { "Стартер": "remont-generatorov-i-starterov" };
 
 function setup({ reduce = false } = {}) {
   const dom = new JSDOM(HTML, { url: "http://localhost/" });
@@ -204,14 +206,20 @@ describe("главная: рентген трактора", () => {
     assert.equal(norm(doc.querySelector("[data-xray-price]").textContent), "по запросу");
   });
 
-  test("без JS подписи узлов — ссылки на услуги своей системы", () => {
+  test("без JS подписи узлов — ссылки на услуги своей системы, «Стартер» — на ремонт стартеров", () => {
     const doc = raw();
     for (const [label, system] of Object.entries(NODE_SYSTEM)) {
       const tag = nodeTag(doc, label);
-      const s = SYMPTOMS.find((x) => x.system === system);
+      const slug = NODE_SERVICE[label] || SYMPTOMS.find((x) => x.system === system).service;
       assert.equal(tag.tagName, "A", label);
-      assert.equal(tag.getAttribute("href"), `/uslugi/${s.service}/`, label);
+      assert.equal(tag.getAttribute("href"), `/uslugi/${slug}/`, label);
     }
+  });
+
+  test("исходники рентгена не копируются в dist/: страница берёт только сжатые копии", () => {
+    assert.ok(!fs.existsSync(path.join(DIST, "assets/images/xray")), "dist/assets/images/xray");
+    assert.ok(fs.existsSync(path.join(DIST, "assets/images/og")), "остальные папки картинок на месте");
+    assert.ok(!/\/assets\/images\/xray\//.test(HTML), "главная не ссылается на исходники");
   });
 
   test("подпись узла — кнопка с понятным именем, нажатие выбирает свою причину", () => {

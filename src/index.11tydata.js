@@ -16,13 +16,14 @@ const XRAY_SYSTEMS = {
   climate: { x: 19.5, y: 45.9, tone: "frost", alt: "подсвечен контур кондиционера: компрессор и блок на крыше" },
 };
 // Подписи узлов: side — куда от узла вынесена подпись. Подпись — кнопка выбора причины своей system (история 20).
+// service — своя услуга для ссылки без JS, если услуга симптома system к узлу не подходит.
 const XRAY_NODES = [
   { label: "Кабина", x: 63.5, y: 27.3, system: "cab", side: "right" },
   { label: "ЭБУ", x: 42.3, y: 43, system: "ecu", side: "up" },
   { label: "Кондиционер", x: 19.5, y: 45.9, system: "climate", side: "up" },
   { label: "Генератор", x: 27.2, y: 50.8, system: "charge", side: "left" },
   { label: "Жгут", x: 46.2, y: 54.2, system: "harness", side: "right" },
-  { label: "Стартер", x: 31.6, y: 57.6, system: "start", side: "down" },
+  { label: "Стартер", x: 31.6, y: 57.6, system: "start", side: "down", service: "remont-generatorov-i-starterov" },
   { label: "АКБ", x: 54.7, y: 61, system: "start", side: "down" },
 ];
 
@@ -89,7 +90,8 @@ export default {
         fault: XRAY_SYSTEMS[active] || null,
         nodes: XRAY_NODES.map((n) => {
           const s = list.find((x) => x.system === n.system);
-          return { ...n, symptom: s?.label || "", serviceUrl: s?.serviceUrl || "" };
+          const own = n.service && loadCollection("services").find((x) => x.slug === n.service);
+          return { ...n, symptom: s?.label || "", serviceUrl: own?.url || s?.serviceUrl || "" };
         }),
       };
     },
