@@ -2,19 +2,19 @@ window.STATE =
 {
   "version": 2,
   "slug": "redesign",
-  "dir": "2026-11-03-redesign",
+  "dir": "2026-11-03-redesign--wip",
   "title": "Редизайн сайта АГРОВОЛЬТАЖ",
   "mode": "semi",
   "depth": "normal",
   "tier": "T2",
-  "briefFile": "2026-11-03-brief.md",
+  "briefFile": "2026-11-05-brief.md",
   "memoryFile": "AGENTS.md",
   "memoryOwner": "autopilot",
   "skillDir": "C:/Users/Alexandr/.claude/skills/autopilot",
   "baseCommit": "96aae2a",
   "startedAt": "2026-11-03T14:28:04+03:00",
-  "updatedAt": "2026-11-04T11:35:30+03:00",
-  "finishedAt": "2026-11-04T11:35:30+03:00",
+  "updatedAt": "2026-11-05T09:48:32+03:00",
+  "finishedAt": null,
   "stages": [
     {
       "id": "preflight",
@@ -25,51 +25,43 @@ window.STATE =
     {
       "id": "manifest",
       "status": "done",
-      "startedAt": "2026-11-03T14:28:22+03:00",
-      "finishedAt": "2026-11-03T14:31:02+03:00"
+      "startedAt": "2026-11-05T09:47:32+03:00",
+      "finishedAt": "2026-11-05T09:48:29+03:00"
     },
     {
       "id": "briefing",
-      "status": "skipped",
-      "startedAt": "2026-11-03T14:28:23+03:00",
-      "finishedAt": "2026-11-03T14:28:23+03:00",
-      "note": "вопросов не потребовалось: направление задано дизайн-брифом"
+      "status": "pending"
     },
     {
       "id": "spec",
       "status": "done",
-      "startedAt": "2026-11-03T14:31:02+03:00",
-      "finishedAt": "2026-11-03T14:33:08+03:00"
+      "startedAt": "2026-11-05T09:48:29+03:00",
+      "finishedAt": "2026-11-05T09:48:30+03:00"
     },
     {
       "id": "plan",
       "status": "done",
-      "startedAt": "2026-11-03T14:33:08+03:00",
-      "finishedAt": "2026-11-03T14:33:23+03:00"
+      "startedAt": "2026-11-05T09:48:30+03:00",
+      "finishedAt": "2026-11-05T09:48:31+03:00"
     },
     {
       "id": "build",
-      "status": "done",
-      "startedAt": "2026-11-03T14:33:23+03:00",
-      "finishedAt": "2026-11-04T11:10:12+03:00"
+      "status": "active",
+      "startedAt": "2026-11-05T09:48:31+03:00"
     },
     {
       "id": "review",
-      "status": "done",
-      "startedAt": "2026-11-04T11:10:12+03:00",
-      "finishedAt": "2026-11-04T11:27:25+03:00"
+      "status": "pending"
     },
     {
       "id": "final",
-      "status": "done",
-      "startedAt": "2026-11-04T11:27:25+03:00",
-      "finishedAt": "2026-11-04T11:35:30+03:00"
+      "status": "pending"
     }
   ],
   "requirements": {
-    "total": 16,
+    "total": 20,
     "done": 16,
-    "inTicket": 0,
+    "inTicket": 4,
     "inSpec": 0,
     "placeholder": 0,
     "deferred": 0,
@@ -242,6 +234,35 @@ window.STATE =
       "commit": "23c75a4"
     },
     {
+      "id": "04",
+      "title": "Трактор не прыгает и не моргает, причины нажимаются на тракторе",
+      "requirements": [
+        "R14",
+        "R15",
+        "R16",
+        "R17",
+        "R17.1"
+      ],
+      "blockedBy": [],
+      "wave": 6,
+      "zone": [
+        "src/assets/js/xray.js",
+        "src/assets/css/main.css",
+        "src/index.njk",
+        "src/index.11tydata.js",
+        "src/assets/images/xray/",
+        "scripts/",
+        "lib/images.js",
+        "tests/xray.test.mjs"
+      ],
+      "review": "нет",
+      "model": "сильная",
+      "status": "in-progress",
+      "retries": 0,
+      "repairs": 0,
+      "startedAt": "2026-11-05T09:48:32+03:00"
+    },
+    {
       "id": "F1",
       "title": "Ремонт ветки по ревью",
       "requirements": [
@@ -296,10 +317,10 @@ window.STATE =
       "review": "нет",
       "model": "обычная",
       "status": "done",
-      "retries": 0,
-      "repairs": 0,
       "startedAt": "2026-11-04T11:31:53+03:00",
       "finishedAt": "2026-11-04T11:34:26+03:00",
+      "retries": 0,
+      "repairs": 0,
       "tests": {
         "passed": 157,
         "failed": 0
@@ -331,13 +352,7 @@ window.STATE =
     "src/uslugi/service.njk — 6 этапов услуги в одну линию на 1280 тесные, заголовки в 3–4 строки",
     "main.css .service-row — на ≤768 метка «Демо» скрыта вместе с описанием"
   ],
-  "blind": {
-    "checked": 11,
-    "matched": 10,
-    "mismatches": [
-      "G03: одинаковый H1 «Диагностика и ремонт электрики John Deere» на главной и /uslugi/"
-    ]
-  },
+  "blind": null,
   "beats": [
     "2026-11-03T14:28:04+03:00",
     "2026-11-03T14:28:21+03:00",
@@ -383,9 +398,16 @@ window.STATE =
     "2026-11-04T11:31:53+03:00",
     "2026-11-04T11:34:26+03:00",
     "2026-11-04T11:34:27+03:00",
-    "2026-11-04T11:35:30+03:00"
+    "2026-11-04T11:35:30+03:00",
+    "2026-11-05T09:47:32+03:00",
+    "2026-11-05T09:47:34+03:00",
+    "2026-11-05T09:48:07+03:00",
+    "2026-11-05T09:48:29+03:00",
+    "2026-11-05T09:48:30+03:00",
+    "2026-11-05T09:48:31+03:00",
+    "2026-11-05T09:48:32+03:00"
   ],
-  "rev": 50,
+  "rev": 59,
   "waiting": null,
   "waits": [
     {
@@ -746,6 +768,62 @@ window.STATE =
       "t": "2026-11-04T11:35:30+03:00",
       "k": "finish",
       "result": "Сайт переделан по макету B: рентген трактора с симптомами, новая дизайн-система на всех страницах, тексты и SEO-заголовки переписаны"
+    },
+    {
+      "t": "2026-11-05T09:47:32+03:00",
+      "k": "reopen"
+    },
+    {
+      "t": "2026-11-05T09:48:07+03:00",
+      "k": "tickets",
+      "n": 7
+    },
+    {
+      "t": "2026-11-05T09:48:07+03:00",
+      "k": "gate",
+      "g": "G3",
+      "ok": true,
+      "problems": 0
+    },
+    {
+      "t": "2026-11-05T09:48:29+03:00",
+      "k": "stage",
+      "id": "manifest",
+      "act": "start"
+    },
+    {
+      "t": "2026-11-05T09:48:29+03:00",
+      "k": "gate",
+      "g": "G1",
+      "ok": true,
+      "open": 0,
+      "total": 20
+    },
+    {
+      "t": "2026-11-05T09:48:29+03:00",
+      "k": "stage",
+      "id": "spec",
+      "act": "start"
+    },
+    {
+      "t": "2026-11-05T09:48:30+03:00",
+      "k": "stage",
+      "id": "plan",
+      "act": "start"
+    },
+    {
+      "t": "2026-11-05T09:48:31+03:00",
+      "k": "stage",
+      "id": "build",
+      "act": "start"
+    },
+    {
+      "t": "2026-11-05T09:48:32+03:00",
+      "k": "ticket",
+      "ids": [
+        "04"
+      ],
+      "act": "start"
     }
   ],
   "reqList": [
@@ -828,35 +906,42 @@ window.STATE =
       "id": "R13",
       "text": "«B — рентген трактора»",
       "status": "done"
+    },
+    {
+      "id": "R14",
+      "text": "«при переключении причины поломки моргает и трактор»",
+      "status": "in-ticket"
+    },
+    {
+      "id": "R15",
+      "text": "«нужно чтоб трактор был зафиксирован»",
+      "status": "in-ticket"
+    },
+    {
+      "id": "R16",
+      "text": "«а подсветка причин просто накладывалась сверху на него, а не заменяла все изображение»",
+      "status": "in-ticket"
+    },
+    {
+      "id": "R17",
+      "text": "«должна быть возможность и нажатия на тракторе на причину, сейчас там нет возможности»",
+      "status": "in-ticket"
     }
   ],
   "gates": {
-    "G1": {
-      "ok": false,
-      "at": "2026-11-03T14:31:02+03:00",
-      "open": 10,
-      "total": 10
-    },
-    "G2": {
-      "ok": true,
-      "at": "2026-11-03T14:32:27+03:00",
-      "found": 4,
-      "fixed": 4,
-      "deferred": 0
-    },
     "G3": {
       "ok": true,
-      "at": "2026-11-04T10:14:48+03:00",
+      "at": "2026-11-05T09:48:07+03:00",
       "problems": 0
     },
-    "G4": {
-      "ok": false,
-      "at": "2026-11-04T11:31:51+03:00",
-      "checked": 11,
-      "matched": 10
+    "G1": {
+      "ok": true,
+      "at": "2026-11-05T09:48:29+03:00",
+      "open": 0,
+      "total": 20
     }
   },
-  "result": "Сайт переделан по макету B: рентген трактора с симптомами, новая дизайн-система на всех страницах, тексты и SEO-заголовки переписаны",
+  "result": null,
   "report": [
     "Фразы про гарантию и «акт по ремонту» в FAQ и на главной помечены «[уточнить]» — подтвердите, выдаёте ли вы акт и какая гарантия"
   ]
